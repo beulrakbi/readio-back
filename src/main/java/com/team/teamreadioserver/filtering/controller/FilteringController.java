@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/admin")
+@CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
 public class FilteringController {
 
@@ -29,9 +30,10 @@ public class FilteringController {
     }
 
     @Operation(summary = "필터링 그룹 등록 요청", description = "필터링 그룹이 등록됩니다.", tags = { "FilteringController" })
-    @PostMapping("/filtering")
+    @PostMapping("/filtering/create")
     public ResponseEntity<ResponseDTO> insertFilteringGroup(@RequestBody FilteringGroupDTO filteringGroupDTO)
     {
+        System.out.println("테스트");
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "필터링 그룹 등록 성공", filteringService.insertFilteringGroup(filteringGroupDTO)));
     }
 }

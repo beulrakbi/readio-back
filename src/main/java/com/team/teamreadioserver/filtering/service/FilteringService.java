@@ -38,6 +38,7 @@ public class FilteringService {
         catch (Exception e)
         {
             log.error("[FilteringService] insertFiltering Fail");
+            throw e;
         }
 
         log.info("[FilteringService] insertFiltering End");
@@ -52,13 +53,15 @@ public class FilteringService {
         int result = 0;
 
         try {
-            FilteringGroup filteringGroup = modelMapper.map(filteringGroupDTO, FilteringGroup.class);
+//            FilteringGroup filteringGroup = modelMapper.map(filteringGroupDTO, FilteringGroup.class);
+            FilteringGroup filteringGroup = new FilteringGroup(filteringGroupDTO.getTitle(), filteringGroupDTO.getContent());
             filteringGroupRepository.save(filteringGroup);
             result = 1;
         }
         catch (Exception e)
         {
-            log.error("[FilteringService] insertFilteringGroup Fail");
+            log.error("[FilteringService] insertFilteringGroup Fail", e);
+            throw e;
         }
 
         log.info("[FilteringService] insertFilteringGroup End");

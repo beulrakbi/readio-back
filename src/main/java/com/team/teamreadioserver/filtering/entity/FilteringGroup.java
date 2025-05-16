@@ -23,4 +23,10 @@ public class FilteringGroup {
     @Column(name = "content")
     private String content;
 
+    public FilteringGroup(String title, String content)
+    {
+        this.title = title;
+        this.content = content;
+    }
+
 }
