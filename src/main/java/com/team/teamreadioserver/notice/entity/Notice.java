@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Builder
 @NoArgsConstructor
@@ -27,7 +28,7 @@ public class Notice {
     private String noticeTitle;
 
     @Column(name = ("notice_create_at"))
-    private LocalDate noticeCreateAt;
+    private LocalDateTime noticeCreateAt;
 
     @Column(name = ("notice_view"))
     private int noticeView;
@@ -48,7 +49,7 @@ public class Notice {
     @PrePersist
     public void prePersist() {
         this.userId = 1;
-        this.noticeCreateAt = LocalDate.now();
+        this.noticeCreateAt = LocalDateTime.now();
         this.noticeView = 0;
     }
 }
