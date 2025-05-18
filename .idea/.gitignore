@@ -26,6 +26,6 @@ build/
 *.log
 
 # OS 캐시 파일
-.DS_Store   # macOS
-Thumbs.db   # Windows
+.DS_Store  # macOS
+Thmbs.db   # Windows
 /dataSources.xml
