@@ -7,7 +7,7 @@
     <insert id="insertUser" parameterType="com.team.teamreadioserver.user.dto.JoinRequestDTO">
         INSERT INTO user  (user_id, user_role, user_name, user_pwd, user_email, user_phone, user_birthday, user_enrolldate)
         VALUES (
-                #{userId}, 'ROLE_USER', #{userName}, #{userPwd}, #{userEmail}, #{userPhone}, #{userBirthday}, NOW()
+                #{userId}, 'USER', #{userName}, #{userPwd}, #{userEmail}, #{userPhone}, #{userBirthday}, NOW()
                )
     </insert>
 

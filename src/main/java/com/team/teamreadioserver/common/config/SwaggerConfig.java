@@ -20,7 +20,7 @@ public class SwaggerConfig {
 	@Bean
 	public GroupedOpenApi chatOpenApi() {
 		/* 설명. Swagger에서 처리하고자 하는 경로를 지정 */
-		String [] paths = {"/api/v1/**", "/auth/**", "/api/**"};
+		String [] paths = {"/api/v1/**", "/auth/**", "/users/**"};
 		
 		return GroupedOpenApi.builder()
 							 .group("readio 서비스 API v1")

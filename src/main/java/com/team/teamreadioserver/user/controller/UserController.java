@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 @Tag(name = "회원 API", description = "회원가입 관련 API")
 public class UserController {
 
@@ -19,7 +19,7 @@ public class UserController {
   }
 
   @Operation(summary = "회원가입", description = "신규 사용자를 등록한다.")
-  @PostMapping("join")
+  @PostMapping("/join")
   public ResponseEntity<String> join(@RequestBody JoinRequestDTO joinRequestDTO) {
     if (!userService.isUserIdAvailable(joinRequestDTO.getUserId())){
       return ResponseEntity.badRequest().body("이미 존재하는 아이디입니다.");
