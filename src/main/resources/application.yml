@@ -1,6 +1,6 @@
 # server config
 server:
- port: 8000
+ port: 8080
 
 spring:
  # DB config

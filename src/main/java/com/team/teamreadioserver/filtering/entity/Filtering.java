@@ -1,16 +1,14 @@
 package com.team.teamreadioserver.filtering.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Entity
 @Table(name = "filtering")
 @Getter
 @ToString
 @RequiredArgsConstructor
+@AllArgsConstructor
 public class Filtering {
 
     @Id

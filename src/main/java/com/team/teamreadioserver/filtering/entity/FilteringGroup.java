@@ -1,14 +1,18 @@
 package com.team.teamreadioserver.filtering.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+
+import java.util.Date;
 
 @Entity
 @Table(name = "filtering_group")
 @Getter
 @ToString
+@AllArgsConstructor
 @RequiredArgsConstructor
 public class FilteringGroup {
 
@@ -23,10 +27,14 @@ public class FilteringGroup {
     @Column(name = "content")
     private String content;
 
+    @Column(name = "create_at")
+    private Date createAt;
+
     public FilteringGroup(String title, String content)
     {
         this.title = title;
         this.content = content;
+        this.createAt = new Date();
     }
 
 }
