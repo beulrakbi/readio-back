@@ -35,4 +35,12 @@ public class NoticeService {
                 updateDTO.getNoticeImg()
         );
     }
+
+    @Transactional
+    public void deleteNotice(Integer noticeId) {
+        Notice notice = noticeRepository.findById(noticeId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 공지사항이 없습니다."));
+
+        noticeRepository.delete(notice);
+    }
 }

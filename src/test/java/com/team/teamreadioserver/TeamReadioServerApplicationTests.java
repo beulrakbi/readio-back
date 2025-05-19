@@ -57,4 +57,19 @@ class TeamReadioServerApplicationTests {
         assertEquals("게시글 수정 테스트", updatedNotice.getNoticeContent());
         assertEquals(NoticeState.URGENT, updatedNotice.getNoticeState());
     }
+
+    @Test
+    void testDeleteNotice() {
+        // 2. 방금 저장된 공지사항 가져오기
+        List<Notice> notices = noticeRepository.findAll();
+        assertFalse(notices.isEmpty());
+        Notice savedNotice = notices.get(notices.size() - 1); // 마지막에 추가된 항목
+
+        // 3. 삭제 수행
+        noticeService.deleteNotice(savedNotice.getNoticeId());
+
+        // 4. 삭제 확인
+        boolean exists = noticeRepository.findById(savedNotice.getNoticeId()).isPresent();
+        assertFalse(exists); // 존재하지 않아야 함
+    }
 }
