@@ -68,4 +68,5 @@ class TeamReadioServerApplicationTests {
         boolean exists = noticeRepository.findById(savedNotice.getNoticeId()).isPresent();
         assertFalse(exists); // 존재하지 않아야 함
     }
+
 }

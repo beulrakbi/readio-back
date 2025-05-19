@@ -34,5 +34,11 @@ public class FaqService {
         );
     }
 
+    @Transactional
+    public void deleteFaq(Integer faqId) {
+        Faq faq = faqRepository.findById(faqId)
+                .orElseThrow(()->new IllegalArgumentException("해당 게시륵"));
+        faqRepository.delete(faq);
+    }
 
 }
