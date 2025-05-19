@@ -52,4 +52,11 @@ public class Notice {
         this.noticeCreateAt = LocalDateTime.now();
         this.noticeView = 0;
     }
+
+    public void update(String title, String content, NoticeState state, NoticeImg img) {
+        this.noticeTitle = title;
+        this.noticeContent = content;
+        this.noticeState = state;
+        this.noticeImg = img;
+    }
 }

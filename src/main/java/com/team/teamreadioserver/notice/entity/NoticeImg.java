@@ -20,10 +20,6 @@ public class NoticeImg {
     @Column(name = ("saved_name"))
     private String savedName;
 
-    //나중에 연관관계 매핑
-    @Column(name = "user_id")
-    private Integer userId;
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "notice_id")
     private Notice notice;
