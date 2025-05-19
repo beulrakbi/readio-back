@@ -31,7 +31,6 @@ class NoticeApplicationTests {
                 NoticeState.TEMPORARY,
                 null
         );
-
         noticeService.writeNotice(dto);
     }
     @Test
