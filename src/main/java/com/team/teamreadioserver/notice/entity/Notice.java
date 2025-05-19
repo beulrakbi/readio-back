@@ -44,11 +44,11 @@ public class Notice {
     private NoticeImg noticeImg;
 
     @Column(name = ("user_id"))
-    private Integer userId;
+    private String userId;
 
     @PrePersist
     public void prePersist() {
-        this.userId = 1;
+        this.userId = "test2";
         this.noticeCreateAt = LocalDateTime.now();
         this.noticeView = 0;
     }
