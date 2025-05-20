@@ -6,6 +6,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
@@ -18,7 +19,6 @@ public class InterestCategory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "interest_id", updatable = false, nullable = false)
     private Long interestId;
-
 
     @Column(name = "interest_category", nullable = false, unique = true)
     private String interestCategory;
