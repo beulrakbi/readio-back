@@ -1,5 +1,6 @@
 package com.team.teamreadioserver.notice.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +20,7 @@ public class NoticeImg {
 
     @Column(name = ("saved_name"))
     private String savedName;
-
+    @JsonBackReference
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "notice_id")
     private Notice notice;

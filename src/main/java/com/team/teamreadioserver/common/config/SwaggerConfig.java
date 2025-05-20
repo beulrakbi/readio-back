@@ -17,16 +17,16 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SwaggerConfig {
 
-	@Bean
-	public GroupedOpenApi chatOpenApi() {
-		/* 설명. Swagger에서 처리하고자 하는 경로를 지정 */
-		String [] paths = {"/api/v1/**", "/auth/**"};
-		
-		return GroupedOpenApi.builder()
-							 .group("readio 서비스 API v1")
-							 .pathsToMatch(paths)
-							 .build();
-	}
+//	@Bean
+//	public GroupedOpenApi chatOpenApi() {
+//		/* 설명. Swagger에서 처리하고자 하는 경로를 지정 */
+//		String [] paths = {"/api/v1/**", "/auth/**"};
+//
+//		return GroupedOpenApi.builder()
+//							 .group("readio 서비스 API v1")
+//							 .pathsToMatch(paths)
+//							 .build();
+//	}
 }
 
 

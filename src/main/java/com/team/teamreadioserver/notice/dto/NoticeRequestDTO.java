@@ -21,5 +21,5 @@ public class NoticeRequestDTO {
     @NotNull(message = "말머리는 무조건 선택되어야 합니다.")
     private NoticeState noticeState;
 
-    private NoticeImg noticeImg;  // 이미지 1개
+    private NoticeImg noticeImg;
 }

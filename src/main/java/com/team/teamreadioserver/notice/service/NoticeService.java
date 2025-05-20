@@ -1,6 +1,7 @@
 package com.team.teamreadioserver.notice.service;
 
 import com.team.teamreadioserver.notice.dto.NoticeRequestDTO;
+//import com.team.teamreadioserver.notice.dto.NoticeUpdateDTO;
 import com.team.teamreadioserver.notice.dto.NoticeUpdateDTO;
 import com.team.teamreadioserver.notice.entity.Notice;
 import com.team.teamreadioserver.notice.repository.NoticeRepository;
@@ -18,7 +19,7 @@ public class NoticeService {
                 .noticeTitle(requestDTO.getNoticeTitle())
                 .noticeContent(requestDTO.getNoticeContent())
                 .noticeState(requestDTO.getNoticeState())
-                .noticeImg(requestDTO.getNoticeImg())
+//                .noticeImg(requestDTO.getNoticeImg())
                 .build();
 
         noticeRepository.save(notice);

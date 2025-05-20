@@ -57,6 +57,6 @@ public class Notice {
         this.noticeTitle = title;
         this.noticeContent = content;
         this.noticeState = state;
-        this.noticeImg = img;
+//        this.noticeImg = img;
     }
 }
