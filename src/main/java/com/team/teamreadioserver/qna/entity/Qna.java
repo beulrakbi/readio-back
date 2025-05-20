@@ -39,4 +39,9 @@ public class Qna {
         this.qnaCreateAt = LocalDateTime.now();
         this.qnaView = 0;
     }
+    public void updateQuestion(String title, String question) {
+        this.qnaTitle = title;
+        this.qnaQuestion = question;
+    }
+
 }
