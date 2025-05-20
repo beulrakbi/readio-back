@@ -9,7 +9,6 @@ import com.team.teamreadioserver.filtering.dto.FilteringGroupDTO;
 import com.team.teamreadioserver.filtering.dto.FilteringGroupDetailDTO;
 import com.team.teamreadioserver.filtering.service.FilteringService;
 import io.swagger.v3.oas.annotations.Operation;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
