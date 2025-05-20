@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface FilteringRepository extends JpaRepository<Filtering, Integer> {
 
-    List<Filtering> findByGroupId();
+    List<Filtering> findByGroupId(int groupId);
 
 }

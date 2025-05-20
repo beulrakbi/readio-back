@@ -114,6 +114,10 @@ public class FilteringService {
         return modelMapper.map(filteringGroupRepository.findByGroupId(groupId), FilteringGroupDTO.class);
     }
 
+    public List<FilteringDTO> selectFilterings(int groupId)
+    {
+        return filteringRepository.findByGroupId(groupId).stream().map(filtering -> modelMapper.map(filtering, FilteringDTO.class)).collect(Collectors.toList());
+    }
 
 
 }

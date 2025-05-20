@@ -6,6 +6,7 @@ import com.team.teamreadioserver.common.common.PagingResponseDTO;
 import com.team.teamreadioserver.common.common.ResponseDTO;
 import com.team.teamreadioserver.filtering.dto.FilteringDTO;
 import com.team.teamreadioserver.filtering.dto.FilteringGroupDTO;
+import com.team.teamreadioserver.filtering.dto.FilteringGroupDetailDTO;
 import com.team.teamreadioserver.filtering.service.FilteringService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
@@ -57,16 +58,32 @@ public class FilteringController {
         pagingResponseDTO.setData(filteringService.selectFilteringGroupWithPaging(cri));
         pagingResponseDTO.setPageInfo(new PageDTO(cri, total));
 
-        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "조회 성공", pagingResponseDTO));
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "필터링 그룹 전체 조회 성공", pagingResponseDTO));
 
     }
 
-    @Operation (summary = "필터링 상세조회", description = "필터링 그룹이 상세 조회됩니다.", tags = { "FilteringController" })
+    @Operation (summary = "필터링 그룹 상세조회", description = "필터링 그룹이 상세 조회됩니다.", tags = { "FilteringController" })
     @GetMapping("/filtering/{groupId}")
     public ResponseEntity<ResponseDTO> selectFilteringGroup(@PathVariable int groupId)
     {
-        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "상품 상세정보 조회 성공",  filteringService.selectFilteringGroup(groupId)));
+
+        FilteringGroupDTO group = filteringService.selectFilteringGroup(groupId);
+        List<FilteringDTO> filterings = filteringService.selectFilterings(groupId);
+
+        FilteringGroupDetailDTO result = new FilteringGroupDetailDTO();
+        result.setFilteringGroup(group);
+        result.setFilterings(filterings);
+
+        return ResponseEntity.ok().body(
+                new ResponseDTO(HttpStatus.OK, "필터링 그룹 + 필터링 목록 조회 성공", result));
+
     }
 
+//    @Operation(summary = "필터링 조회", description = "필터링이 그룹아이디 기준으로 조회됩니다.", tags = { "FilteringController" })
+//    @GetMapping("/filtering/{groupId}")
+//    public ResponseEntity<ResponseDTO> selectFilterings(@PathVariable int groupId)
+//    {
+//        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "필터링 조회 성공", filteringService.selectFilterings(groupId)));
+//    }
 
 }
