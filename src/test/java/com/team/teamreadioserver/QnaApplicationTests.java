@@ -71,7 +71,7 @@ class QnaApplicationTests {
     void testCreateAnswer(){
         List<Qna> qnas = qnaRepository.findAll();
         assertFalse(qnas.isEmpty());
-        Qna savedQna = qnas.get(0);
+        Qna savedQna = qnas.get(1);
         QnaAnswerDTO answerDTO = new QnaAnswerDTO(
                 savedQna.getQnaId(),
                 "답변 테스트중입니다."
@@ -80,4 +80,21 @@ class QnaApplicationTests {
         Qna updatedQna = qnaRepository.findById(savedQna.getQnaId()).get();
         assertEquals("답변 테스트중입니다.", updatedQna.getQnaAnswer());
     }
+
+    //답변 삭제
+    @Test
+    void testDeleteAnswer(){
+        List<Qna> qnas = qnaRepository.findAll();
+        assertFalse(qnas.isEmpty());
+        Qna savedQna = qnas.get(1);
+        QnaAnswerDTO answerDTO = new QnaAnswerDTO(
+                savedQna.getQnaId(),
+                null
+        );
+        qnaService.updateQnaAnswer(answerDTO);
+        Qna updatedQna = qnaRepository.findById(savedQna.getQnaId()).get();
+        assertEquals(null, updatedQna.getQnaAnswer());
+    }
+
+
 }

@@ -41,7 +41,7 @@ public class QnaService {
         qnaRepository.delete(qna);
     }
 
-    //답변 등록
+    //답변 등록 / 수정 / 삭제
     @Transactional
     public void updateQnaAnswer(QnaAnswerDTO qnaAnswerDTO) {
         Qna qna = qnaRepository.findById(qnaAnswerDTO.getQnaId())
