@@ -43,5 +43,8 @@ public class Qna {
         this.qnaTitle = title;
         this.qnaQuestion = question;
     }
+    public void createAnswer(String Answer){
+        this.qnaAnswer = Answer;
+    }
 
 }

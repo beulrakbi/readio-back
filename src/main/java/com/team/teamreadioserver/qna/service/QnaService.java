@@ -1,5 +1,6 @@
 package com.team.teamreadioserver.qna.service;
 
+import com.team.teamreadioserver.qna.dto.QnaAnswerDTO;
 import com.team.teamreadioserver.qna.dto.QnaQuestionDTO;
 import com.team.teamreadioserver.qna.entity.Qna;
 import com.team.teamreadioserver.qna.repository.QnaRepository;
@@ -29,6 +30,24 @@ public class QnaService {
         qna.updateQuestion(
                 qnaQuestionDTO.getQnaTitle(),
                 qnaQuestionDTO.getQnaQuestion()
+        );
+    }
+    //질문 삭제
+    @Transactional
+    public void deleteQna(Integer qnaId) {
+        Qna qna = qnaRepository.findById(qnaId)
+                .orElseThrow(()-> new IllegalArgumentException("해당 질문이 없습니다."));
+
+        qnaRepository.delete(qna);
+    }
+
+    //답변 등록
+    @Transactional
+    public void updateQnaAnswer(QnaAnswerDTO qnaAnswerDTO) {
+        Qna qna = qnaRepository.findById(qnaAnswerDTO.getQnaId())
+                .orElseThrow(()-> new IllegalArgumentException("해당 질문이 없습니다."));
+        qna.createAnswer(
+                qnaAnswerDTO.getQnaAnswer()
         );
     }
 }
