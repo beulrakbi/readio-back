@@ -42,8 +42,19 @@ public class FilteringController {
     @PostMapping("/filtering/create")
     public ResponseEntity<ResponseDTO> insertFilteringGroup(@RequestBody FilteringGroupDTO filteringGroupDTO)
     {
-        System.out.println("테스트");
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "필터링 그룹 등록 성공", filteringService.insertFilteringGroup(filteringGroupDTO)));
+    }
+
+    @Operation(summary = "필터링 그룹 활성 상태 수정 요청", description = "필터링 그룹 활성 상태가 수정됩니다.", tags = { "FilteringController" })
+    @PutMapping("/filtering")
+    public ResponseEntity<ResponseDTO> updateFilteringGroupActiveState(@RequestBody FilteringGroupDTO filteringGroupDTO)
+    {
+
+        System.out.println("변경?");
+        return ResponseEntity
+                .ok()
+                .body(new ResponseDTO(HttpStatus.OK, "리뷰 수정 성공",  filteringService.updateFilteringGroupActiveState(filteringGroupDTO)));
+
     }
 
     @Operation(summary = "필터링 그룹 전체 조회", description = "필터링 그룹이 전체 조회됩니다.", tags = { "FilteringController" })
@@ -78,12 +89,5 @@ public class FilteringController {
                 new ResponseDTO(HttpStatus.OK, "필터링 그룹 + 필터링 목록 조회 성공", result));
 
     }
-
-//    @Operation(summary = "필터링 조회", description = "필터링이 그룹아이디 기준으로 조회됩니다.", tags = { "FilteringController" })
-//    @GetMapping("/filtering/{groupId}")
-//    public ResponseEntity<ResponseDTO> selectFilterings(@PathVariable int groupId)
-//    {
-//        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "필터링 조회 성공", filteringService.selectFilterings(groupId)));
-//    }
 
 }

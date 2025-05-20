@@ -45,7 +45,7 @@ public class FilteringService {
             {
                 filteringDTO.setGroupId(groupId);
                 System.out.println("filteringDTO : " + filteringDTO);
-                Filtering filtering = new Filtering(filteringDTO.getFilteringId(), filteringDTO.getGroupId(), filteringDTO.getVideoId(), filteringDTO.getKeyword(), filteringDTO.getIsActive());
+                Filtering filtering = new Filtering(filteringDTO.getFilteringId(), filteringDTO.getGroupId(), filteringDTO.getVideoId(), filteringDTO.getKeyword());
                 filteringRepository.save(filtering);
                 result = 1;
             }
@@ -83,13 +83,30 @@ public class FilteringService {
         return filteringGroup.getGroupId();
     }
 
+    @Transactional
+    public Object updateFilteringGroupActiveState(FilteringGroupDTO filteringGroupDTO) {
+        log.info("[FilteringService] updateFilteringGroupActiveState() Start");
+        int result = 0;
+        try {
+            FilteringGroup foundFilteringGroup = filteringGroupRepository.findByGroupId(filteringGroupDTO.getGroupId());
+            foundFilteringGroup.modifyFilteringGroupActiveState();
+            result = 1;
+        } catch (Exception e)
+        {
+            log.error("[FilteringService] updateFilteringGroupActiveState() Fail");
+        }
+        log.info("[FilteringService] updateFilteringGroupActiveState() End");
+
+        return (result > 0) ? "필터링 그룹 상태 수정 성공" : "필터링 그룹 상태 수정 실패" ;
+    }
+
     public int selectFilteringGroups()
     {
-        log.info("[ProductService] selectFilteringGroup() Start");
+        log.info("[FilteringService] selectFilteringGroup() Start");
 
-        int result = filteringRepository.findAll().size();
-
-        log.info("[ProductService] selectFilteringGroup() End");
+        int result = filteringGroupRepository.findAllBy().size();
+        System.out.println("result" + result);
+        log.info("[FilteringService] selectFilteringGroup() End");
 
         return result;
     }
@@ -103,7 +120,7 @@ public class FilteringService {
         Pageable paging = PageRequest.of(index, count, Sort.by("groupId").descending());
 
         Page<FilteringGroup> result = filteringGroupRepository.findAllBy(paging);
-        List<FilteringGroup> filteringGroups = (List<FilteringGroup>)result.getContent();;
+        List<FilteringGroup> filteringGroups = (List<FilteringGroup>)result.getContent();
 
         log.info("[FilteringService] selectFilteringGroup End");
         return filteringGroups.stream().map(filteringGroup -> modelMapper.map(filteringGroup, FilteringGroupDTO.class)).collect(Collectors.toList());

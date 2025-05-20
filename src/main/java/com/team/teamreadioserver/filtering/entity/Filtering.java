@@ -25,7 +25,4 @@ public class Filtering {
     @Column(name = "keyword")
     private String keyword;
 
-    @Column(name = "is_active")
-    private String isActive;
-
 }

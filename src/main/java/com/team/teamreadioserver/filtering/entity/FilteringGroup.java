@@ -30,11 +30,23 @@ public class FilteringGroup {
     @Column(name = "create_at")
     private Date createAt;
 
+    @Column(name = "is_active")
+    private String isActive;
+
     public FilteringGroup(String title, String content)
     {
         this.title = title;
         this.content = content;
         this.createAt = new Date();
+        this.isActive = "N";
+    }
+
+    public void modifyFilteringGroupActiveState()
+    {
+        if(this.isActive.equals("Y"))
+            this.isActive = "N";
+        else
+            this.isActive = "Y";
     }
 
 }
