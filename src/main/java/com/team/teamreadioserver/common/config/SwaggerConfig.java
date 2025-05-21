@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.info.Info;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /* 설명. Swagger는 OpenAPI Specification(OAS)이다.
  *  build.gradle에 의존성을 추가해줘야 한다.
@@ -17,7 +19,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SwaggerConfig {
 
-//	@Bean
+	//	@Bean
 //	public GroupedOpenApi chatOpenApi() {
 //		/* 설명. Swagger에서 처리하고자 하는 경로를 지정 */
 //		String [] paths = {"/api/v1/**", "/auth/**"};
@@ -27,9 +29,19 @@ public class SwaggerConfig {
 //							 .pathsToMatch(paths)
 //							 .build();
 //	}
+	@Bean
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/**")
+						.allowedOrigins("http://localhost:5173")
+						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+						.allowCredentials(true);
+			}
+		};
+	}
 }
-
-
 
 
 

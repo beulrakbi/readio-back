@@ -17,5 +17,6 @@ public class NoticeUpdateDTO {
     private String noticeContent;
     @NotNull(message = "말머리는 무조건 선택되어야 합니다.")
     private NoticeState noticeState;
-    private NoticeImg noticeImg;
+
+    private NoticeImgDTO noticeImg;
 }
