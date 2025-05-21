@@ -1,31 +1,18 @@
-# Default ignored files
-/shelf/
-/workspace.xml
-# Editor-based HTTP Client requests
-/httpRequests/
-# Datasource local storage ignored files
-/dataSources/
-/dataSources.local.xml
+# macOS 시스템 파일
+.DS_Store
 
-# IntelliJ 설정
-.idea/
-*.iml
-httpRequests/
+# VS Code 설정 폴더
+.vscode/
 
-# 개인 설정
-.name
-compiler.xml
-gradle.xml
-misc.xml
-
-# Gradle 캐시 관련
+# Gradle 빌드 파일
 .gradle/
 build/
-*.bin
-*.lock
-*.log
+out/
 
-# OS 캐시 파일
-.DS_Store  # macOS
-Thmbs.db   # Windows
-/dataSources.xml
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# 기타
+*.log
+.env
