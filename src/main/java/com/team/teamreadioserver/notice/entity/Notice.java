@@ -57,6 +57,14 @@ public class Notice {
         this.noticeTitle = title;
         this.noticeContent = content;
         this.noticeState = state;
-//        this.noticeImg = img;
+        this.setNoticeImg(img); // ✅ 이렇게 써야 연결됨
     }
+
+    public void setNoticeImg(NoticeImg img) {
+        this.noticeImg = img;
+        if (img != null) {
+            img.setNotice(this);
+        }
+    }
+
 }
