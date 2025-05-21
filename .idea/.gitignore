@@ -29,3 +29,23 @@ build/
 .DS_Store  # macOS
 Thmbs.db   # Windows
 /dataSources.xml
+
+
+# macOS 시스템 파일
+.DS_Store
+
+# VS Code 설정 폴더
+.vscode/
+
+# Gradle 빌드 파일
+.gradle/
+build/
+out/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# 기타
+*.log
+.env
