@@ -8,9 +8,9 @@ import lombok.*;
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class VideoDTO {
-    private int videoId;
+    private String videoId;
     private String title;
-    private int channelTitle;
+    private String channelTitle;
     private String description;
     private String thumbnail;
 
