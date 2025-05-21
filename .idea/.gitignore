@@ -7,9 +7,25 @@
 /dataSources/
 /dataSources.local.xml
 
+# IntelliJ 설정
+.idea/
+*.iml
+httpRequests/
+
+# 개인 설정
 .name
 compiler.xml
 gradle.xml
 misc.xml
 
-.idea/
+# Gradle 캐시 관련
+.gradle/
+build/
+*.bin
+*.lock
+*.log
+
+# OS 캐시 파일
+.DS_Store  # macOS
+Thmbs.db   # Windows
+/dataSources.xml
