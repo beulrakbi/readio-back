@@ -46,6 +46,7 @@ jwt:
 springdoc:
  swagger-ui:
   path: /swagger-ui.html
+# packages-to-scan: com.team.teamreadioserver.notion.controller
 
 # logging config
 logging:
