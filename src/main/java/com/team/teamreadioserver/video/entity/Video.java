@@ -16,13 +16,13 @@ public class Video {
 
     @Id
     @Column(name = "video_id")
-    private int videoId;
+    private String videoId;
 
     @Column(name = "title")
     private String title;
 
     @Column(name = "channel_title")
-    private int channelTitle;
+    private String channelTitle;
 
     @Column(name = "description")
     private String description;

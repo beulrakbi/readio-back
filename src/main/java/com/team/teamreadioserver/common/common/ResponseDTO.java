@@ -1,7 +1,11 @@
 package com.team.teamreadioserver.common.common;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.http.HttpStatus;
 
+@Getter
+@Setter
 public class ResponseDTO {
 
     private int status;         // HTTP 응답 상태코드
