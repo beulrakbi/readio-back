@@ -4,10 +4,12 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "curation_keywords")
 @Getter
+@ToString
 @RequiredArgsConstructor
 public class CurationKeywords {
 

@@ -24,8 +24,11 @@ public class CurationKeywordsService {
     public List<CurationKeywordsDTO> selectCurationKeywordsByType(String type)
     {
         List<CurationKeywords> curationKeywords = curationKeywordsRepository.findByType(type);
+        System.out.println("타입: " + type);
+        System.out.println("어쩌구" + curationKeywords);
         Collections.shuffle(curationKeywords);
-        curationKeywords = curationKeywords.subList(0, 5);
+        int toIndex = Math.min(curationKeywords.size(), 5);
+        curationKeywords = curationKeywords.subList(0, toIndex);
         List<CurationKeywordsDTO> result = new ArrayList<>();
         for (CurationKeywords curationKeyword : curationKeywords)
         {
