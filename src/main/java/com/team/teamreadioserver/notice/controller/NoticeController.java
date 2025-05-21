@@ -3,9 +3,11 @@ package com.team.teamreadioserver.notice.controller;
 import com.team.teamreadioserver.notice.dto.NoticeRequestDTO;
 import com.team.teamreadioserver.notice.dto.NoticeResponseDTO;
 import com.team.teamreadioserver.notice.dto.NoticeUpdateDTO;
+import com.team.teamreadioserver.notice.repository.NoticeRepository;
 import com.team.teamreadioserver.notice.service.NoticeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 
@@ -17,6 +19,8 @@ public class NoticeController {
 
     @Autowired
     private NoticeService noticeService;
+    @Autowired
+    private NoticeRepository noticeRepository;
 
     @Operation(summary = "공지 등록", description = "새로운 공지사항을 등록합니다.")
     @PostMapping("/notice/write")
@@ -45,4 +49,10 @@ public class NoticeController {
         return noticeService.getNoticeList();
     }
 
+    @Operation(summary = "공지사항 상세", description = "공지사항 게시글을 상세 조회합니다.")
+    @GetMapping("/notice/detail/{noticeId}")
+    public ResponseEntity<NoticeResponseDTO> getNoticeDetail(@PathVariable Integer noticeId) {
+        NoticeResponseDTO notice = noticeService.detail(noticeId);
+        return ResponseEntity.ok(notice);
+    }
 }

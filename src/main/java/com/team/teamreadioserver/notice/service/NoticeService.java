@@ -28,7 +28,8 @@ public class NoticeService {
                         notice.getNoticeTitle(),
                         notice.getNoticeContent(),
                         notice.getNoticeCreateAt(),
-                        notice.getNoticeView()
+                        notice.getNoticeView(),
+                        notice.getNoticeState()
                 ))
                 .collect(Collectors.toList());
     }
@@ -78,5 +79,11 @@ public class NoticeService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 공지사항이 없습니다."));
 
         noticeRepository.delete(notice);
+    }
+
+    public NoticeResponseDTO detail(Integer noticeId) {
+        return noticeRepository.findById(noticeId)
+                .map(NoticeResponseDTO::fromEntity)
+                .orElseThrow(() -> new IllegalArgumentException("공지사항이 존재하지 않습니다."));
     }
 }
