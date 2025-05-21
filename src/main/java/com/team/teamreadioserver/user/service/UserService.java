@@ -18,13 +18,18 @@ public class UserService {
   }
 
   // 아이디 중복 체크
-  public boolean isUserIdAvailable(String userId) {
+  public boolean isIdAvailable(String userId) {
     return userMapper.countByUserId(userId) == 0;
   }
 
   // 이메일 중복 체크
   public boolean isEmailAvailable(String userEmail) {
     return userMapper.countByUserEmail(userEmail) == 0;
+  }
+
+  // 전화번호 중복 체크
+  public boolean isPhoneAvailable(String userPhone) {
+    return userMapper.countByUserPhone(userPhone) == 0;
   }
 
   // 회원가입

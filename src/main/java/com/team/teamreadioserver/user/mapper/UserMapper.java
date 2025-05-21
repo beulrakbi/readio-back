@@ -10,4 +10,8 @@ public interface UserMapper {
   int countByUserId(String userId);
 
   int countByUserEmail(String userEmail);
+
+  int countByUserPhone(String userPhone);
+
+
 }
