@@ -16,10 +16,10 @@ import java.time.LocalDateTime;
 @Table(name="user_interest_keyword")
 public class UserInterestKeyword {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_interest_keyword_id", updatable = false, nullable = false)
-    private Long userInterestKeywordId;
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Column(name = "user_interest_keyword_id", updatable = false, nullable = false)
+//    private Long userInterestKeywordId;
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
