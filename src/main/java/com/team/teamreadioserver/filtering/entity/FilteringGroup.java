@@ -49,4 +49,10 @@ public class FilteringGroup {
             this.isActive = "Y";
     }
 
+    public void modifyFilteringGroup(String newTitle, String newContent)
+    {
+        this.title = newTitle;
+        this.content = newContent;
+    }
+
 }

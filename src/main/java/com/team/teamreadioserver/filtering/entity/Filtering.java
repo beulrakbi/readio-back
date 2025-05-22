@@ -6,6 +6,7 @@ import lombok.*;
 @Entity
 @Table(name = "filtering")
 @Getter
+@Setter
 @ToString
 @RequiredArgsConstructor
 @AllArgsConstructor
@@ -24,5 +25,12 @@ public class Filtering {
 
     @Column(name = "keyword")
     private String keyword;
+
+    public void modifyFilter(String newVideoId, String newKeyword)
+    {
+        this.videoId = newVideoId;
+        this.keyword = newKeyword;
+    }
+
 
 }
