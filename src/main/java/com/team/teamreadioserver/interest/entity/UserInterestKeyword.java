@@ -21,14 +21,14 @@ public class UserInterestKeyword {
     @Column(name = "user_interest_keyword_id", updatable = false, nullable = false)
     private Long userInterestKeywordId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
-    private User userId;;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "interest_keyword_id", referencedColumnName = "interest_keyword_id")
-    @Column(name = "interest_keyword_id", nullable = false)
-    private Long interestId;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+//    private User userId;;
+//
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "interest_keyword_id", referencedColumnName = "interest_keyword_id")
+//    @Column(name = "interest_keyword_id", nullable = false)
+//    private Long interestId;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
