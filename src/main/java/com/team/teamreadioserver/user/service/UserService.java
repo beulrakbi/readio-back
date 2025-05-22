@@ -17,6 +17,14 @@ public class UserService {
     this.passwordEncoder = passwordEncoder;
   }
 
+  // 회원가입
+  @Transactional
+  public void joinUser(JoinRequestDTO joinRequestDTO) {
+    String encodedPwd = passwordEncoder.encode(joinRequestDTO.getUserPwd());
+    joinRequestDTO.setUserPwd(encodedPwd);
+    userMapper.insertUser(joinRequestDTO);
+  }
+
   // 아이디 중복 체크
   public boolean isIdAvailable(String userId) {
     return userMapper.countByUserId(userId) == 0;
@@ -32,13 +40,7 @@ public class UserService {
     return userMapper.countByUserPhone(userPhone) == 0;
   }
 
-  // 회원가입
-  @Transactional
-  public void joinUser(JoinRequestDTO joinRequestDTO) {
-    String encodedPwd = passwordEncoder.encode(joinRequestDTO.getUserPwd());
-    joinRequestDTO.setUserPwd(encodedPwd);
-    userMapper.insertUser(joinRequestDTO);
-  }
+
 
 
 }
