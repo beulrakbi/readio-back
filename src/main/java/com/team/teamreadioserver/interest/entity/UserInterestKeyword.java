@@ -1,6 +1,7 @@
 package com.team.teamreadioserver.interest.entity;
 
 import com.team.teamreadioserver.interest.enums.InterestStatus;
+import com.team.teamreadioserver.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,12 +23,11 @@ public class UserInterestKeyword {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
-    private User userId;;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "interest_keyword_id", referencedColumnName = "interest_keyword_id")
-    @Column(name = "interest_keyword_id", nullable = false)
-    private Long interestId;
+    @JoinColumn(name = "interest_keyword_id")
+    private InterestKeyword interestKeyword;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();

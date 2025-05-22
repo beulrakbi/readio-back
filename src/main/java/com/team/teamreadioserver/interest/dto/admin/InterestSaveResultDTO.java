@@ -1,4 +1,4 @@
-package com.team.teamreadioserver.interest.dto;
+package com.team.teamreadioserver.interest.dto.admin;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

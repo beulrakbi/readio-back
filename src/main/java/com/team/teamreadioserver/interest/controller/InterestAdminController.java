@@ -1,9 +1,9 @@
 package com.team.teamreadioserver.interest.controller;
 
-import com.team.teamreadioserver.interest.dto.InterestAdminRequestDTO;
-import com.team.teamreadioserver.interest.dto.InterestDTO;
-import com.team.teamreadioserver.interest.dto.InterestSaveResultDTO;
-import com.team.teamreadioserver.interest.dto.InterestUpdateRequestDTO;
+import com.team.teamreadioserver.interest.dto.admin.InterestAdminRequestDTO;
+import com.team.teamreadioserver.interest.dto.admin.InterestDTO;
+import com.team.teamreadioserver.interest.dto.admin.InterestSaveResultDTO;
+import com.team.teamreadioserver.interest.dto.admin.InterestUpdateRequestDTO;
 import com.team.teamreadioserver.interest.service.InterestAdminService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.team.teamreadioserver.interest.dto;
+package com.team.teamreadioserver.interest.dto.admin;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;

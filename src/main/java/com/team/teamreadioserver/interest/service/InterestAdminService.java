@@ -1,7 +1,7 @@
 package com.team.teamreadioserver.interest.service;
 
-import com.team.teamreadioserver.interest.dto.InterestDTO;
-import com.team.teamreadioserver.interest.dto.InterestSaveResultDTO;
+import com.team.teamreadioserver.interest.dto.admin.InterestDTO;
+import com.team.teamreadioserver.interest.dto.admin.InterestSaveResultDTO;
 import com.team.teamreadioserver.interest.entity.InterestCategory;
 import com.team.teamreadioserver.interest.entity.InterestKeyword;
 import com.team.teamreadioserver.interest.repository.InterestCategoryRepository;
