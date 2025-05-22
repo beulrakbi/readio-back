@@ -30,10 +30,10 @@ public class UserInterestKeyword {
 //    @Column(name = "interest_keyword_id", nullable = false)
 //    private Long interestId;
 
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private InterestStatus status;
+//    @Column(name = "created_at", nullable = false)
+//    private LocalDateTime createdAt = LocalDateTime.now();
+//
+//    @Enumerated(EnumType.STRING)
+//    @Column(name = "status", nullable = false)
+//    private InterestStatus status;
 }
