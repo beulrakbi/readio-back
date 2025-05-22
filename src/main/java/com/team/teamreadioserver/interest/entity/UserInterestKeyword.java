@@ -5,16 +5,16 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+//
+//@Getter
+//@Setter
+//@NoArgsConstructor(access = AccessLevel.PROTECTED)
+//@AllArgsConstructor
+//@Builder
 
-@Getter
-@Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
-
-@Entity
-@Table(name="user_interest_keyword")
-public class UserInterestKeyword {
+//@Entity
+//@Table(name="user_interest_keyword")
+//public class UserInterestKeyword {
 
 //    @Id
 //    @GeneratedValue(strategy = GenerationType.IDENTITY)
