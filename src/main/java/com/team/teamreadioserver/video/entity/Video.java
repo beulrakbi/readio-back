@@ -1,10 +1,9 @@
 package com.team.teamreadioserver.video.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
+
+import java.util.Objects;
 
 @Entity
 @Table(name = "video")
@@ -12,6 +11,7 @@ import lombok.ToString;
 @ToString
 @RequiredArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Video {
 
     @Id
@@ -29,5 +29,6 @@ public class Video {
 
     @Column(name = "thumbnail")
     private String thumbnail;
+
 
 }

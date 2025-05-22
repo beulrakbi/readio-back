@@ -42,11 +42,13 @@ public class VideoController {
     }
 
     @Operation(summary = "비디오 조회", description = "비디오가 조회됩니다.", tags = { "VideoController" })
-    @GetMapping("/{keyword}")
-    public ResponseEntity<ResponseDTO> getVideoByKeyword(@PathVariable String keyword)
+    @GetMapping("/{search}")
+    public ResponseEntity<ResponseDTO> getVideoByKeyword(@PathVariable String search)
     {
         log.info("[VideoController] getVideoByKeyword");
-        VideosDTO result = videoService.findVideos(keyword);
+        VideosDTO result = videoService.findVideos(search);
+
+        System.out.println("videosDTO: " + result);
         if(result.getNum() > 0)
         {
             return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "비디오 조회 성공", result));
