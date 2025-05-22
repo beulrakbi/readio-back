@@ -1,11 +1,13 @@
 package com.team.teamreadioserver.interest.controller;
 
 import com.team.teamreadioserver.interest.dto.InterestAdminRequestDTO;
+import com.team.teamreadioserver.interest.dto.InterestDTO;
 import com.team.teamreadioserver.interest.dto.InterestSaveResultDTO;
 import com.team.teamreadioserver.interest.dto.InterestUpdateRequestDTO;
 import com.team.teamreadioserver.interest.service.InterestAdminService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,15 +33,25 @@ public class InterestAdminController {
 
     //조회
     @GetMapping("/categories")
-    public ResponseEntity<List<String>> getAllCategories() {
-        List<String> categories = interestAdminService.getAllCategories();
-        return ResponseEntity.ok(categories);
+    public ResponseEntity<List<InterestDTO>> getAllCategories() {
+        try {
+            List<InterestDTO> result = interestAdminService.getAllCategoriesWithId();
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GetMapping("/keywords")
-    public ResponseEntity<List<String>> getAllKeywords() {
-        List<String> keywords = interestAdminService.getAllKeywords();
-        return ResponseEntity.ok(keywords);
+    public ResponseEntity<List<InterestDTO>> getAllKeywords() {
+        try {
+            List<InterestDTO> result = interestAdminService.getAllKeywordsWithId();
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     //수정
@@ -59,7 +71,18 @@ public class InterestAdminController {
         return ResponseEntity.ok("키워드가 수정되었습니다.");
     }
 
+    //삭제
+    @DeleteMapping("/category/{interestCategoryId}")
+    public ResponseEntity<?> deleteCategory(@PathVariable Long interestCategoryId) {
+        interestAdminService.deleteCategory(interestCategoryId);
+        return ResponseEntity.ok("카테고리가 삭제되었습니다.");
+    }
 
+    @DeleteMapping("/keyword/{interestKeywordId}")
+    public ResponseEntity<?> deleteKeyword(@PathVariable Long interestKeywordId) {
+        interestAdminService.deleteKeyword(interestKeywordId);
+        return ResponseEntity.ok("키워드가 삭제되었습니다.");
+    }
 
 
 

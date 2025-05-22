@@ -1,5 +1,6 @@
 package com.team.teamreadioserver.interest.service;
 
+import com.team.teamreadioserver.interest.dto.InterestDTO;
 import com.team.teamreadioserver.interest.dto.InterestSaveResultDTO;
 import com.team.teamreadioserver.interest.entity.InterestCategory;
 import com.team.teamreadioserver.interest.entity.InterestKeyword;
@@ -44,23 +45,50 @@ public class InterestAdminService {
     }
     //조회
     public List<String> getAllCategories() {
+        System.out.println("[getAllCategories] 호출됨");
+        List<InterestCategory> list = categoryRepository.findAll();
+        System.out.println("[getAllCategories] 조회 결과:" + list.size());
+
+        for (InterestCategory category : list) {
+            System.out.printf("[getAllCategories] %s\n", category);
+        }
         return categoryRepository.findAll().stream()
                 .map(InterestCategory::getInterestCategory)
                 .toList();
     }
 
     public List<String> getAllKeywords() {
-        return keywordRepository.findAll().stream()
+        System.out.println("[getAllKeywords] 호출됨");
+        List<InterestKeyword> list = keywordRepository.findAll();
+        System.out.println("[getAllKeywords] 조회 결과: " + list.size());
+
+        for (InterestKeyword keyword : list) {
+            System.out.printf("[getAllKeywords] %s\n", keyword);
+        }
+
+        return list.stream()
                 .map(InterestKeyword::getInterestKeyword)
                 .toList();
     }
 
+    public List<InterestDTO> getAllCategoriesWithId() {
+        return categoryRepository.findAll().stream()
+                .map(c -> new InterestDTO(c.getInterestId(), c.getInterestCategory()))
+                .toList();
+    }
+
+    public List<InterestDTO> getAllKeywordsWithId() {
+        return keywordRepository.findAll().stream()
+                .map(k -> new InterestDTO(k.getInterestKeywordId(), k.getInterestKeyword()))
+                .toList();
+    }
     //수정
     @Transactional
     public void updateCategory(Long interestId, String newName) {
         InterestCategory category = categoryRepository.findById(interestId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 카테고리를 찾을 수 없습니다."));
         category.setInterestCategory(newName);
+        category.setCreatedAt(LocalDateTime.now());
     }
 
     @Transactional
@@ -68,6 +96,24 @@ public class InterestAdminService {
         InterestKeyword keyword = keywordRepository.findById(interestKeywordId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 키워드를 찾을 수 없습니다."));
         keyword.setInterestKeyword(newName);
+        keyword.setCreatedAt(LocalDateTime.now());
+
     }
+
+    //삭제
+    @Transactional
+    public void deleteCategory(Long  interestId) {
+        InterestCategory category = categoryRepository.findById(interestId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 카테고리를 찾을 수 없습니다."));
+        categoryRepository.delete(category);
+    }
+
+    @Transactional
+    public void deleteKeyword(Long interestKeywordId) {
+        InterestKeyword keyword = keywordRepository.findById(interestKeywordId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 키워드를 찾을 수 없습니다."));
+        keywordRepository.delete(keyword);
+    }
+
 
 }

@@ -24,7 +24,8 @@ public class InterestKeyword {
     @Column(name = "interest_keyword", nullable = false, unique = true)
     private String interestKeyword;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
+
 
 }
