@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -34,6 +36,7 @@ public class InterestUserController {
     @PutMapping
     public ResponseEntity<?> updateInterests(@Valid @RequestBody InterestUserRequestDTO dto) {
         interestUserService.updateInterests(dto);
-        return ResponseEntity.ok("관심사 수정이 완료되었습니다.");
+        return ResponseEntity.ok(Map.of("message", "관심사 수정이 완료되었습니다."));
+
     }
 }

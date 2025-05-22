@@ -64,22 +64,32 @@ public class InterestUserService {
         }
     }
 
-    // ✅ 조회 메서드는 별도 정의
+    //  조회 메서드는 별도 정의
     @Transactional(readOnly = true)
     public InterestUserResponseDTO getInterestsByUserId(String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         List<UserInterestCategory> categoryList = userInterestCategoryRepository.findByUser_UserId(userId);
+        System.out.println("조회된 카테고리 수: " + categoryList.size());
         List<UserInterestKeyword> keywordList = userInterestKeywordRepository.findByUser_UserId(userId);
+        System.out.println("조회된 키워드 수: " + keywordList.size());
 
         List<InterestUserResponseDTO.SimpleInterestDTO> categories = categoryList.stream()
-                .map(cat -> new InterestUserResponseDTO.SimpleInterestDTO(
-                        cat.getInterestCategory().getInterestId(),
-                        cat.getInterestCategory().getInterestCategory()))
+                .filter(cat -> {
+                    System.out.println("카테고리 상태: " + cat.getStatus()); // ✅ 로그 확인
+                    return cat.getStatus() == InterestStatus.ACTIVE;
+                })
+                .map(cat -> {
+                    System.out.println("카테고리 이름: " + cat.getInterestCategory().getInterestCategory()); // ✅ name 확인
+                    return new InterestUserResponseDTO.SimpleInterestDTO(
+                            cat.getInterestCategory().getInterestId(),
+                            cat.getInterestCategory().getInterestCategory()
+                    );
+                })
                 .toList();
-
         List<InterestUserResponseDTO.SimpleInterestDTO> keywords = keywordList.stream()
+                .filter(kw -> kw.getStatus() == InterestStatus.ACTIVE)
                 .map(kw -> new InterestUserResponseDTO.SimpleInterestDTO(
                         kw.getInterestKeyword().getInterestKeywordId(),
                         kw.getInterestKeyword().getInterestKeyword()))
@@ -101,15 +111,16 @@ public class InterestUserService {
         List<UserInterestCategory> existingCategories = userInterestCategoryRepository.findByUser_UserId(user.getUserId());
 
         // 2. 요청한 ID Set
-        Set<Long> newCategoryIds = new HashSet<>(dto.getCategoryIds());
-
+        Set<Long> newCategoryIds = dto.getCategoryIds() == null ? new HashSet<>() : new HashSet<>(dto.getCategoryIds());
         // 3. 기존 항목 중 체크 해제된 것 → DELETED 처리
         for (UserInterestCategory existing : existingCategories) {
             Long categoryId = existing.getInterestCategory().getInterestId();
             if (!newCategoryIds.contains(categoryId)) {
                 existing.setStatus(InterestStatus.DELETED);
             } else {
-                newCategoryIds.remove(categoryId); // 그대로 유지된 항목은 추가 X
+                // 이 항목은 다시 선택된 항목이므로 되살림 필요
+                existing.setStatus(InterestStatus.ACTIVE);
+                newCategoryIds.remove(categoryId);
             }
         }
 
@@ -126,15 +137,15 @@ public class InterestUserService {
             userInterestCategoryRepository.save(newUserCat);
         }
 
-        // 🔁 키워드도 같은 방식으로 반복
+        // 키워드도 같은 방식으로 반복
         List<UserInterestKeyword> existingKeywords = userInterestKeywordRepository.findByUser_UserId(user.getUserId());
-        Set<Long> newKeywordIds = new HashSet<>(dto.getKeywordIds());
-
+        Set<Long> newKeywordIds = dto.getKeywordIds() == null ? new HashSet<>() : new HashSet<>(dto.getKeywordIds());
         for (UserInterestKeyword existing : existingKeywords) {
             Long keywordId = existing.getInterestKeyword().getInterestKeywordId();
             if (!newKeywordIds.contains(keywordId)) {
                 existing.setStatus(InterestStatus.DELETED);
             } else {
+                existing.setStatus(InterestStatus.ACTIVE);
                 newKeywordIds.remove(keywordId);
             }
         }
