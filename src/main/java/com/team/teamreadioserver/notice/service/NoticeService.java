@@ -86,4 +86,14 @@ public class NoticeService {
                 .map(NoticeResponseDTO::fromEntity)
                 .orElseThrow(() -> new IllegalArgumentException("공지사항이 존재하지 않습니다."));
     }
+
+    public List<NoticeResponseDTO> searchNoticesByTitle(String keyword) {
+        List<Notice> notices = noticeRepository.findByNoticeTitleContainingIgnoreCase(keyword);
+
+        return notices.stream()
+                .map(NoticeResponseDTO::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+
 }
