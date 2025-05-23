@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
   private final UserService userService;
-  private final TokenProvider tokenProvider;
+//  private final TokenProvider tokenProvider;
 
   public UserController(UserService userService) {
     this.userService = userService;
-    this.tokenProvider = tokenProvider;
+//    this.tokenProvider = tokenProvider;
   }
 
   @Operation(summary = "회원가입", description = "신규 사용자를 등록한다.")
