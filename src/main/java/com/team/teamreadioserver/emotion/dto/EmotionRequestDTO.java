@@ -16,5 +16,6 @@ public class EmotionRequestDTO {
 
     private EmotionType emotionType;
 
+    
     private LocalDate date;
 }
