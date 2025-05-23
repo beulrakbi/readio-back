@@ -22,6 +22,12 @@
     <select id="countByUserPhone" parameterType="string" resultType="int">
         select COUNT(*) FROM `user` WHERE user_phone = #{userPhone}
     </select>
-    
+
+
+<!--    <select id="findByUserId" parameterType="string" resultType="com.team.teamreadioserver.user.entity.User">-->
+<!--        select user_id, user_role, user_name, user_pwd, user_email, user_phone, user_birthday, user_enrolldate-->
+<!--        FROM user-->
+<!--        WHERE user_id = #{userId}-->
+<!--    </select>-->
 
 </mapper>

@@ -1,6 +1,8 @@
 package com.team.teamreadioserver.user.service;
 
 import com.team.teamreadioserver.user.dto.JoinRequestDTO;
+import com.team.teamreadioserver.user.dto.LoginRequestDTO;
+import com.team.teamreadioserver.user.entity.User;
 import com.team.teamreadioserver.user.mapper.UserMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -39,6 +41,22 @@ public class UserService {
   public boolean isPhoneAvailable(String userPhone) {
     return userMapper.countByUserPhone(userPhone) == 0;
   }
+
+
+//  @Transactional
+//  public User login(LoginRequestDTO loginRequestDTO) {
+//
+//    User user = userMapper.findByUserId(loginRequestDTO.getUserId());
+//    if (user != null && passwordEncoder.matches(loginRequestDTO.getUserPwd(), user.getUserPwd())) {
+//      return user;
+//    }
+//    // 로그인 실패
+//    return null;
+//  }
+//
+//  public User findByUserId(String userId) {
+//    return userMapper.findByUserId(userId);
+//  }
 
 
 
