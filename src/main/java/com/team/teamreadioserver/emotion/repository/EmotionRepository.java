@@ -14,8 +14,8 @@ public interface EmotionRepository extends JpaRepository<Emotion, Long> {
     // 특정 날짜에 등록된 감정 1건만
     Optional<Emotion> findFirstByUser_UserIdAndCreatedAtBetween(String userId, LocalDateTime start, LocalDateTime end);
 
-    // 월 전체 감정 조회
-    List<Emotion> findByUser_UserIdAndCreatedAtBetween(String userId, LocalDateTime startDateTime, LocalDateTime endDateTime);
+    // 해당 월에 등록된 감정 전체 조회
+    List<Emotion> findByUserAndDateBetween(User user, LocalDate startDate, LocalDate endDate);
 
     // 해당 날짜에 등록된 감정이 있는지 조회
     Optional<Emotion> findByUserAndDate(User user, LocalDate date);

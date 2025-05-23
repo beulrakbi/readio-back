@@ -24,11 +24,11 @@ public class EmotionService {
     private final EmotionRepository emotionRepository;
 
     @Transactional
-    public void saveEmotion(EmotionRequestDTO dto) {
-        User user = userRepository.findById(dto.getUserId())
+    public void saveEmotion(EmotionRequestDTO requestDTO) {
+        User user = userRepository.findById(requestDTO.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        LocalDate date = dto.getDate();
+        LocalDate date = requestDTO.getDate();
         LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
 
@@ -37,12 +37,13 @@ public class EmotionService {
                 .orElse(null);
 
         if (existing != null) {
-            existing.setEmotionType(dto.getEmotionType());
+            existing.setEmotionType(requestDTO.getEmotionType());
         } else {
             Emotion newEmotion = Emotion.builder()
                     .user(user)
-                    .emotionType(dto.getEmotionType())
-                    .createdAt(startOfDay) // 감정 등록일 기준
+                    .emotionType(requestDTO.getEmotionType())
+                    .date(requestDTO.getDate())
+                    .createdAt(LocalDateTime.now())
                     .build();
             emotionRepository.save(newEmotion);
         }
@@ -50,26 +51,19 @@ public class EmotionService {
 
     //조회
     public List<EmotionResponseDTO> getEmotionsByMonth(String userId, int year, int month) {
-        // 1. 유저 조회 및 예외 처리
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        // 2. 월 시작/끝 계산
         LocalDate startDate = LocalDate.of(year, month, 1);
         LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
-        LocalDateTime startDateTime = startDate.atStartOfDay();
-        LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
 
-        // 3. 감정 조회
-        List<Emotion> emotions = emotionRepository
-                .findByUser_UserIdAndCreatedAtBetween(user.getUserId(), startDateTime, endDateTime);
+        List<Emotion> emotions = emotionRepository.findByUserAndDateBetween(user, startDate, endDate);
 
-        // 4. 응답 DTO로 변환
         return emotions.stream()
                 .map(e -> new EmotionResponseDTO(
-                        e.getEmotionType().name(),      // "HAPPY"
-                        e.getEmotionType().getLabel(),  // "기쁨"
-                        e.getCreatedAt().toLocalDate()  // 2025-06-01
+                        e.getEmotionType().name(),
+                        e.getEmotionType().getLabel(),
+                        e.getDate()
                 ))
                 .toList();
     }
