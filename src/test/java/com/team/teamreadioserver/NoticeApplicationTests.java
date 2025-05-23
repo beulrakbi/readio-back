@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @SpringBootTest
-class TeamReadioServerApplicationTests {
+class NoticeApplicationTests {
     @Autowired
     private NoticeService noticeService;
     @Autowired
@@ -31,7 +31,6 @@ class TeamReadioServerApplicationTests {
                 NoticeState.TEMPORARY,
                 null
         );
-
         noticeService.writeNotice(dto);
     }
     @Test
@@ -68,5 +67,4 @@ class TeamReadioServerApplicationTests {
         boolean exists = noticeRepository.findById(savedNotice.getNoticeId()).isPresent();
         assertFalse(exists); // 존재하지 않아야 함
     }
-
 }
