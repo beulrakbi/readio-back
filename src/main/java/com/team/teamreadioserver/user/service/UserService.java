@@ -48,5 +48,9 @@ public class UserService {
     return null;
   }
 
+  public User findByUserId(String userId) {
+    return userMapper.findByUserId(userId);
+  }
+
 
 }

@@ -35,13 +35,6 @@ public class UserController {
     return ResponseEntity.ok("회원가입 성공");
   }
 
-  @Operation(summary = "로그인", description = "사용자가 로그인한다.")
-  @PostMapping("/login")
-  public ResponseEntity<?> login (@RequestBody LoginRequestDTO loginRequestDTO) {
-
-
-  }
-
   @GetMapping("/test")
   public String test() {
     return "test";

@@ -16,8 +16,14 @@ public class DetailsUser implements UserDetails {
         this.user = user;
     }
 
+    private User getUser() {
+        return user;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+//        List<String> roles = new ArrayList<>();
+//        roles.add("ROLE_" + member.getRole().toString());
         return List.of(new SimpleGrantedAuthority(user.getUserRole().name()));
     }
 
