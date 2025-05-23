@@ -5,6 +5,7 @@ import com.team.teamreadioserver.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -29,6 +30,9 @@ public class Emotion {
     @Enumerated(EnumType.STRING)
     @Column(name = "emotion_type",  nullable = true)
     private EmotionType emotionType;
+
+    @Column(name = "date", nullable = false)
+    private LocalDate date;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
