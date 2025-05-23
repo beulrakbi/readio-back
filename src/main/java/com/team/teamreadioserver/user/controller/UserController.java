@@ -1,6 +1,7 @@
 package com.team.teamreadioserver.user.controller;
 
 import com.team.teamreadioserver.user.dto.JoinRequestDTO;
+import com.team.teamreadioserver.user.dto.LoginRequestDTO;
 import com.team.teamreadioserver.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,9 +14,11 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
   private final UserService userService;
+  private final TokenProvider tokenProvider;
 
   public UserController(UserService userService) {
     this.userService = userService;
+    this.tokenProvider = tokenProvider;
   }
 
   @Operation(summary = "회원가입", description = "신규 사용자를 등록한다.")
@@ -30,6 +33,13 @@ public class UserController {
 
     userService.joinUser(joinRequestDTO);
     return ResponseEntity.ok("회원가입 성공");
+  }
+
+  @Operation(summary = "로그인", description = "사용자가 로그인한다.")
+  @PostMapping("/login")
+  public ResponseEntity<?> login (@RequestBody LoginRequestDTO loginRequestDTO) {
+
+
   }
 
   @GetMapping("/test")

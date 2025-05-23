@@ -5,18 +5,28 @@
 <mapper namespace="com.team.teamreadioserver.user.mapper.UserMapper">
 
     <insert id="insertUser" parameterType="com.team.teamreadioserver.user.dto.JoinRequestDTO">
-        INSERT INTO user  (user_id, user_role, user_name, user_pwd, user_email, user_phone, user_birthday, user_enrolldate)
-        VALUES (
-                #{userId}, 'USER', #{userName}, #{userPwd}, #{userEmail}, #{userPhone}, #{userBirthday}, NOW()
-               )
+        INSERT INTO user (user_id, user_role, user_name, user_pwd, user_email, user_phone, user_birthday,
+                          user_enrolldate)
+        VALUES (#{userId}, 'USER', #{userName}, #{userPwd}, #{userEmail}, #{userPhone}, #{userBirthday}, NOW())
     </insert>
 
-    <select id="countByUserId"  parameterType="string" resultType="int">
-        SELECT COUNT(*) FROM user WHERE user_id = #{userId}
+    <select id="countByUserId" parameterType="string" resultType="int">
+        SELECT COUNT(*)
+        FROM user
+        WHERE user_id = #{userId}
     </select>
 
     <select id="countByUserEmail" parameterType="string" resultType="int">
-        select COUNT(*) FROM user WHERE user_email = #{userEmail}
+        select COUNT(*)
+        FROM user
+        WHERE user_email = #{userEmail}
     </select>
+
+    <select id="findByUserId" parameterType="string" resultType="com.team.teamreadioserver.user.entity.User">
+        select user_id, user_role, user_name, user_pwd, user_email, user_phone, user_birthday, user_enrolldate
+        FROM user
+        WHERE user_id = #{userId}
+    </select>
+
 
 </mapper>
