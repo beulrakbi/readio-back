@@ -4,6 +4,7 @@ import com.team.teamreadioserver.user.dto.JoinRequestDTO;
 import com.team.teamreadioserver.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,8 +32,13 @@ public class UserController {
 //            return ResponseEntity.badRequest().body("이미 존재하는 이메일입니다.");
 //        }
 
-        userService.joinUser(joinRequestDTO);
-        return ResponseEntity.ok("회원가입 성공");
+        try { // 회원가입 로직도 예외 처리 추가
+            userService.joinUser(joinRequestDTO);
+            return ResponseEntity.ok("회원가입 성공");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원가입 실패: " + e.getMessage());
+        }
     }
 
     @Operation(summary = "회원가입-아이디 중복확인", description = "회원가입 시 아이디 중복확인을 진행한다.")

@@ -12,9 +12,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  *  접속: http://localhost:8080/swagger-ui/index.html (application.yaml 참고)
  * */
 @OpenAPIDefinition(
-		info = @Info(title = "readio",
-					 description = "React부터 Spring Data Jpa까지 진행하는 서비스 API 명세서",
-					 version = "v1"))
+    info = @Info(title = "readio",
+        description = "React부터 Spring Data Jpa까지 진행하는 서비스 API 명세서",
+        version = "v1"))
 @Configuration
 public class SwaggerConfig {
 
@@ -29,18 +29,18 @@ public class SwaggerConfig {
 //							 .build();
 //	}
 
-	@Bean
-	public WebMvcConfigurer corsConfigurer() {
-		return new WebMvcConfigurer() {
-			@Override
-			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**")
-						.allowedOrigins("http://localhost:5173")
-						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-						.allowCredentials(true);
-			}
-		};
-	}
+//	@Bean
+//	public WebMvcConfigurer corsConfigurer() {
+//		return new WebMvcConfigurer() {
+//			@Override
+//			public void addCorsMappings(CorsRegistry registry) {
+//				registry.addMapping("/**")
+//						.allowedOrigins("http://localhost:5173")
+//						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+//						.allowCredentials(true);
+//			}
+//		};
+//	}
 
 
 }

@@ -17,7 +17,4 @@ public interface UserMapper {
 
   User findByUserId(@Param("userId") String userId);
 
-
-
-
 }

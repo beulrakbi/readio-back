@@ -20,6 +20,7 @@ public class UserService {
   // 회원가입
   @Transactional
   public void joinUser(JoinRequestDTO joinRequestDTO) {
+    // 비밀번호 암호화해서 DB에 저장
     String encodedPwd = passwordEncoder.encode(joinRequestDTO.getUserPwd());
     joinRequestDTO.setUserPwd(encodedPwd);
     userMapper.insertUser(joinRequestDTO);
@@ -39,9 +40,6 @@ public class UserService {
   public boolean isPhoneAvailable(String userPhone) {
     return userMapper.countByUserPhone(userPhone) == 0;
   }
-
-
-
 
 
 }

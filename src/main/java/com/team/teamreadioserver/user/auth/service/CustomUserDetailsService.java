@@ -2,13 +2,11 @@ package com.team.teamreadioserver.user.auth.service;//package com.team.teamreadi
 
 
 import com.team.teamreadioserver.user.mapper.UserMapper;
-import org.springframework.security.core.userdetails.User;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import static com.team.teamreadioserver.user.entity.UserRole.*;
 
 //MyBatis 연동 사용자 조회
 
@@ -23,14 +21,25 @@ public class CustomUserDetailsService implements UserDetailsService {
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    System.out.println("로그인 요청 username: " + username);
     com.team.teamreadioserver.user.entity.User user = userMapper.findByUserId(username);
     if(user == null) {
-      throw new UsernameNotFoundException("사용자를 찾을 수 없습니다." + username);
+      System.out.println("사용자 없음:" + username + " (DB조회 결과 null)");
+      throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.:" + username);
     }
+    System.out.println("사용자 찾기:" + user.getUserId());
+    System.out.println("암호화된 비밀번호:" + user.getUserPwd());
+    System.out.println("권한:" + user.getUserRole());
+
+    String userRoleName = (user.getUserRole() != null) ? user.getUserRole().name() : "USER";
+    if (user.getUserRole() == null) {
+      System.err.println("경고: 사용자 " + user.getUserId() + "의 역할(userRole)이 DB에서 null로 로드되었습니다. 기본값 USER로 설정합니다.");
+    }
+
      return org.springframework.security.core.userdetails.User.builder()
          .username(user.getUserId())
          .password(user.getUserPwd())
-         .roles(user.getUserRole().name())
+         .roles(userRoleName)
          .build();
   }
 
