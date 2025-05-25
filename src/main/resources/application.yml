@@ -42,7 +42,7 @@ image:
 # security(jwt) config
 jwt:
  secret: BWQ3NDiE+stVlnYfuLeHZ0i2hIRhoGZKIrHAnj0OPedv3aBEOPWJQ9KqqmH/XYWam6MeGG8+7gs2Rbs5ID0Vdg==
-
+ expiration: 3600000 # 1시간, 밀리초 단위
 
 # springdoc open-api config
 springdoc:
