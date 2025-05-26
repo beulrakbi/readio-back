@@ -1,20 +1,12 @@
-package com.team.teamreadioserver.search.entity;
+package com.team.teamreadioserver.search.dto;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Entity(name = "book")
-public class Book {
+public class BookResponseDTO {
 
-    @Id
     private String bookIsbn;
     private String bookTitle;
     private String bookAuthor;
@@ -22,6 +14,4 @@ public class Book {
     private String bookCover;
     private String bookDescription;
     private String bookPubDate;
-
-
 }

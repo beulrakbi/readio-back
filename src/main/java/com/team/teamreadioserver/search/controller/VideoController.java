@@ -1,4 +1,4 @@
 package com.team.teamreadioserver.search.controller;
 
-public class SearchBookController {
+public class VideoController {
 }
