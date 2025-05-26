@@ -1,4 +1,3 @@
-//package com.team.teamreadioserver.user.auth.model;
 //
 //import com.team.teamreadioserver.user.entity.User;
 //import org.springframework.security.core.GrantedAuthority;

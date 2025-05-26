@@ -4,6 +4,17 @@
 
 <mapper namespace="com.team.teamreadioserver.user.mapper.UserMapper">
 
+    <resultMap id="userResultMap" type="com.team.teamreadioserver.user.entity.User">
+        <id property="userId" column="user_id"/>
+        <result property="userRole" column="user_role"/>
+        <result property="userName" column="user_name"/>
+        <result property="userPwd" column="user_pwd"/>
+        <result property="userEmail" column="user_email"/>
+        <result property="userPhone" column="user_phone"/>
+        <result property="userBirthday" column="user_birthday"/>
+        <result property="userEnrolldate" column="user_enrolldate"/>
+    </resultMap>
+
     <insert id="insertUser" parameterType="com.team.teamreadioserver.user.dto.JoinRequestDTO">
         INSERT INTO user (user_id, user_role, user_name, user_pwd, user_email, user_phone, user_birthday,
                           user_enrolldate)
@@ -12,21 +23,33 @@
 
     <select id="countByUserId" parameterType="string" resultType="int">
         SELECT COUNT(*)
-        FROM user
+        FROM `user`
         WHERE user_id = #{userId}
     </select>
 
     <select id="countByUserEmail" parameterType="string" resultType="int">
         select COUNT(*)
-        FROM user
+        FROM `user`
         WHERE user_email = #{userEmail}
     </select>
 
-    <select id="findByUserId" parameterType="string" resultType="com.team.teamreadioserver.user.entity.User">
-        select user_id, user_role, user_name, user_pwd, user_email, user_phone, user_birthday, user_enrolldate
-        FROM user
-        WHERE user_id = #{userId}
+    <select id="countByUserPhone" parameterType="string" resultType="int">
+        select COUNT(*)
+        FROM `user`
+        WHERE user_phone = #{userPhone}
     </select>
 
+    <select id="findByUserId" parameterType="string" resultMap="userResultMap">
+        select user_id,
+               user_role,
+               user_name,
+               user_pwd,
+               user_email,
+               user_phone,
+               user_birthday,
+               user_enrolldate as userEnrollDate
+        FROM `user`
+        WHERE user_id = #{userId}
+    </select>
 
 </mapper>

@@ -42,7 +42,7 @@ image:
 # security(jwt) config
 jwt:
  secret: BWQ3NDiE+stVlnYfuLeHZ0i2hIRhoGZKIrHAnj0OPedv3aBEOPWJQ9KqqmH/XYWam6MeGG8+7gs2Rbs5ID0Vdg==
-
+ expiration: 3600000 # 1시간, 밀리초 단위
 
 # springdoc open-api config
 springdoc:
@@ -55,6 +55,9 @@ logging:
   root: info
   org.hibernate.SQL: debug
   org.hibernate.orm.jdbc.bind: trace
+  com.team.teamreadioserver.user.mapper: DEBUG   # UserMapper 로그 디버그 출력
+  java.sql: DEBUG
+  org.mybatis: DEBUG                             # MyBatis 전체 로그 디버그 출력 (선택)
 
 mybatis:
  mapper-locations: classpath:mapper/*.xml

@@ -19,8 +19,17 @@ public class UserService {
     this.passwordEncoder = passwordEncoder;
   }
 
+  // 회원가입
+  @Transactional
+  public void joinUser(JoinRequestDTO joinRequestDTO) {
+    // 비밀번호 암호화해서 DB에 저장
+    String encodedPwd = passwordEncoder.encode(joinRequestDTO.getUserPwd());
+    joinRequestDTO.setUserPwd(encodedPwd);
+    userMapper.insertUser(joinRequestDTO);
+  }
+
   // 아이디 중복 체크
-  public boolean isUserIdAvailable(String userId) {
+  public boolean isIdAvailable(String userId) {
     return userMapper.countByUserId(userId) == 0;
   }
 
@@ -29,12 +38,9 @@ public class UserService {
     return userMapper.countByUserEmail(userEmail) == 0;
   }
 
-  // 회원가입
-  @Transactional
-  public void joinUser(JoinRequestDTO joinRequestDTO) {
-    String encodedPwd = passwordEncoder.encode(joinRequestDTO.getUserPwd());
-    joinRequestDTO.setUserPwd(encodedPwd);
-    userMapper.insertUser(joinRequestDTO);
+  // 전화번호 중복 체크
+  public boolean isPhoneAvailable(String userPhone) {
+    return userMapper.countByUserPhone(userPhone) == 0;
   }
 
   @Transactional
