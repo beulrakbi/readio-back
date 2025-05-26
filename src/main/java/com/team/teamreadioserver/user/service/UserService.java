@@ -50,6 +50,13 @@ public class UserService {
     return userMapper.findByUserId(userId);
   }
 
+  // 비밀번호 확인
+  public boolean verifyPassword(String userId, String inputPassword) {
+    String storedHashedPassword = userMapper.getPasswordByUserId(userId);
+    if(storedHashedPassword == null) return false;
+    return passwordEncoder.matches(inputPassword, storedHashedPassword);
+  }
+
   // 회원정보조회
   public UserInfoResponseDTO getUserInfo(String userId) {
     return userMapper.selectUserById(userId);
@@ -68,7 +75,6 @@ public class UserService {
     }
     // 수정용 DTO로 전체 수정 가능
     return userMapper.updateUser(userEditRequestDTO);
-
   }
 
 }

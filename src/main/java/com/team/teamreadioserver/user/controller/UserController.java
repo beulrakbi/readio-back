@@ -70,6 +70,20 @@ public class UserController {
         return response;
     }
 
+    @Operation(summary = "페이지 진입 전 비밀번호 확인", description = "현재 비밀번호 확인을 거친 후에 정보 수정이 가능하다.")
+    @PostMapping("/verifypwd")
+    public ResponseEntity<?> verifyPassword(@RequestBody Map<String, String> request) {
+        String userId = request.get("userId");
+        String inputPassword = request.get("password");
+
+        boolean isValid = userService.verifyPassword(userId, inputPassword);
+        if (isValid) {
+            return ResponseEntity.ok("비밀번호 확인 성공");
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호가 일치하지 않습니다");
+        }
+    }
+
     // 회원정보 조회
     @Operation(summary = "회원정보조회", description = "회원정보 수정 시 정보를 조회해온다.")
     @GetMapping("/edit")
@@ -87,6 +101,7 @@ public class UserController {
         }
         return "fail";
     }
+
 
 
 
