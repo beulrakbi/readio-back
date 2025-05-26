@@ -1,6 +1,8 @@
 package com.team.teamreadioserver.user.controller;
 
 import com.team.teamreadioserver.user.dto.JoinRequestDTO;
+import com.team.teamreadioserver.user.dto.UserEditRequestDTO;
+import com.team.teamreadioserver.user.dto.UserInfoResponseDTO;
 import com.team.teamreadioserver.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -57,7 +59,6 @@ public class UserController {
         Map<String, Boolean> response = new HashMap<>();
         response.put("exist" , !isAvailable);
         return response;
-
     }
 
     @Operation(summary = "회원가입-휴대폰번호 중복확인", description = "회원가입 시 이메일 중복확인을 진행한다.")
@@ -67,11 +68,29 @@ public class UserController {
         Map<String, Boolean> response = new HashMap<>();
         response.put("exist" , !isAvailable);
         return response;
+    }
 
+    // 회원정보 조회
+    @Operation(summary = "회원정보조회", description = "회원정보 수정 시 정보를 조회해온다.")
+    @GetMapping("/edit")
+    public UserInfoResponseDTO getUserInfo(@RequestParam String userId) {
+        return userService.getUserInfo(userId);
+    }
 
+    // 회원정보 수정
+    @Operation(summary = "회원정보 수정", description = "회원정보 수정이 가능하다.")
+    @PutMapping("/edit")
+    public String updateUser(@RequestBody UserEditRequestDTO userEditRequestDTO) {
+        int updatedCount = userService.updateUser(userEditRequestDTO);
+        if (updatedCount == 1) {
+            return "success";
+        }
+        return "fail";
     }
 
 
+
+    
     @GetMapping("/test")
     public String test() {
         return "test";
