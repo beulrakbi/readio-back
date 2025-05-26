@@ -14,9 +14,9 @@ public class InterestUserRequestDTO {
     @NotNull
     private String userId;
 
-    @Size(max = 3)
+    @Size(max = 3, message = "관심분야는 최대 3개까지 선택가능합니다.")
     private List<Long> categoryIds;
 
-    @Size(max = 5)
+    @Size(max = 5, message = "관심키워드는 최대 5개까지 선택가능합니다.")
     private List<Long> keywordIds;
 }

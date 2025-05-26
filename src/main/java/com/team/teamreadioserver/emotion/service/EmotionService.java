@@ -99,4 +99,7 @@ public class EmotionService {
 
         emotionRepository.delete(emotion);
     }
+
+
+
 }
