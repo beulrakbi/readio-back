@@ -71,4 +71,25 @@ public class VideoService {
         return result;
     }
 
+    public VideosDTO searchVideos(String search) {
+        Set<Video> videos = new HashSet<>();
+        videos.addAll(videoRepository.findAllByDescriptionContaining(search));
+        videos.addAll(videoRepository.findAllByTitleContaining(search));
+        System.out.println("asdfasdf: " + videoRepository.findAllByDescriptionContaining(search));
+        System.out.println("갯수: " + videos.size());
+
+        List<VideoDTO> videoDTOS = new ArrayList<>();
+        videoDTOS.addAll(videos.stream().map(video -> modelMapper.map(video, VideoDTO.class)).collect(Collectors.toList()));
+
+        for (VideoDTO videoDTO : videoDTOS) {
+            String cleanText = StringEscapeUtils.unescapeHtml4(videoDTO.getTitle());
+            videoDTO.setTitle(cleanText);
+        }
+
+        VideosDTO result = new VideosDTO(videoDTOS, videoDTOS.size());
+
+        System.out.println("test: " + videoDTOS);
+
+        return result;
+    }
 }

@@ -57,4 +57,14 @@ public class VideoController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseDTO(HttpStatus.BAD_REQUEST, "비디오 조회 실패", null));
     }
 
+    @Operation(summary = "비디오 검색", description = "비디오가 검색됩니다.", tags = { "VideoController" })
+    @GetMapping("/query/{search}")
+    public ResponseEntity<ResponseDTO> searchVideoByKeyword(@PathVariable String search)
+    {
+        log.info("[VideoController] searchVideoByKeyword");
+        VideosDTO result = videoService.searchVideos(search);
+
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "비디오 검색 성공", result));
+    }
+
 }

@@ -15,4 +15,8 @@ public interface VideoRepository extends JpaRepository<Video, String> {
     @Query(value = "SELECT * FROM video WHERE title LIKE %:search% ORDER BY RAND() LIMIT 5", nativeQuery = true)
     Set<Video> findByTitleContaining(@Param("search") String search);
     Set<Video> findByVideoIdContaining(String videoId);
+
+    Set<Video> findAllByDescriptionContaining(String search);
+    Set<Video> findAllByTitleContaining(String search);
+
 }
