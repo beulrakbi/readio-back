@@ -15,12 +15,14 @@ import java.time.LocalDateTime;
 public class FaqResponseDTO {
     private Integer faqId;
     private String faqTitle;
+    private String faqContent;
     private LocalDateTime faqCreateAt;
 
     public static FaqResponseDTO fromEntity(Faq faq) {
         FaqResponseDTO dto = new FaqResponseDTO();
         dto.faqId = faq.getFaqId();
         dto.faqTitle = faq.getFaqTitle();
+        dto.faqContent = faq.getFaqContent();
         dto.faqCreateAt = faq.getFaqCreateAt();
         return dto;
     }

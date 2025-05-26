@@ -5,10 +5,12 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Setter
 public class FaqUpdateDTO {
     private Integer faqId;
     @NotBlank(message = "제목은 공백이 아니어야 합니다.")
@@ -21,7 +23,7 @@ public class FaqUpdateDTO {
         FaqUpdateDTO dto = new FaqUpdateDTO();
         dto.faqId = faq.getFaqId();
         dto.faqTitle = faq.getFaqTitle();
-        dto.faqContent = faq.getFaqTitle();
+        dto.faqContent = faq.getFaqContent();
         return dto;
     }
 }

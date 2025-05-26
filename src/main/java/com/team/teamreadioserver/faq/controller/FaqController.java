@@ -48,7 +48,7 @@ public class FaqController {
     }
 
     @Operation(summary = "FAQ 삭제", description = "FAQ 삭제")
-    @GetMapping("/faq/delete/{faqId}")
+    @DeleteMapping("/faq/delete/{faqId}")
     public String deleteFaq(@PathVariable Integer faqId) {
         faqService.deleteFaq(faqId);
         return "FAQ가 삭제되었습니다.";

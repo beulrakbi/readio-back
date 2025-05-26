@@ -27,6 +27,7 @@ public class FaqService {
                 .map(faq1 -> new FaqResponseDTO(
                         faq1.getFaqId(),
                         faq1.getFaqTitle(),
+                        faq1.getFaqContent(),
                         faq1.getFaqCreateAt()
                 ))
                 .collect(Collectors.toList());
