@@ -18,12 +18,14 @@ public class Video {
     @Column(name = "video_id")
     private String videoId;
 
+    @EqualsAndHashCode.Include
     @Column(name = "title")
     private String title;
 
     @Column(name = "channel_title")
     private String channelTitle;
 
+    @EqualsAndHashCode.Include
     @Column(name = "description")
     private String description;
 
