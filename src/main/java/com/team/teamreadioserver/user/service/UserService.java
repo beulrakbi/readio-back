@@ -43,20 +43,10 @@ public class UserService {
     return userMapper.countByUserPhone(userPhone) == 0;
   }
 
-//  @Transactional
-//  public User login(LoginRequestDTO loginRequestDTO) {
-//
-//    User user = userMapper.findByUserId(loginRequestDTO.getUserId());
-//    if (user != null && passwordEncoder.matches(loginRequestDTO.getUserPwd(), user.getUserPwd())) {
-//      return user;
-//    }
-//    // 로그인 실패
-//    return null;
-//  }
-//
-//  public User findByUserId(String userId) {
-//    return userMapper.findByUserId(userId);
-//  }
+  // 로그인 시 아이디 조회하기
+  public User findByUserId(String userId) {
+    return userMapper.findByUserId(userId);
+  }
 
 
 }
