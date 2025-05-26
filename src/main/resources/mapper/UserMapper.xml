@@ -55,7 +55,7 @@
     <select id="getPasswordByUserId" parameterType="string" resultType="string">
         SELECT user_pwd
         FROM `user`
-        WHERE user_id = #{usreId}
+        WHERE user_id = #{userId}
     </select>
 
     <!--회원정보 조회-->

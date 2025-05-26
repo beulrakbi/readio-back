@@ -6,6 +6,8 @@ import com.team.teamreadioserver.user.dto.UserEditRequestDTO;
 import com.team.teamreadioserver.user.dto.UserInfoResponseDTO;
 import com.team.teamreadioserver.user.entity.User;
 import com.team.teamreadioserver.user.mapper.UserMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class UserService {
 
+  private final Logger logger = LoggerFactory.getLogger(UserService.class);
   private final UserMapper userMapper;
   private final PasswordEncoder passwordEncoder;
 
@@ -53,7 +56,14 @@ public class UserService {
   // 비밀번호 확인
   public boolean verifyPassword(String userId, String inputPassword) {
     String storedHashedPassword = userMapper.getPasswordByUserId(userId);
+
+    logger.info("사용자가 입력한 비번: " + inputPassword);
+    logger.info("db에서 읽어온 비밀번호해시:" + storedHashedPassword);
+
     if(storedHashedPassword == null) return false;
+
+    // 디버깅..
+
     return passwordEncoder.matches(inputPassword, storedHashedPassword);
   }
 

@@ -70,6 +70,7 @@ public class UserController {
         return response;
     }
 
+    // 비밀번호 확인
     @Operation(summary = "페이지 진입 전 비밀번호 확인", description = "현재 비밀번호 확인을 거친 후에 정보 수정이 가능하다.")
     @PostMapping("/verifypwd")
     public ResponseEntity<?> verifyPassword(@RequestBody Map<String, String> request) {
