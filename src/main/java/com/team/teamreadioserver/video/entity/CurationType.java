@@ -1,26 +1,24 @@
 package com.team.teamreadioserver.video.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 @Entity
-@Table(name = "curation_keywords")
+@Table(name = "curation_type")
 @Getter
 @ToString
 @RequiredArgsConstructor
-public class CurationKeywords {
-
+public class CurationType {
     @Id
-    @Column(name = "curation_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int curationId;
-
-    @Column(name = "keyword")
-    private String keyword;
-
     @Column(name = "type_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int typeId;
+
+    @Column(name = "type_name")
+    private String typeName;
+
+    @Column(name = "type_text")
+    private String typeText;
 }
