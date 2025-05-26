@@ -18,7 +18,7 @@ import java.util.List;
 public class CurationKeywordsService {
 
     private final CurationKeywordsRepository curationKeywordsRepository;
-    private static final Logger log = LoggerFactory.getLogger(VideoService.class);
+    private static final Logger log = LoggerFactory.getLogger(CurationKeywordsService.class);
     private final ModelMapper modelMapper;
 
     public List<CurationKeywordsDTO> selectCurationKeywordsByType(String type)
