@@ -3,9 +3,12 @@ package com.team.teamreadioserver.user.controller;
 import com.team.teamreadioserver.user.dto.JoinRequestDTO;
 import com.team.teamreadioserver.user.dto.UserEditRequestDTO;
 import com.team.teamreadioserver.user.dto.UserInfoResponseDTO;
+import com.team.teamreadioserver.user.mapper.UserMapper;
 import com.team.teamreadioserver.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,9 +22,12 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final Logger logger = LoggerFactory.getLogger(UserController.class);
+    private final UserMapper userMapper;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserMapper userMapper) {
         this.userService = userService;
+        this.userMapper = userMapper;
     }
 
     @Operation(summary = "회원가입", description = "신규 사용자를 등록한다.")
@@ -82,9 +88,21 @@ public class UserController {
     // 회원정보 조회
     @Operation(summary = "회원정보조회", description = "회원정보 수정 시 정보를 조회해온다.")
     @GetMapping("/edit")
-    public UserInfoResponseDTO getUserInfo(@RequestParam String userId) {
-        return userService.getUserInfo(userId);
+    public ResponseEntity<UserInfoResponseDTO> getUserInfo(@RequestParam String userId) {
+        UserInfoResponseDTO user = userService.getUserInfo(userId);
+        return ResponseEntity.ok(user);
     }
+//    public UserInfoResponseDTO getUserInfo(@RequestParam String userId) {
+//        UserInfoResponseDTO dto = userMapper.selectUserById(userId);
+//        logger.info("조회된 회원 정보: {}", dto);
+//
+//        if (dto == null) {
+//            logger.warn("조회된 회원 정보가 없습니다! userId: {}", userId);
+//        }
+//
+//        return dto;
+////        return userService.getUserInfo(userId);
+//    }
 
     // 회원정보 수정
     @Operation(summary = "회원정보 수정", description = "회원정보 수정이 가능하다.")
@@ -94,6 +112,7 @@ public class UserController {
         if (updatedCount == 1) {
             return "success";
         }
+
         return "fail";
     }
 

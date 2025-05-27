@@ -15,6 +15,14 @@
         <result property="userEnrolldate" column="user_enrolldate"/>
     </resultMap>
 
+    <resultMap id="userInfoResponseMap" type="com.team.teamreadioserver.user.dto.UserInfoResponseDTO">
+        <result property="userId" column="user_id" />
+        <result property="userName" column="user_name" />
+        <result property="userEmail" column="user_email" />
+        <result property="userPhone" column="user_phone" />
+        <result property="userBirthday" column="user_birthday" />
+    </resultMap>
+
     <insert id="insertUser" parameterType="com.team.teamreadioserver.user.dto.JoinRequestDTO">
         INSERT INTO user (user_id, user_role, user_name, user_pwd, user_email, user_phone, user_birthday,
                           user_enrolldate)
@@ -59,8 +67,7 @@
     </select>
 
     <!--회원정보 조회-->
-    <select id="selectUserByUserId" parameterType="string"
-            resultType="com.team.teamreadioserver.user.dto.UserInfoResponseDTO">
+    <select id="selectUserById" parameterType="string" resultType="com.team.teamreadioserver.user.dto.UserInfoResponseDTO">
         SELECT user_id,
                user_name,
                user_email,
