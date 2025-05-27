@@ -63,6 +63,7 @@ public class SecurityConfig {
             .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자 관련 경로
             .anyRequest().authenticated()   // 그 외는 모두 로그인 필요
         )
+            // JwtSecurityConfig 부분이랑 동일한 역할_JwtAuthenticationFilter를 SecurityFilterChain 안에서 등록
         .addFilterBefore(new JwtAuthenticationFilter(tokenProvider, userDetailsService),
             UsernamePasswordAuthenticationFilter.class);
 
@@ -78,7 +79,7 @@ public class SecurityConfig {
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.addAllowedOriginPattern("http://localhost:*");
+    configuration.addAllowedOriginPattern("http://localhost:*");      // 5173이든 5174든 다 허용
     configuration.addAllowedMethod("*");
     configuration.addAllowedHeader("*");
     configuration.setAllowCredentials(true);
