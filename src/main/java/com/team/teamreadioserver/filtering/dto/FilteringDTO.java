@@ -12,5 +12,5 @@ public class FilteringDTO {
     private int groupId;
     private String videoId;
     private String keyword;
-    private String isActive;
+
 }
