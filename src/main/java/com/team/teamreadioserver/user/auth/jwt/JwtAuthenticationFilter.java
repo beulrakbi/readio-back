@@ -32,7 +32,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String token = getTokenFromRequest(request);
-        logger.info("JWT 토큰: " + token);
+        logger.info("JWT 토큰: " + token);        // 주석 해도 되고 안해도 되고
+//        메인 페이지가 permitAll()로 설정되어 있고, 로그인 직후 새로고침되므로 null 값 반환은 정상
+//        실제로는 정상발급되며, 네트워크 확인해보면 토큰값 들어있음. 다른 경로로 이동시에도 토큰값이 정상적으로 출력됨
 
         if (token != null && tokenProvider.validateToken(token)) {
             String username = tokenProvider.getUsernameFromToken(token);
