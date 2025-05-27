@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -22,79 +23,85 @@ import java.util.Map;
 @Tag(name = "회원 API", description = "회원가입 관련 API")
 public class UserController {
 
-    private final UserService userService;
-    private final Logger logger = LoggerFactory.getLogger(UserController.class);
-    private final UserMapper userMapper;
+  private final UserService userService;
+  private final Logger logger = LoggerFactory.getLogger(UserController.class);
+  private final UserMapper userMapper;
 
-    public UserController(UserService userService, UserMapper userMapper) {
-        this.userService = userService;
-        this.userMapper = userMapper;
+  public UserController(UserService userService, UserMapper userMapper) {
+    this.userService = userService;
+    this.userMapper = userMapper;
+  }
+
+  @Operation(summary = "회원가입", description = "신규 사용자를 등록한다.")
+  @PostMapping("/join")
+  public ResponseEntity<String> join(@RequestBody JoinRequestDTO joinRequestDTO) {
+
+    try { // 회원가입 로직도 예외 처리 추가
+      userService.joinUser(joinRequestDTO);
+      return ResponseEntity.ok("회원가입 성공");
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원가입 실패: " + e.getMessage());
     }
+  }
 
-    @Operation(summary = "회원가입", description = "신규 사용자를 등록한다.")
-    @PostMapping("/join")
-    public ResponseEntity<String> join(@RequestBody JoinRequestDTO joinRequestDTO) {
+  @Operation(summary = "회원가입-아이디 중복확인", description = "회원가입 시 아이디 중복확인을 진행한다.")
+  @GetMapping("/join/check-id")
+  public Map<String, Boolean> checkUserId(@RequestParam String userId) {
+    boolean isAvailable = userService.isIdAvailable(userId);
+    Map<String, Boolean> response = new HashMap<>();
+    response.put("exist", !isAvailable);
+    return response;
+  }
 
-        try { // 회원가입 로직도 예외 처리 추가
-            userService.joinUser(joinRequestDTO);
-            return ResponseEntity.ok("회원가입 성공");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원가입 실패: " + e.getMessage());
-        }
+  @Operation(summary = "회원가입-이메일 중복확인", description = "회원가입 시 이메일 중복확인을 진행한다.")
+  @GetMapping("/join/check-email")
+  public Map<String, Boolean> checkUserEmail(@RequestParam String userEmail) {
+    boolean isAvailable = userService.isEmailAvailable(userEmail);
+    Map<String, Boolean> response = new HashMap<>();
+    response.put("exist", !isAvailable);
+    return response;
+  }
+
+  @Operation(summary = "회원가입-휴대폰번호 중복확인", description = "회원가입 시 이메일 중복확인을 진행한다.")
+  @GetMapping("/join/check-phone")
+  public Map<String, Boolean> checkUserPhone(@RequestParam String userPhone) {
+    boolean isAvailable = userService.isPhoneAvailable(userPhone);
+    Map<String, Boolean> response = new HashMap<>();
+    response.put("exist", !isAvailable);
+    return response;
+  }
+
+  // 비밀번호 확인
+  @Operation(summary = "페이지 진입 전 비밀번호 확인", description = "현재 비밀번호 확인을 거친 후에 정보 수정이 가능하다.")
+  @PostMapping("/verifypwd")
+  public ResponseEntity<?> verifyPassword(@RequestBody Map<String, String> request) {
+    String userId = request.get("userId");
+    String inputPassword = request.get("password");
+
+    boolean isValid = userService.verifyPassword(userId, inputPassword);
+    if (isValid) {
+      return ResponseEntity.ok("비밀번호 확인 성공");
+    } else {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호가 일치하지 않습니다");
     }
+  }
 
-    @Operation(summary = "회원가입-아이디 중복확인", description = "회원가입 시 아이디 중복확인을 진행한다.")
-    @GetMapping("/join/check-id")
-    public Map<String, Boolean> checkUserId(@RequestParam String userId) {
-        boolean isAvailable = userService.isIdAvailable(userId);
-        Map<String, Boolean> response = new HashMap<>();
-        response.put("exist" , !isAvailable);
-        return response;
+  // 회원정보 조회
+  @Operation(summary = "회원정보조회", description = "회원정보 수정 시 정보를 조회해온다.")
+  @ResponseBody
+  @GetMapping("/edit")
+  public ResponseEntity<UserInfoResponseDTO> getUserInfo(@AuthenticationPrincipal UserDetails userDetails) {
+    String authenticatedUserId = userDetails.getUsername(); // JWT에서 추출된 사용자 ID
+    logger.info("회원 정보 조회 요청: UserID = {}", authenticatedUserId); // 로그 추가
+
+    UserInfoResponseDTO user = userService.getUserInfo(authenticatedUserId);
+    if (user == null) {
+      // 서비스에서 예외를 던지도록 수정했다면 이 부분은 필요 없음
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404 Not Found
     }
-
-    @Operation(summary = "회원가입-이메일 중복확인", description = "회원가입 시 이메일 중복확인을 진행한다.")
-    @GetMapping("/join/check-email")
-    public Map<String, Boolean> checkUserEmail(@RequestParam String userEmail) {
-        boolean isAvailable = userService.isEmailAvailable(userEmail);
-        Map<String, Boolean> response = new HashMap<>();
-        response.put("exist" , !isAvailable);
-        return response;
-    }
-
-    @Operation(summary = "회원가입-휴대폰번호 중복확인", description = "회원가입 시 이메일 중복확인을 진행한다.")
-    @GetMapping("/join/check-phone")
-    public Map<String, Boolean> checkUserPhone(@RequestParam String userPhone) {
-        boolean isAvailable = userService.isPhoneAvailable(userPhone);
-        Map<String, Boolean> response = new HashMap<>();
-        response.put("exist" , !isAvailable);
-        return response;
-    }
-
-    // 비밀번호 확인
-    @Operation(summary = "페이지 진입 전 비밀번호 확인", description = "현재 비밀번호 확인을 거친 후에 정보 수정이 가능하다.")
-    @PostMapping("/verifypwd")
-    public ResponseEntity<?> verifyPassword(@RequestBody Map<String, String> request) {
-        String userId = request.get("userId");
-        String inputPassword = request.get("password");
-
-        boolean isValid = userService.verifyPassword(userId, inputPassword);
-        if (isValid) {
-            return ResponseEntity.ok("비밀번호 확인 성공");
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호가 일치하지 않습니다");
-        }
-    }
-
-    // 회원정보 조회
-    @Operation(summary = "회원정보조회", description = "회원정보 수정 시 정보를 조회해온다.")
-    @ResponseBody
-    @GetMapping("/edit")
-    public ResponseEntity<UserInfoResponseDTO> getUserInfo(@AuthenticationPrincipal org.springframework.security.core.userdetails.User userDetails) {
-        String userId = userDetails.getUsername();
-        UserInfoResponseDTO user = userService.getUserInfo(userId);
-        return ResponseEntity.ok(user);
-    }
+    return ResponseEntity.ok(user);
+  }
 //    public UserInfoResponseDTO getUserInfo(@RequestParam String userId) {
 //        UserInfoResponseDTO dto = userMapper.selectUserById(userId);
 //        logger.info("조회된 회원 정보: {}", dto);
@@ -104,25 +111,48 @@ public class UserController {
 //        }
 //
 //        return dto;
-////        return userService.getUserInfo(userId);
+
+  /// /        return userService.getUserInfo(userId);
 //    }
 
-    // 회원정보 수정
-    @Operation(summary = "회원정보 수정", description = "회원정보 수정이 가능하다.")
-    @PutMapping("/edit")
-    public String updateUser(@RequestBody UserEditRequestDTO userEditRequestDTO) {
-        int updatedCount = userService.updateUser(userEditRequestDTO);
-        if (updatedCount == 1) {
-            return "success";
-        }
+  // 회원정보 수정
+  @Operation(summary = "회원정보 수정", description = "로그인된 사용자는 회원정보 수정이 가능하다.")
+  @PutMapping("/edit")
+  public ResponseEntity<String> updateUser(@RequestBody UserEditRequestDTO userEditRequestDTO,
+                                           @AuthenticationPrincipal UserDetails userDetails) {
 
-        return "fail";
+    String authenticatedUserId = userDetails.getUsername();
+
+    if (!authenticatedUserId.equals(userEditRequestDTO.getUserId())) {
+      logger.warn("회원정보 수정 시도: 인증된 사용자({}), 요청 userId({}) 불일치", authenticatedUserId, userEditRequestDTO.getUserId());
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).body("자신의 정보만 수정할 수 있습니다.");
     }
 
-    @GetMapping("/test")
-    public String test() {
-        return "test";
+    try {
+      int updatedCount = userService.updateUser(userEditRequestDTO);
+      if (updatedCount == 1) {
+        return ResponseEntity.ok("회원정보가 성공적으로 수정되었습니다."); // 200 OK
+      } else {
+        // 예를 들어, 업데이트 대상이 없거나, 예상치 못한 상황
+        return ResponseEntity.badRequest().body("회원정보 수정에 실패했습니다: 대상이 없거나 변경사항이 없습니다."); // 400 Bad Request
+      }
+    } catch (Exception e) {
+      // 실제 운영 환경에서는 예외 메시지를 그대로 노출하지 않고,
+      // 로깅 후 일반적인 오류 메시지를 반환하는 것이 좋습니다.
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류로 회원정보 수정에 실패했습니다: " + e.getMessage()); // 500 Internal Server Error
     }
+  }
+//  public String updateUser(@RequestBody UserEditRequestDTO userEditRequestDTO) {
+//    int updatedCount = userService.updateUser(userEditRequestDTO);
+//    if (updatedCount == 1) {
+//      return "success";
+//    }
+//    return "fail";
+//  }
 
+  @GetMapping("/test")
+  public String test() {
+    return "test";
+  }
 
 }

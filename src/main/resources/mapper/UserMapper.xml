@@ -60,23 +60,34 @@
 
     <!--회원정보 조회-->
     <select id="selectUserById" parameterType="string" resultType="com.team.teamreadioserver.user.dto.UserInfoResponseDTO">
-        SELECT user_id,
-               user_name,
-               user_email,
-               user_phone,
-               user_birthday
+        SELECT user_id as userID,
+               user_name as userName,
+               user_email as userEmail,
+               user_phone as userPhone,
+               user_birthday as userBirthday
         FROM `user`
-        WHERE user_id = #{userId}
+        WHERE user_id = TRIM(#{userId})
     </select>
 
     <!--회원정보 수정-->
     <update id="updateUser" parameterType="com.team.teamreadioserver.user.dto.UserEditRequestDTO">
         UPDATE user
-        SET user_name = #{userName},
-            user_email = #{userEmail},
-            user_phone = #{userPhone},
-            user_birthday = #{userBirthday},
-            user_pwd = #{userPwd}
+        <set>
+            <if test="userName != null">
+                user_name = #{userName},
+            </if>
+            <if test="userEmail != null">
+                user_email = #{userEmail},
+            </if>
+            <if test="userPhone != null">
+                user_phone = #{userPhone},
+            </if>
+            <if test="userBirthday != null">
+                user_birthday = #{userBirthday},
+            </if>
+            <if test="userPwd != null and userPwd != ''"> user_pwd = #{userPwd},
+            </if>
+        </set>
         WHERE user_id = #{userId}
     </update>
 
