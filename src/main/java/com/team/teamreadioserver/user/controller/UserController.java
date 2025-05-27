@@ -27,12 +27,6 @@ public class UserController {
     @Operation(summary = "회원가입", description = "신규 사용자를 등록한다.")
     @PostMapping("/join")
     public ResponseEntity<String> join(@RequestBody JoinRequestDTO joinRequestDTO) {
-//        if (!userService.isIdAvailable(joinRequestDTO.getUserId())) {
-//            return ResponseEntity.badRequest().body("이미 존재하는 아이디입니다.");
-//        }
-//        if (!userService.isEmailAvailable(joinRequestDTO.getUserEmail())) {
-//            return ResponseEntity.badRequest().body("이미 존재하는 이메일입니다.");
-//        }
 
         try { // 회원가입 로직도 예외 처리 추가
             userService.joinUser(joinRequestDTO);
@@ -45,7 +39,7 @@ public class UserController {
 
     @Operation(summary = "회원가입-아이디 중복확인", description = "회원가입 시 아이디 중복확인을 진행한다.")
     @GetMapping("/join/check-id")
-        public Map<String, Boolean> checkUserId(@RequestParam String userId) {
+    public Map<String, Boolean> checkUserId(@RequestParam String userId) {
         boolean isAvailable = userService.isIdAvailable(userId);
         Map<String, Boolean> response = new HashMap<>();
         response.put("exist" , !isAvailable);
@@ -103,10 +97,6 @@ public class UserController {
         return "fail";
     }
 
-
-
-
-    
     @GetMapping("/test")
     public String test() {
         return "test";

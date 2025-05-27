@@ -81,7 +81,7 @@ public class UserService {
     } else {
       // 비밀번호 입력 안했으면 기존 비밀번호 유지
       String existingPwd = userMapper.selectPasswordByUserId(userEditRequestDTO.getUserId());
-          userEditRequestDTO.setUserPwd(existingPwd);
+      userEditRequestDTO.setUserPwd(existingPwd);
     }
     // 수정용 DTO로 전체 수정 가능
     return userMapper.updateUser(userEditRequestDTO);
