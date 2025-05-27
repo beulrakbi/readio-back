@@ -42,17 +42,29 @@ public class VideoController {
     }
 
     @Operation(summary = "비디오 조회", description = "비디오가 조회됩니다.", tags = { "VideoController" })
-    @GetMapping("/{keyword}")
-    public ResponseEntity<ResponseDTO> getVideoByKeyword(@PathVariable String keyword)
+    @GetMapping("/{search}")
+    public ResponseEntity<ResponseDTO> getVideoByKeyword(@PathVariable String search)
     {
         log.info("[VideoController] getVideoByKeyword");
-        VideosDTO result = videoService.findVideos(keyword);
+        VideosDTO result = videoService.findVideos(search);
+
+        System.out.println("videosDTO: " + result);
         if(result.getNum() > 0)
         {
             return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "비디오 조회 성공", result));
         }
         else
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseDTO(HttpStatus.BAD_REQUEST, "비디오 조회 실패", null));
+    }
+
+    @Operation(summary = "비디오 검색", description = "비디오가 검색됩니다.", tags = { "VideoController" })
+    @GetMapping("/query/{search}")
+    public ResponseEntity<ResponseDTO> searchVideoByKeyword(@PathVariable String search)
+    {
+        log.info("[VideoController] searchVideoByKeyword");
+        VideosDTO result = videoService.searchVideos(search);
+
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "비디오 검색 성공", result));
     }
 
 }
