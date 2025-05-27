@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/curation")
+@RequestMapping("/")
 @CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
 public class CurationKeywordsController {
@@ -28,7 +28,7 @@ public class CurationKeywordsController {
     private final CurationKeywordsService curationKeywordsService;
 
     @Operation(summary = "큐레이션 타입 조회", description = "큐레이션 타입이 조회됩니다.", tags = { "CurationKeywordsController" })
-    @GetMapping
+    @GetMapping("/admin/curation")
     public ResponseEntity<ResponseDTO> selectCurationTypes()
     {
         log.info("[CurationKeywordsController] selectCurationTypes");
@@ -39,7 +39,7 @@ public class CurationKeywordsController {
     }
 
     @Operation(summary = "큐레이션 타입 조회", description = "큐레이션 타입이 조회됩니다.", tags = { "CurationKeywordsController" })
-    @GetMapping("/all")
+    @GetMapping("/admin/curation/all")
     public ResponseEntity<ResponseDTO> selectAllCurationTypesAndKeywords()
     {
         log.info("[CurationKeywordsController] selectAllCurationTypesAndKeywords");
@@ -52,7 +52,7 @@ public class CurationKeywordsController {
 
 
     @Operation(summary = "큐레이션 키워드 조회", description = "큐레이션 키워드가 조회됩니다.", tags = { "CurationKeywordsController" })
-    @GetMapping("/{typeId}")
+    @GetMapping("/admin/curation/{typeId}")
     public ResponseEntity<ResponseDTO> selectCurationKeywordsByType(@PathVariable int typeId)
     {
         log.info("[CurationKeywordsController] selectCurationKeywordsByType");
@@ -82,6 +82,6 @@ public class CurationKeywordsController {
     @PostMapping("/save")
     public ResponseEntity<ResponseDTO> insertCurationKeywords(@RequestBody CurationDTO curationDTO)
     {
-
+        return null;
     }
 }
