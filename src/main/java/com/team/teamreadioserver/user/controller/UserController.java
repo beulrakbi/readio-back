@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -87,8 +88,10 @@ public class UserController {
 
     // 회원정보 조회
     @Operation(summary = "회원정보조회", description = "회원정보 수정 시 정보를 조회해온다.")
+    @ResponseBody
     @GetMapping("/edit")
-    public ResponseEntity<UserInfoResponseDTO> getUserInfo(@RequestParam String userId) {
+    public ResponseEntity<UserInfoResponseDTO> getUserInfo(@AuthenticationPrincipal org.springframework.security.core.userdetails.User userDetails) {
+        String userId = userDetails.getUsername();
         UserInfoResponseDTO user = userService.getUserInfo(userId);
         return ResponseEntity.ok(user);
     }
