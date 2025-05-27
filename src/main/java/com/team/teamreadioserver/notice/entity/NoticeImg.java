@@ -29,4 +29,3 @@ public class NoticeImg {
     @JoinColumn(name = "notice_id")
     private Notice notice;
 }
-//테스트
