@@ -18,14 +18,12 @@ import java.util.List;
 public class CurationKeywordsService {
 
     private final CurationKeywordsRepository curationKeywordsRepository;
-    private static final Logger log = LoggerFactory.getLogger(VideoService.class);
+    private static final Logger log = LoggerFactory.getLogger(CurationKeywordsService.class);
     private final ModelMapper modelMapper;
 
     public List<CurationKeywordsDTO> selectCurationKeywordsByType(String type)
     {
         List<CurationKeywords> curationKeywords = curationKeywordsRepository.findByType(type);
-        System.out.println("타입: " + type);
-        System.out.println("어쩌구" + curationKeywords);
         Collections.shuffle(curationKeywords);
         int toIndex = Math.min(curationKeywords.size(), 5);
         curationKeywords = curationKeywords.subList(0, toIndex);

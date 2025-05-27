@@ -1,10 +1,9 @@
 package com.team.teamreadioserver.video.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
+
+import java.util.Objects;
 
 @Entity
 @Table(name = "video")
@@ -12,22 +11,26 @@ import lombok.ToString;
 @ToString
 @RequiredArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Video {
 
     @Id
     @Column(name = "video_id")
-    private int videoId;
+    private String videoId;
 
+    @EqualsAndHashCode.Include
     @Column(name = "title")
     private String title;
 
     @Column(name = "channel_title")
-    private int channelTitle;
+    private String channelTitle;
 
+    @EqualsAndHashCode.Include
     @Column(name = "description")
     private String description;
 
     @Column(name = "thumbnail")
     private String thumbnail;
+
 
 }
