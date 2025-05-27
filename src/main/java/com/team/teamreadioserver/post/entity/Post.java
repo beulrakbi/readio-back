@@ -1,5 +1,6 @@
 package com.team.teamreadioserver.post.entity;
 
+import com.team.teamreadioserver.postReview.entity.PostReview;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -47,4 +48,7 @@ public class Post {
 
     @OneToOne(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private PostImg postImg;
+
+//    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+//    private PostReview postReview;
 }

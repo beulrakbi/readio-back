@@ -12,7 +12,7 @@ import java.util.Date;
 public class PostReviewResponseDTO {
     private int postReviewId;
     private String postReivewContent;
-    private Date postReviewDate;
+    private String postReviewDate;
     private int profileId;
     private int postId;
     private int postReviewLike;

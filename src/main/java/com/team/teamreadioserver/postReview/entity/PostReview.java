@@ -1,6 +1,7 @@
 package com.team.teamreadioserver.postReview.entity;
 
 import com.team.teamreadioserver.post.entity.Post;
+import com.team.teamreadioserver.profile.entity.Profile;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,7 +28,7 @@ public class PostReview {
     private Date postReviewDate;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "profile_id")
-    private profile profile;
+    private Profile profile;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
