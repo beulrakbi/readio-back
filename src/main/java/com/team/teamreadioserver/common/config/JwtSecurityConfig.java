@@ -1,4 +1,4 @@
-package com.team.teamreadioserver.common.config;//package com.team.teamreadioserver.common.config;
+//package com.team.teamreadioserver.common.config;
 //
 //import com.ohgiraffers.jwtrestapi.jwt.JwtFilter;
 //import com.ohgiraffers.jwtrestapi.jwt.TokenProvider;
