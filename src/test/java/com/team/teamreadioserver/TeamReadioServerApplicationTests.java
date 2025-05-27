@@ -6,9 +6,12 @@ import com.team.teamreadioserver.notice.entity.Notice;
 import com.team.teamreadioserver.notice.enumPackage.NoticeState;
 import com.team.teamreadioserver.notice.repository.NoticeRepository;
 import com.team.teamreadioserver.notice.service.NoticeService;
+import com.team.teamreadioserver.config.PasswordConfig;
+import com.team.teamreadioserver.user.mapper.UserMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 
@@ -67,6 +70,19 @@ class TeamReadioServerApplicationTests {
         // 4. 삭제 확인
         boolean exists = noticeRepository.findById(savedNotice.getNoticeId()).isPresent();
         assertFalse(exists); // 존재하지 않아야 함
+    }
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UserMapper userMapper;
+
+    @Test
+    public void testPasswordEncoder() {
+        String raw = "userInputPassword";
+        String encoded = userMapper.findByUserId("testUser").getUserPwd();
+        System.out.println("비밀번호 일치 여부:" + passwordEncoder.matches(raw, encoded));
     }
 
 }

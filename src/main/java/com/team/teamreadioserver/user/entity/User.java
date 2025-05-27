@@ -43,6 +43,7 @@ public class User {
   private LocalDate userBirthday;
 
   @Column(name = "user_enrolldate", nullable = false)
-  private LocalDateTime userEnrollDate;
+  private LocalDate userEnrollDate;
+
 
 }
