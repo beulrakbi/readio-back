@@ -40,7 +40,7 @@
     </select>
 
     <select id="findByUserId" parameterType="string" resultMap="userResultMap">
-        select user_id,
+        SELECT user_id,
                user_role,
                user_name,
                user_pwd,
@@ -51,5 +51,42 @@
         FROM `user`
         WHERE user_id = #{userId}
     </select>
+
+    <select id="getPasswordByUserId" parameterType="string" resultType="string">
+        SELECT user_pwd
+        FROM `user`
+        WHERE user_id = #{userId}
+    </select>
+
+    <!--회원정보 조회-->
+    <select id="selectUserById" parameterType="string" resultType="com.team.teamreadioserver.user.dto.UserInfoResponseDTO">
+        SELECT user_id,
+               user_name,
+               user_email,
+               user_phone,
+               user_birthday
+        FROM `user`
+        WHERE user_id = #{userId}
+    </select>
+
+    <!--회원정보 수정-->
+    <update id="updateUser" parameterType="com.team.teamreadioserver.user.dto.UserEditRequestDTO">
+        UPDATE user
+        SET user_name = #{userName},
+            user_email = #{userEmail},
+            user_phone = #{userPhone},
+            user_birthday = #{userBirthday},
+            user_pwd = #{userPwd}
+        WHERE user_id = #{userId}
+    </update>
+
+    <!--회원정보 수정 시 비밀번호 기존값 유지-->
+    <select id="selectPasswordByUserId" parameterType="string" resultType="string">
+        SELECT user_pwd
+        FROM `user`
+        WHERE user_id = #{userId}
+    </select>
+
+
 
 </mapper>

@@ -10,7 +10,7 @@ spring:
   username: readio
   password: readio
 
-# fileupload config
+ # fileupload config
  servlet:
   multipart:
    enabled: true
@@ -20,7 +20,7 @@ spring:
   resources:
    static-locations: classpath:/img/
 
-# JPA config
+ # JPA config
  jpa:
   generate-ddl: false
   database: mysql
@@ -48,6 +48,7 @@ jwt:
 springdoc:
  swagger-ui:
   path: /swagger-ui.html
+# packages-to-scan: com.team.teamreadioserver.notion.controller
 
 # logging config
 logging:
