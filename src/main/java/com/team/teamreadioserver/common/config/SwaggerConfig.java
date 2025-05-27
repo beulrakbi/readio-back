@@ -2,7 +2,6 @@ package com.team.teamreadioserver.common.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
-import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -19,16 +18,17 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class SwaggerConfig {
 
-	//	@Bean
+//	@Bean
 //	public GroupedOpenApi chatOpenApi() {
 //		/* 설명. Swagger에서 처리하고자 하는 경로를 지정 */
-//		String [] paths = {"/api/v1/**", "/auth/**"};
+//		String [] paths = {"/api/v1/**", "/auth/**", "/users/**"};
 //
 //		return GroupedOpenApi.builder()
 //							 .group("readio 서비스 API v1")
 //							 .pathsToMatch(paths)
 //							 .build();
 //	}
+
 	@Bean
 	public WebMvcConfigurer corsConfigurer() {
 		return new WebMvcConfigurer() {
@@ -41,7 +41,11 @@ public class SwaggerConfig {
 			}
 		};
 	}
+
+
 }
+
+
 
 
 

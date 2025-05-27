@@ -1,0 +1,17 @@
+package com.team.teamreadioserver.profile.repository;
+
+import com.team.teamreadioserver.profile.entity.Profile;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+
+public interface ProfileRepository extends JpaRepository<Profile, Long> {
+
+    Optional<Profile> findByUser_UserId(String userId);
+
+    // 필명 중복 확인용 (기본 필명 생성시 필요)
+    boolean existsByPenName(String penName);
+
+
+}
