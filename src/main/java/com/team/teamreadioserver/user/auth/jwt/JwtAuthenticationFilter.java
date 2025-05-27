@@ -15,42 +15,42 @@ import java.io.IOException;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-  private final JwtTokenProvider tokenProvider;
-  private final CustomUserDetailsService userDetailsService;
+    private final JwtTokenProvider tokenProvider;
+    private final CustomUserDetailsService userDetailsService;
 
-  // 디버깅용 로거 사용
-  private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+    // 디버깅용 로거 사용
+    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
-  public JwtAuthenticationFilter(JwtTokenProvider tokenProvider, CustomUserDetailsService userDetailsService) {
-    this.tokenProvider = tokenProvider;
-    this.userDetailsService = userDetailsService;
-  }
-
-  @Override
-  protected void doFilterInternal(HttpServletRequest request,
-                                  HttpServletResponse response,
-                                  FilterChain filterChain) throws ServletException, IOException {
-
-    String token = getTokenFromRequest(request);
-    logger.info("JWT 토큰: " + token);
-
-    if (token != null && tokenProvider.validateToken(token)) {
-      String username = tokenProvider.getUsernameFromToken(token);
-      logger.info("토큰에서 추출한 username: " + username);
-
-      UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-      UsernamePasswordAuthenticationToken authentication =
-              new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-      SecurityContextHolder.getContext().setAuthentication(authentication);
+    public JwtAuthenticationFilter(JwtTokenProvider tokenProvider, CustomUserDetailsService userDetailsService) {
+        this.tokenProvider = tokenProvider;
+        this.userDetailsService = userDetailsService;
     }
-    filterChain.doFilter(request, response);
-  }
 
-  private String getTokenFromRequest(HttpServletRequest request) {
-    String bearer = request.getHeader("Authorization");
-    if (bearer != null && bearer.startsWith("Bearer ")) {
-      return bearer.substring(7);
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+
+        String token = getTokenFromRequest(request);
+        logger.info("JWT 토큰: " + token);
+
+        if (token != null && tokenProvider.validateToken(token)) {
+            String username = tokenProvider.getUsernameFromToken(token);
+            logger.info("토큰에서 추출한 username: " + username);
+
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
+        filterChain.doFilter(request, response);
     }
-    return null;
-  }
+
+    private String getTokenFromRequest(HttpServletRequest request) {
+        String bearer = request.getHeader("Authorization");
+        if (bearer != null && bearer.startsWith("Bearer ")) {
+            return bearer.substring(7);
+        }
+        return null;
+    }
 }

@@ -2,7 +2,6 @@ package com.team.teamreadioserver.user.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-
 import java.time.LocalDate;
 
 // 회원정보 조회용 DTO

@@ -18,7 +18,7 @@ public class DetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userService.findByUserId(username);
-        if(user == null) throw new UsernameNotFoundException("User Not Found!");
+        if(user == null) throw new UsernameNotFoundException("아이디가 존재하지 않습니다.");
         return new DetailsUser(user);
         }
     }

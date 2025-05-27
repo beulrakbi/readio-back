@@ -28,13 +28,13 @@
     </select>
 
     <select id="countByUserEmail" parameterType="string" resultType="int">
-        select COUNT(*)
+        SELECT COUNT(*)
         FROM `user`
         WHERE user_email = #{userEmail}
     </select>
 
     <select id="countByUserPhone" parameterType="string" resultType="int">
-        select COUNT(*)
+        SELECT COUNT(*)
         FROM `user`
         WHERE user_phone = #{userPhone}
     </select>
@@ -86,7 +86,5 @@
         FROM `user`
         WHERE user_id = #{userId}
     </select>
-
-
 
 </mapper>
