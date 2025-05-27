@@ -66,4 +66,22 @@ public class CurationKeywordsController {
                 new ResponseDTO(HttpStatus.OK, "큐레이션 키워드 조회 성공", result));
 
     }
+
+    @Operation(summary = "큐레이션 타입 수정", description = "큐레이션 타입이 수정됩니다.", tags = { "CurationKeywordsController" })
+    @PutMapping("/save")
+    public ResponseEntity<ResponseDTO> updateCurationType(@RequestBody CurationDTO curationDTO)
+    {
+        log.info("[CurationKeywordsController] updateCurationType");
+
+        return ResponseEntity
+                .ok()
+                .body(new ResponseDTO(HttpStatus.OK, "필터링 그룹 활성 상태 성공",  curationKeywordsService.updateCurationType(curationDTO.getCurationType())));
+    }
+
+    @Operation(summary = "큐레이션 키워드 추가", description = "큐레이션 키워드가 추가됩니다.", tags = { "CurationKeywordsController" })
+    @PostMapping("/save")
+    public ResponseEntity<ResponseDTO> insertCurationKeywords(@RequestBody CurationDTO curationDTO)
+    {
+
+    }
 }

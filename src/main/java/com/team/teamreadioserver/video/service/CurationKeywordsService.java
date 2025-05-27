@@ -4,6 +4,7 @@ import com.team.teamreadioserver.video.dto.CurationDTO;
 import com.team.teamreadioserver.video.dto.CurationKeywordsDTO;
 import com.team.teamreadioserver.video.dto.CurationTypeDTO;
 import com.team.teamreadioserver.video.entity.CurationKeywords;
+import com.team.teamreadioserver.video.entity.CurationType;
 import com.team.teamreadioserver.video.repository.CurationKeywordsRepository;
 import com.team.teamreadioserver.video.repository.CurationTypeRepository;
 import lombok.AllArgsConstructor;
@@ -44,7 +45,7 @@ public class CurationKeywordsService {
         List<CurationTypeDTO> curationTypeDTOS = curationTypeRepository.findAll().stream().map(type -> modelMapper.map(type, CurationTypeDTO.class)).collect(Collectors.toList());
 
         for (CurationTypeDTO curationTypeDTO : curationTypeDTOS) {
-            CurationDTO curationDTO = new CurationDTO(curationTypeDTO, curationKeywordsRepository.findByTypeId(curationTypeDTO.getTypeId()).stream()
+            CurationDTO curationDTO = new CurationDTO(curationTypeDTO, curationKeywordsRepository.findByTypeIdOrderByTypeId(curationTypeDTO.getTypeId()).stream()
                     .map(keyword -> modelMapper.map(keyword, CurationKeywordsDTO.class)).collect(Collectors.toList()));
             result.add(curationDTO);
         }
@@ -53,7 +54,7 @@ public class CurationKeywordsService {
 
     public List<CurationKeywordsDTO> selectCurationKeywordsByTypeId(int typeId)
     {
-        List<CurationKeywords> curationKeywords = curationKeywordsRepository.findByTypeId(typeId);
+        List<CurationKeywords> curationKeywords = curationKeywordsRepository.findByTypeIdOrderByTypeId(typeId);
         Collections.shuffle(curationKeywords);
         int toIndex = Math.min(curationKeywords.size(), 5);
         curationKeywords = curationKeywords.subList(0, toIndex);
@@ -65,6 +66,19 @@ public class CurationKeywordsService {
         }
 
         return result;
+    }
+
+    public Object updateCurationType(CurationTypeDTO curationTypeDTO)
+    {
+        int result = 0;
+        try {
+            CurationType curationType = curationTypeRepository.findByTypeId(curationTypeDTO.getTypeId());
+            curationType.modifyTypeText(curationTypeDTO.getTypeText());
+            result = 1;
+        } catch (Exception e) {
+            log.error("[CurationService] updateCurationType() Fail");
+        }
+        return (result > 0) ? "큐레이션 타입 수정 성공" : "큐레이션 타입 수정 실패";
     }
 
 }

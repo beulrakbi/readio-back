@@ -50,10 +50,9 @@ public class FilteringController {
     public ResponseEntity<ResponseDTO> updateFilteringGroupActiveState(@RequestBody FilteringGroupDTO filteringGroupDTO)
     {
 
-        System.out.println("변경?");
         return ResponseEntity
                 .ok()
-                .body(new ResponseDTO(HttpStatus.OK, "리뷰 수정 성공",  filteringService.updateFilteringGroupActiveState(filteringGroupDTO)));
+                .body(new ResponseDTO(HttpStatus.OK, "필터링 그룹 활성 상태 성공",  filteringService.updateFilteringGroupActiveState(filteringGroupDTO)));
 
     }
 

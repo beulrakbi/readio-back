@@ -21,4 +21,8 @@ public class CurationType {
 
     @Column(name = "type_text")
     private String typeText;
+
+    public void modifyTypeText(String typeText) {
+        this.typeText = typeText;
+    }
 }
