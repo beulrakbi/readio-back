@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -129,26 +130,20 @@ public class UserController {
     }
 
     try {
+
       int updatedCount = userService.updateUser(userEditRequestDTO);
       if (updatedCount == 1) {
         return ResponseEntity.ok("회원정보가 성공적으로 수정되었습니다."); // 200 OK
       } else {
-        // 예를 들어, 업데이트 대상이 없거나, 예상치 못한 상황
         return ResponseEntity.badRequest().body("회원정보 수정에 실패했습니다: 대상이 없거나 변경사항이 없습니다."); // 400 Bad Request
       }
     } catch (Exception e) {
       // 실제 운영 환경에서는 예외 메시지를 그대로 노출하지 않고,
-      // 로깅 후 일반적인 오류 메시지를 반환하는 것이 좋습니다.
+      // 로깅 후 일반적인 오류 메시지를 반환하기
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류로 회원정보 수정에 실패했습니다: " + e.getMessage()); // 500 Internal Server Error
     }
   }
-//  public String updateUser(@RequestBody UserEditRequestDTO userEditRequestDTO) {
-//    int updatedCount = userService.updateUser(userEditRequestDTO);
-//    if (updatedCount == 1) {
-//      return "success";
-//    }
-//    return "fail";
-//  }
+
 
   @GetMapping("/test")
   public String test() {

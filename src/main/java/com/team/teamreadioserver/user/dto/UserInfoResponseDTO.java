@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 // 회원정보 조회용 DTO
 @Getter
@@ -16,6 +17,7 @@ public class UserInfoResponseDTO {
   private String userEmail;
   private String userPhone;
   private LocalDate userBirthday;
+  private String userRole;
 
   @Override
   public String toString() {

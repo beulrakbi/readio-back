@@ -64,7 +64,8 @@
                user_name as userName,
                user_email as userEmail,
                user_phone as userPhone,
-               user_birthday as userBirthday
+               user_birthday as userBirthday,
+               user_role as userRole
         FROM `user`
         WHERE user_id = TRIM(#{userId})
     </select>
@@ -73,9 +74,6 @@
     <update id="updateUser" parameterType="com.team.teamreadioserver.user.dto.UserEditRequestDTO">
         UPDATE user
         <set>
-            <if test="userName != null">
-                user_name = #{userName},
-            </if>
             <if test="userEmail != null">
                 user_email = #{userEmail},
             </if>

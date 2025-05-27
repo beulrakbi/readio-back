@@ -3,6 +3,8 @@ package com.team.teamreadioserver.user.controller;//package com.team.teamreadios
 import com.team.teamreadioserver.user.auth.jwt.JwtTokenProvider;
 import com.team.teamreadioserver.user.dto.JwtResponseDTO;
 import com.team.teamreadioserver.user.dto.LoginRequestDTO;
+import com.team.teamreadioserver.user.dto.UserInfoResponseDTO;
+import com.team.teamreadioserver.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,13 +13,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.Collection;
 
 //로그인 엔드포인트
 @RestController
@@ -29,6 +31,27 @@ public class AuthController {
 
   @Autowired
   private JwtTokenProvider tokenProvider;
+  @Autowired
+  private UserService userService;
+
+  @GetMapping("/me")
+  public ResponseEntity<UserInfoResponseDTO> getMyInfo(@AuthenticationPrincipal UserDetails userDetails) {
+    if (userDetails == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    // userDetails.getUsername() = 로그인한 사용자 ID
+    String userId = userDetails.getUsername();
+
+    // 예시: 서비스에서 사용자 정보 조회
+    UserInfoResponseDTO userInfo = userService.getUserInfo(userId);
+    if (userInfo == null) {
+      return ResponseEntity.notFound().build();
+    }
+
+    return ResponseEntity.ok(userInfo);
+  }
+
 
   @Operation(summary = "로그인", description = "회원이 로그인을 합니다.")
   @PostMapping("/login")
@@ -41,6 +64,10 @@ public class AuthController {
       );
       UserDetails userDetails = (UserDetails) authentication.getPrincipal();
       String token = tokenProvider.generateToken(authentication.getName());
+
+      // 로그인한 계정 권한 로그 찍기
+      Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
+      System.out.println("로그인한 계정 권한: " + authorities);
 
       // JwtResponseDTO를 사용해서 응답
       JwtResponseDTO jwtResponse = new JwtResponseDTO(token);
