@@ -7,9 +7,9 @@ import com.team.teamreadioserver.common.common.ResponseDTO;
 import com.team.teamreadioserver.filtering.dto.FilteringDTO;
 import com.team.teamreadioserver.filtering.dto.FilteringGroupDTO;
 import com.team.teamreadioserver.filtering.dto.FilteringGroupDetailDTO;
+import com.team.teamreadioserver.filtering.entity.Filtering;
 import com.team.teamreadioserver.filtering.service.FilteringService;
 import io.swagger.v3.oas.annotations.Operation;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,6 +99,14 @@ public class FilteringController {
         return ResponseEntity.ok().body(
                 new ResponseDTO(HttpStatus.OK, "필터링 상세 조회 성공", result));
 
+    }
+
+    @Operation (summary = "필터링 그룹 삭제", description = "필터링 그룹을 삭제합니다.", tags = { "FilteringController" })
+    @DeleteMapping("/filtering/{groupId}")
+    public ResponseEntity<ResponseDTO> deleteFilteringGroup(@PathVariable int groupId)
+    {
+        filteringService.removeFilteringGroup(groupId);
+        return ResponseEntity.noContent().build();
     }
 
 }

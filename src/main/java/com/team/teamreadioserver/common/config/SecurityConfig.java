@@ -18,11 +18,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors() // ⬅ 이거 꼭 있어야 함!
-                .and()
-                .csrf().disable()
-                .authorizeHttpRequests()
-                .anyRequest().permitAll();
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ⬅ 이거 꼭 있어야 함!
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll()
+                );
 
         return http.build();
     }
