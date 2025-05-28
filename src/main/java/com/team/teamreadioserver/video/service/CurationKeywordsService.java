@@ -12,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,7 +35,6 @@ public class CurationKeywordsService {
     public List<CurationTypeDTO> selectAllCurationTypes() {
 
         List<CurationTypeDTO> result = curationTypeRepository.findAll().stream().map(type -> modelMapper.map(type, CurationTypeDTO.class)).collect(Collectors.toList());
-        System.out.printf("testtestsetse: " + result);
         Collections.shuffle(result);
         return result;
     }
@@ -67,7 +67,22 @@ public class CurationKeywordsService {
 
         return result;
     }
+    
+    @Transactional
+    public Object updateAll(CurationDTO curationDTO)
+    {  
+        int result = 0;
+        try {
+            updateCurationType(curationDTO.getCurationType());
+            insertCurationKeywords(curationDTO.getCurationKeywords());
+            result = 1;
+        } catch (Exception e) {
+            log.error("[CurationService] updateAll() Fail");
+        }
+        return (result > 0) ? "큐레이션 전체 수정 성공" : "큐레이션 전체 수정 실패";
+    }
 
+    @Transactional
     public Object updateCurationType(CurationTypeDTO curationTypeDTO)
     {
         int result = 0;
@@ -79,6 +94,37 @@ public class CurationKeywordsService {
             log.error("[CurationService] updateCurationType() Fail");
         }
         return (result > 0) ? "큐레이션 타입 수정 성공" : "큐레이션 타입 수정 실패";
+    }
+
+    @Transactional
+    public Object insertCurationKeywords(List<CurationKeywordsDTO> curationKeywordsDTOS)
+    {
+        int result = 0;
+        try {
+            List<CurationKeywords> foundKeywords = curationKeywordsRepository.findByTypeIdOrderByTypeId(curationKeywordsDTOS.get(0).getTypeId());
+            List<CurationKeywords> newCurationKeywords = curationKeywordsDTOS.stream().map(newKey -> modelMapper.map(newKey, CurationKeywords.class)).collect(Collectors.toList());
+
+            for (CurationKeywords old : foundKeywords)
+            {
+                if (!newCurationKeywords.contains(old))
+                {
+                    curationKeywordsRepository.delete(old);
+                }
+                else
+                {
+                    newCurationKeywords.remove(old);
+                }
+            }
+
+            curationKeywordsRepository.saveAll(newCurationKeywords);
+            result = 1;
+
+        } catch (Exception e)
+        {
+            log.error("[CurationService] insertCurationKeywords() Fail");
+        }
+
+        return (result > 0) ? "큐레이션 키워드 목록 수정 성공" : "큐레이션 키워드 목록 수정 실패";
     }
 
 }

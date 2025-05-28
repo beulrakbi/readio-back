@@ -28,18 +28,18 @@ public class CurationKeywordsController {
     private final CurationKeywordsService curationKeywordsService;
 
     @Operation(summary = "큐레이션 타입 조회", description = "큐레이션 타입이 조회됩니다.", tags = { "CurationKeywordsController" })
-    @GetMapping("/admin/curation")
+    @GetMapping("curation")
     public ResponseEntity<ResponseDTO> selectCurationTypes()
     {
         log.info("[CurationKeywordsController] selectCurationTypes");
 
         List<CurationTypeDTO> result = curationKeywordsService.selectAllCurationTypes();
         return ResponseEntity.ok().body(
-                new ResponseDTO(HttpStatus.OK, "큐레이션 키워드 조회 성공", result));
+                new ResponseDTO(HttpStatus.OK, "큐레이션 타입 조회 성공", result));
     }
 
-    @Operation(summary = "큐레이션 타입 조회", description = "큐레이션 타입이 조회됩니다.", tags = { "CurationKeywordsController" })
-    @GetMapping("/admin/curation/all")
+    @Operation(summary = "큐레이션 타입 및 키워드 조회", description = "큐레이션 타입과 키워드가 조회됩니다.", tags = { "CurationKeywordsController" })
+    @GetMapping("admin/curation/all")
     public ResponseEntity<ResponseDTO> selectAllCurationTypesAndKeywords()
     {
         log.info("[CurationKeywordsController] selectAllCurationTypesAndKeywords");
@@ -52,7 +52,7 @@ public class CurationKeywordsController {
 
 
     @Operation(summary = "큐레이션 키워드 조회", description = "큐레이션 키워드가 조회됩니다.", tags = { "CurationKeywordsController" })
-    @GetMapping("/admin/curation/{typeId}")
+    @GetMapping("curation/{typeId}")
     public ResponseEntity<ResponseDTO> selectCurationKeywordsByType(@PathVariable int typeId)
     {
         log.info("[CurationKeywordsController] selectCurationKeywordsByType");
@@ -67,21 +67,24 @@ public class CurationKeywordsController {
 
     }
 
-    @Operation(summary = "큐레이션 타입 수정", description = "큐레이션 타입이 수정됩니다.", tags = { "CurationKeywordsController" })
-    @PutMapping("/save")
-    public ResponseEntity<ResponseDTO> updateCurationType(@RequestBody CurationDTO curationDTO)
+    @Operation(summary = "큐레이션 수정", description = "큐레이션이 수정됩니다.", tags = { "CurationKeywordsController" })
+    @PutMapping("admin/curation/save")
+    public ResponseEntity<ResponseDTO> updateAllCuration(@RequestBody CurationDTO curationDTO)
     {
         log.info("[CurationKeywordsController] updateCurationType");
 
         return ResponseEntity
                 .ok()
-                .body(new ResponseDTO(HttpStatus.OK, "필터링 그룹 활성 상태 성공",  curationKeywordsService.updateCurationType(curationDTO.getCurationType())));
+                .body(new ResponseDTO(HttpStatus.OK, "큐레이션 수정 성공",  curationKeywordsService.updateAll(curationDTO)));
     }
 
-    @Operation(summary = "큐레이션 키워드 추가", description = "큐레이션 키워드가 추가됩니다.", tags = { "CurationKeywordsController" })
-    @PostMapping("/save")
-    public ResponseEntity<ResponseDTO> insertCurationKeywords(@RequestBody CurationDTO curationDTO)
-    {
-        return null;
-    }
+//    @Operation(summary = "큐레이션 키워드 추가", description = "큐레이션 키워드가 추가됩니다.", tags = { "CurationKeywordsController" })
+//    @PostMapping("/admin/curation/save")
+//    public ResponseEntity<ResponseDTO> insertCurationKeywords(@RequestBody CurationDTO curationDTO)
+//    {
+//        log.info("[CurationKeywordsController] insertCurationKeywords");
+//        return ResponseEntity
+//                .ok()
+//                .body(new ResponseDTO(HttpStatus.OK, "필터링 키워드 수정 성공",  curationKeywordsService.insertCurationKeywords(curationDTO.getCurationKeywords())));
+//    }
 }

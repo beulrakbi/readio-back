@@ -75,8 +75,6 @@ public class VideoService {
         Set<Video> videos = new HashSet<>();
         videos.addAll(videoRepository.findAllByDescriptionContaining(search));
         videos.addAll(videoRepository.findAllByTitleContaining(search));
-        System.out.println("asdfasdf: " + videoRepository.findAllByDescriptionContaining(search));
-        System.out.println("갯수: " + videos.size());
 
         List<VideoDTO> videoDTOS = new ArrayList<>();
         videoDTOS.addAll(videos.stream().map(video -> modelMapper.map(video, VideoDTO.class)).collect(Collectors.toList()));
@@ -87,9 +85,6 @@ public class VideoService {
         }
 
         VideosDTO result = new VideosDTO(videoDTOS, videoDTOS.size());
-
-        System.out.println("test: " + videoDTOS);
-
         return result;
     }
 }
