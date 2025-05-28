@@ -1,5 +1,6 @@
 package com.team.teamreadioserver.postReview.dto;
 
+import com.team.teamreadioserver.profile.entity.Profile;
 import lombok.*;
 
 import java.util.Date;
@@ -11,7 +12,6 @@ import java.util.Date;
 @NoArgsConstructor
 public class PostReviewRequestDTO {
     private int postReviewId;
-    private String postReivewContent;
-    private String postReviewDate;
-    private int profileId;
+    private String postReviewContent;
+    private Integer profileId;
 }

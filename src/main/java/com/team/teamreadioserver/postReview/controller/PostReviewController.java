@@ -23,11 +23,12 @@ public class PostReviewController {
 
     @Operation(summary = "포스트 리뷰 등록 요청", description = "해당 포스트 리뷰 등록이 진행됩니다.", tags = {"PostReviewController"})
     @PostMapping("/{postId}/reviews")
-    public ResponseEntity<ResponseDTO> insertPostReview(@RequestBody PostReviewRequestDTO postReviewRequestDTO) {
+    public ResponseEntity<ResponseDTO> insertPostReview(@PathVariable("postId") Integer postId,
+                                                        @RequestBody PostReviewRequestDTO postReviewRequestDTO) {
 
         return ResponseEntity
                 .ok()
-                .body(new ResponseDTO(HttpStatus.OK, "리뷰 입력 성공", postReviewService.insertPostReview(postReviewRequestDTO)));
+                .body(new ResponseDTO(HttpStatus.OK, "리뷰 입력 성공", postReviewService.insertPostReview(postReviewRequestDTO, postId)));
     }
 
     @Operation(summary = "포스트 리뷰 조회 요청", description = "해당 포스트에 등록된 리뷰 리스트 조회가 진행됩니다.", tags = {"ReviewController"})
@@ -56,6 +57,14 @@ public class PostReviewController {
                 .body(new ResponseDTO(HttpStatus.OK, "리뷰 수정 성공", postReviewService.updatePostReview(postReviewRequestDTO)));
     }
 
+    @Operation(summary = "포스트 리뷰 삭제 요청", description = "리뷰 작성자 또는 관리자가 리뷰를 삭제합니다.", tags = {"ReviewController"}) // swagger 태그 확인
+    @DeleteMapping("/reviews/{reviewId}") // 엔드포인트 예시: /post/reviews/1
+    public ResponseEntity<ResponseDTO> deletePostReview(@PathVariable int reviewId ) {
 
+        postReviewService.deletePostReview(reviewId);
 
+        return ResponseEntity
+                .ok() // 또는 204 No Content (삭제 성공 시 내용 없음)
+                .body(new ResponseDTO(HttpStatus.OK, "리뷰 삭제 성공", null));
+    }
 }

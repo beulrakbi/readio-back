@@ -36,7 +36,7 @@ image:
  add-resource-locations: classpath:/static/img/
  add-resource-handler: /img/**
  image-dir: src/main/resources/static/img
- image-url: http://localhost:8080/img
+ image-url: http://localhost:8080/img/
 
 
 # security(jwt) config

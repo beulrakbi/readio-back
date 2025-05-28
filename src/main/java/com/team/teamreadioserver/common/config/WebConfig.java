@@ -17,6 +17,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        System.out.println("적용되는 Resource Handler: " + ADD_RESOURCE_HANDLER);
+        System.out.println("적용되는 Resource Locations: " + ADD_RESOURCE_LOCATION);
         registry.addResourceHandler(ADD_RESOURCE_HANDLER)
                 .addResourceLocations(ADD_RESOURCE_LOCATION);
     }

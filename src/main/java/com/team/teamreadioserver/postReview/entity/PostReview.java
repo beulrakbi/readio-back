@@ -34,4 +34,9 @@ public class PostReview {
     private Post post;
     @Column(name = "post_review_like")
     private int postReviewLike;
+
+//    @PrePersist
+//    public void prePersist() {
+//        this.profile = 1;
+//    }
 }

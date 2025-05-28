@@ -87,7 +87,7 @@ public class PostService {
                 String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
                 String savedFileName = UUID.randomUUID().toString().replace("-", "") + extension;
 
-                String fileUrl = "/img/post/" + savedFileName;
+                String fileUrl = "post/" + savedFileName;
                 files.add(new PostImgDTO(fileUrl, originalFileName));
 
                 File targetFile = new File(staticPath + "/" + savedFileName);
