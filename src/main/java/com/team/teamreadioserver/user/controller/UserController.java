@@ -89,7 +89,7 @@ public class UserController {
   }
 
   // 회원정보 조회
-  @Operation(summary = "회원정보조회", description = "회원정보 수정 시 정보를 조회해온다.")
+  @Operation(summary = "내 정보 수정-회원정보조회", description = "회원정보 수정 시 해당 회원의 정보를 조회해온다.")
   @ResponseBody
   @GetMapping("/edit")
   public ResponseEntity<UserInfoResponseDTO> getUserInfo(@AuthenticationPrincipal UserDetails userDetails) {

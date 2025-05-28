@@ -62,8 +62,8 @@ public class SecurityConfig {
                     "/swagger-resources/**",
                     "/webjars/**"
                 ).permitAll()
-//            .requestMatchers("/admin/**").permitAll()// 관리자 관련 경로
-                .requestMatchers("/admin", "/admin/**").hasRole("ADMIN") // 관리자 관련 경로
+            .requestMatchers("/admin/**").permitAll()// 관리자 관련 경로 오픈(로그인 안하고 테스트할때 주석 풀고 사용하세요)
+//                .requestMatchers("/admin", "/admin/**").hasRole("ADMIN") // 관리자 관련 경로(admin으로 로그인해야만 경로에 접근 가능)
                 .anyRequest().authenticated()   // 그 외는 모두 로그인 필요
         )
         // JwtSecurityConfig 부분이랑 동일한 역할_JwtAuthenticationFilter를 SecurityFilterChain 안에서 등록
