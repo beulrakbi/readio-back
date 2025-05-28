@@ -50,12 +50,23 @@ public class FilteringController {
     public ResponseEntity<ResponseDTO> updateFilteringGroupActiveState(@RequestBody FilteringGroupDTO filteringGroupDTO)
     {
 
-        System.out.println("변경?");
         return ResponseEntity
                 .ok()
-                .body(new ResponseDTO(HttpStatus.OK, "리뷰 수정 성공",  filteringService.updateFilteringGroupActiveState(filteringGroupDTO)));
+                .body(new ResponseDTO(HttpStatus.OK, "필터링 그룹 활성 상태 수정 성공",  filteringService.updateFilteringGroupActiveState(filteringGroupDTO)));
 
     }
+
+    @Operation(summary = "필터링 수정 요청", description = "필터링이 수정됩니다.", tags = { "FilteringController" })
+    @PutMapping("/filtering/edit")
+    public ResponseEntity<ResponseDTO> updateFilteringGroupActiveState(@RequestBody FilteringGroupDetailDTO filteringGroupDetailDTO)
+    {
+
+        return ResponseEntity
+                .ok()
+                .body(new ResponseDTO(HttpStatus.OK, "필터링 수정 성공",  filteringService.updateFilteringGroup(filteringGroupDetailDTO)));
+
+    }
+
 
     @Operation(summary = "필터링 그룹 전체 조회", description = "필터링 그룹이 전체 조회됩니다.", tags = { "FilteringController" })
     @GetMapping("/filtering")
@@ -86,7 +97,7 @@ public class FilteringController {
         result.setFilterings(filterings);
 
         return ResponseEntity.ok().body(
-                new ResponseDTO(HttpStatus.OK, "필터링 그룹 + 필터링 목록 조회 성공", result));
+                new ResponseDTO(HttpStatus.OK, "필터링 상세 조회 성공", result));
 
     }
 

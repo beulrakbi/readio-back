@@ -13,35 +13,40 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  *  접속: http://localhost:8080/swagger-ui/index.html (application.yaml 참고)
  * */
 @OpenAPIDefinition(
-		info = @Info(title = "readio",
-					 description = "React부터 Spring Data Jpa까지 진행하는 서비스 API 명세서",
-					 version = "v1"))
+    info = @Info(title = "readio",
+        description = "React부터 Spring Data Jpa까지 진행하는 서비스 API 명세서",
+        version = "v1"))
 @Configuration
 public class SwaggerConfig {
 
-	//	@Bean
+//	@Bean
 //	public GroupedOpenApi chatOpenApi() {
 //		/* 설명. Swagger에서 처리하고자 하는 경로를 지정 */
-//		String [] paths = {"/api/v1/**", "/auth/**"};
+//		String [] paths = {"/api/v1/**", "/auth/**", "/users/**"};
 //
 //		return GroupedOpenApi.builder()
 //							 .group("readio 서비스 API v1")
 //							 .pathsToMatch(paths)
 //							 .build();
 //	}
-	@Bean
-	public WebMvcConfigurer corsConfigurer() {
-		return new WebMvcConfigurer() {
-			@Override
-			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**")
-						.allowedOrigins("http://localhost:5173")
-						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-						.allowCredentials(true);
-			}
-		};
-	}
+
+//	@Bean
+//	public WebMvcConfigurer corsConfigurer() {
+//		return new WebMvcConfigurer() {
+//			@Override
+//			public void addCorsMappings(CorsRegistry registry) {
+//				registry.addMapping("/**")
+//						.allowedOrigins("http://localhost:5173")
+//						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+//						.allowCredentials(true);
+//			}
+//		};
+//	}
+
+
 }
+
+
 
 
 

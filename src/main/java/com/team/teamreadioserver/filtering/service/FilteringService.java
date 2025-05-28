@@ -3,6 +3,7 @@ package com.team.teamreadioserver.filtering.service;
 import com.team.teamreadioserver.common.common.Criteria;
 import com.team.teamreadioserver.filtering.dto.FilteringDTO;
 import com.team.teamreadioserver.filtering.dto.FilteringGroupDTO;
+import com.team.teamreadioserver.filtering.dto.FilteringGroupDetailDTO;
 import com.team.teamreadioserver.filtering.entity.Filtering;
 import com.team.teamreadioserver.filtering.entity.FilteringGroup;
 import com.team.teamreadioserver.filtering.repository.FilteringGroupRepository;
@@ -88,6 +89,42 @@ public class FilteringService {
 
         return (result > 0) ? "필터링 그룹 상태 수정 성공" : "필터링 그룹 상태 수정 실패";
     }
+
+    @Transactional
+    public Object updateFilteringGroup(FilteringGroupDetailDTO filteringGroupDetailDTO)
+    {
+        List<FilteringDTO> filteringDTOS = filteringGroupDetailDTO.getFilterings();
+        FilteringGroupDTO filteringGroupDTO = filteringGroupDetailDTO.getFilteringGroup();
+        int result = 0;
+
+        try {
+            FilteringGroup foundFilteringGroup = filteringGroupRepository.findByGroupId(filteringGroupDTO.getGroupId());
+            List<Filtering> foundFilters = filteringRepository.findByGroupId(filteringGroupDTO.getGroupId());
+            List<Filtering> newFilters = filteringDTOS.stream().map(filter -> modelMapper.map(filter, Filtering.class)).collect(Collectors.toList());
+            foundFilteringGroup.modifyFilteringGroup(filteringGroupDTO.getTitle(), filteringGroupDTO.getContent());
+
+            for (Filtering oldFilter : foundFilters) {
+                if (!newFilters.contains(oldFilter))
+                {
+                    filteringRepository.delete(oldFilter);
+                }
+                else
+                {
+                    newFilters.remove(oldFilter);
+                }
+            }
+
+            filteringRepository.saveAll(newFilters);
+            result = 1;
+
+        } catch (Exception e)
+        {
+            log.error("[FilteringService] updateFilteringGroup() Fail");
+        }
+
+        return (result > 0) ? "필터링 그룹 상태 수정 성공" : "필터링 그룹 상태 수정 실패" ;
+    }
+
 
     public int selectFilteringGroups() {
         log.info("[FilteringService] selectFilteringGroup() Start");

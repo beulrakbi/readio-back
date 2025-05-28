@@ -1,5 +1,7 @@
 package com.team.teamreadioserver.notice.dto;
 
+import com.team.teamreadioserver.notice.entity.Notice;
+import com.team.teamreadioserver.notice.enumPackage.NoticeState;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,4 +19,16 @@ public class NoticeResponseDTO {
     private String noticeContent;
     private LocalDateTime noticeCreateAt;
     private int noticeView;
+    private NoticeState noticeState;
+
+    public static NoticeResponseDTO fromEntity(Notice notice) {
+        NoticeResponseDTO dto = new NoticeResponseDTO();
+        dto.noticeId = notice.getNoticeId();
+        dto.noticeTitle = notice.getNoticeTitle();
+        dto.noticeContent = notice.getNoticeContent();
+        dto.noticeState = notice.getNoticeState();
+        dto.noticeCreateAt = notice.getNoticeCreateAt(); // 날짜 형식에 따라 변경 가능
+        dto.noticeView = notice.getNoticeView();
+        return dto;
+    }
 }
