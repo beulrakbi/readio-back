@@ -39,7 +39,7 @@ public class CustomUserDetailsService implements UserDetailsService {
      return org.springframework.security.core.userdetails.User.builder()
          .username(user.getUserId())
          .password(user.getUserPwd())
-         .roles(userRoleName)
+         .roles(userRoleName) // 내부적으로 ROLE_ 접두어 자동으로 붙임 예)"ROLE_ADMIN"
          .build();
   }
 

@@ -13,8 +13,8 @@ public class UserEditRequestDTO {
   private String userId;
   private String userName;
   private String userPwd;
-  public String userEmail;
-  public String userPhone;
-  public LocalDate userBirthday;
+  private String userEmail;
+  private String userPhone;
+  private LocalDate userBirthday;
 
 }
