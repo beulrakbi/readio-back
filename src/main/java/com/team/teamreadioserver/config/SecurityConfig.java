@@ -54,7 +54,7 @@ public class SecurityConfig {
                         .requestMatchers("/img/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/user/interests/categories", "/api/user/interests/keywords").permitAll()
                         .requestMatchers("/api/user/**").authenticated()
-                        .requestMatchers("/users/login", "/users/join/**", "/video/**", "/curation/**").permitAll()  // 인증 필요없는 경로
+                        .requestMatchers("/video/**", "/curation/**", "search/**").permitAll()  // 인증 필요없는 경로
                         .requestMatchers(
                                 "/",
                                 "/swagger-ui/**",
