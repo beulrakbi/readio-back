@@ -3,6 +3,7 @@ package com.team.teamreadioserver.config;
 import com.team.teamreadioserver.user.auth.jwt.JwtAuthenticationFilter;
 import com.team.teamreadioserver.user.auth.jwt.JwtTokenProvider;
 import com.team.teamreadioserver.user.auth.service.CustomUserDetailsService;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -10,6 +11,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -40,7 +42,12 @@ public class SecurityConfig {
         authProvider.setPasswordEncoder(passwordEncoder); // 필수설정~ 비밀번호 비교
         return authProvider;
     }
-
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring()
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
+                .requestMatchers("/img/**");
+    }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
         http
@@ -52,6 +59,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/users/login", "/users/join/**", "/video/**", "/curation/**", "/img/**").permitAll()  // 인증 필요없는 경로
                         .requestMatchers(HttpMethod.GET, "/api/user/interests/categories", "/api/user/interests/keywords").permitAll()
+
                         .requestMatchers("/api/user/**").authenticated()
                         .requestMatchers(
                                 "/",
