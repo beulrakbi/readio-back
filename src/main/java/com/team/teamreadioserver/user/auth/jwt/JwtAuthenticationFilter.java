@@ -31,6 +31,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
+        String requestURI = request.getRequestURI(); // 현재 요청 URI 로깅 추가
+        logger.info("---- JWT Filter 시작: 요청 URI = {}", requestURI); // 추가된 디버깅 로그
+
         String token = getTokenFromRequest(request);
         logger.info("JWT 토큰: " + token);        // 주석 해도 되고 안해도 되고
 //        메인 페이지가 permitAll()로 설정되어 있고, 로그인 직후 새로고침되므로 null 값 반환은 정상
@@ -44,16 +47,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+                logger.debug("  >> SecurityContextHolder에 {} 사용자로 인증 설정 시도.", username);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                logger.debug("  >> SecurityContextHolder에 {} 사용자 인증 성공. 현재 컨텍스트: {}", username, SecurityContextHolder.getContext().getAuthentication().getName()); // 현재 인증된 사용자 이름 확인
+
             } catch (Exception e) {
                 logger.error("사용자 인증 처리 중 오류 발생", e);
                 SecurityContextHolder.clearContext();
             }
         }else {
-            logger.info("유효한 JWT 토큰이 없거나 토큰이 만료/비정상입니다.");
+            logger.info("JWT 토큰이 없거나 토큰이 만료/비정상입니다. SecurityContextHolder 초기화");
             SecurityContextHolder.clearContext();  // 인증 초기화
         }
         filterChain.doFilter(request, response);
+        logger.info("---- JWT Filter 종료: 요청 URI = {}", requestURI); // 추가된 디버깅 로그
     }
 
     private String getTokenFromRequest(HttpServletRequest request) {
