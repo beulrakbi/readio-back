@@ -5,16 +5,13 @@ import com.team.teamreadioserver.bookReview.dto.MyReviewResponseDTO;
 import com.team.teamreadioserver.bookReview.dto.ReviewRequestDTO;
 import com.team.teamreadioserver.bookReview.entity.BookReview;
 import com.team.teamreadioserver.bookReview.entity.ReviewLike;
-import com.team.teamreadioserver.bookReview.enumPackage.IsHidden;
 import com.team.teamreadioserver.bookReview.repository.BookReviewRepository;
 import com.team.teamreadioserver.bookReview.repository.LikesRepository;
-import com.team.teamreadioserver.search.dto.BookRequestDTO;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class BookReviewService {
