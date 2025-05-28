@@ -10,5 +10,5 @@ import lombok.*;
 public class CurationKeywordsDTO {
     private int curationId;
     private String keyword;
-    private String type;
+    private int typeId;
 }
