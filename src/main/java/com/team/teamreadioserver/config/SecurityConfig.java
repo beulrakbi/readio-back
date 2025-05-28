@@ -44,9 +44,9 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
     http
-        .cors()
-        .and()
-        .csrf().disable()
+        .cors(cors -> cors.configurationSource(corsConfigurationSource))
+//        .and() (삭제) 람다에선 필요없음
+        .csrf(csrf -> csrf.disable())
         .authenticationProvider(authenticationProvider())
         .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
