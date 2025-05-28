@@ -15,9 +15,11 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "book")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Book {
 
     @Id
+    @EqualsAndHashCode.Include
     @Column(name = "book_isbn", length = 15)
     private String bookIsbn;
 
