@@ -47,7 +47,6 @@ public class VideoController {
     {
         log.info("[VideoController] getVideoByKeyword");
         VideosDTO result = videoService.findVideos(search);
-//        System.out.println("videosDTO: " + result);
         if(result.getNum() > 0)
         {
             return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "비디오 조회 성공", result));

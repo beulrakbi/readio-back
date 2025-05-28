@@ -65,6 +65,5 @@ mybatis:
  mapper-locations: classpath:mapper/*.xml
  type-aliases-package: com.team.teamreadioserver.user.dto
 
-
 aladin:
  ttbkey: ttbehfvls09271435001
