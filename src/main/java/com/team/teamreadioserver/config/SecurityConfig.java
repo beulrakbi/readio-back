@@ -51,6 +51,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/users/login", "/users/join/**").permitAll()  // 인증 필요없는 경로
+                        .requestMatchers("/img/**").permitAll()
                         .requestMatchers(
                                 "/",
                                 "/swagger-ui/**",
