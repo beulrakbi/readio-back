@@ -7,8 +7,8 @@ import lombok.*;
 @ToString
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class CurationKeywordsDTO {
-    private int curationId;
-    private String keyword;
+public class CurationTypeDTO {
     private int typeId;
+    private String typeName;
+    private String typeText;
 }

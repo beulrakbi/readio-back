@@ -54,6 +54,7 @@ public class SecurityConfig {
                         .requestMatchers("/img/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/user/interests/categories", "/api/user/interests/keywords").permitAll()
                         .requestMatchers("/api/user/**").authenticated()
+                        .requestMatchers("/users/login", "/users/join/**", "/video/**", "/curation/**").permitAll()  // 인증 필요없는 경로
                         .requestMatchers(
                                 "/",
                                 "/swagger-ui/**",
@@ -63,7 +64,8 @@ public class SecurityConfig {
                                 "/swagger-resources/**",
                                 "/webjars/**"
                         ).permitAll()
-                        .requestMatchers("/admin","/admin/**").hasRole("ADMIN") // 관리자 관련 경로
+                        .requestMatchers("/admin/**").permitAll()// 관리자 관련 경로
+//                        .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자 관련 경로
                         .anyRequest().authenticated()   // 그 외는 모두 로그인 필요
                 )
                 // JwtSecurityConfig 부분이랑 동일한 역할_JwtAuthenticationFilter를 SecurityFilterChain 안에서 등록

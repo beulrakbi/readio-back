@@ -28,7 +28,7 @@ public class VideoController {
     public ResponseEntity<ResponseDTO> insertVideo(@RequestBody VideoDTO videoDTO)
     {
         log.info("[VideoController] insertVideo");
-        System.out.println("videoDTO" + videoDTO);
+//        System.out.println("videoDTO" + videoDTO);
         Object result = videoService.insertVideo(videoDTO);
         if (result.equals("비디오 추가 성공")) {
             return ResponseEntity.ok().body(
@@ -47,8 +47,7 @@ public class VideoController {
     {
         log.info("[VideoController] getVideoByKeyword");
         VideosDTO result = videoService.findVideos(search);
-
-        System.out.println("videosDTO: " + result);
+//        System.out.println("videosDTO: " + result);
         if(result.getNum() > 0)
         {
             return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "비디오 조회 성공", result));
@@ -63,7 +62,6 @@ public class VideoController {
     {
         log.info("[VideoController] searchVideoByKeyword");
         VideosDTO result = videoService.searchVideos(search);
-
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "비디오 검색 성공", result));
     }
 
