@@ -1,5 +1,6 @@
 package com.team.teamreadioserver.interest.service;
 
+import com.team.teamreadioserver.interest.dto.admin.InterestDTO;
 import com.team.teamreadioserver.interest.dto.user.InterestUserRequestDTO;
 import com.team.teamreadioserver.interest.dto.user.InterestUserResponseDTO;
 import com.team.teamreadioserver.interest.entity.InterestCategory;
@@ -21,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +33,8 @@ public class InterestUserService {
     private final InterestKeywordRepository interestKeywordRepository;
     private final UserInterestCategoryRepository userInterestCategoryRepository;
     private final UserInterestKeywordRepository userInterestKeywordRepository;
+    private final InterestCategoryRepository categoryRepository;
+    private final InterestKeywordRepository keywordRepository;
 
     @Transactional
     public void registerInterests(InterestUserRequestDTO dto) {
@@ -161,6 +165,18 @@ public class InterestUserService {
                     .build();
             userInterestKeywordRepository.save(newUserKeyword);
         }
+    }
+
+    public List<InterestDTO> getAllCategoriesWithId() {
+        return categoryRepository.findAll().stream()
+                .map(c -> new InterestDTO(c.getInterestId(), c.getInterestCategory()))
+                .toList();
+    }
+
+    public List<InterestDTO> getAllKeywordsWithId() {
+        return keywordRepository.findAll().stream()
+                .map(k -> new InterestDTO(k.getInterestKeywordId(), k.getInterestKeyword()))
+                .toList();
     }
 
 }

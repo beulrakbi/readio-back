@@ -1,5 +1,6 @@
 package com.team.teamreadioserver.interest.controller;
 
+import com.team.teamreadioserver.interest.dto.admin.InterestDTO;
 import com.team.teamreadioserver.interest.dto.user.InterestUserRequestDTO;
 import com.team.teamreadioserver.interest.dto.user.InterestUserResponseDTO;
 import com.team.teamreadioserver.interest.service.InterestUserService;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -38,5 +40,14 @@ public class InterestUserController {
         interestUserService.updateInterests(dto);
         return ResponseEntity.ok(Map.of("message", "관심사 수정이 완료되었습니다."));
 
+    }
+
+    @GetMapping("/categories")
+    public ResponseEntity<List<InterestDTO>> getAllInterestCategories() {
+        return ResponseEntity.ok(interestUserService.getAllCategoriesWithId());
+    }
+    @GetMapping("/keywords")
+    public ResponseEntity<List<InterestDTO>> getAllInterestKeywords() {
+        return ResponseEntity.ok(interestUserService.getAllKeywordsWithId());
     }
 }

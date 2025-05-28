@@ -50,7 +50,11 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/users/login", "/users/join/**", "/video/**", "/curation/**", "search/**").permitAll()  // 인증 필요없는 경로
+                        .requestMatchers("/users/login", "/users/join/**").permitAll()  // 인증 필요없는 경로
+                        .requestMatchers("/img/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/user/interests/categories", "/api/user/interests/keywords").permitAll()
+                        .requestMatchers("/api/user/**").authenticated()
+                        .requestMatchers("/video/**", "/curation/**", "search/**").permitAll()  // 인증 필요없는 경로
                         .requestMatchers(
                                 "/",
                                 "/swagger-ui/**",
