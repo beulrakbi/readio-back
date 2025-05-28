@@ -1,6 +1,9 @@
 //package com.team.teamreadioserver.search.entity;
 //
-//import jakarta.persistence.*;
+//import jakarta.persistence.Entity;
+//import jakarta.persistence.GeneratedValue;
+//import jakarta.persistence.GenerationType;
+//import jakarta.persistence.Id;
 //import lombok.AllArgsConstructor;
 //import lombok.Getter;
 //import lombok.NoArgsConstructor;
@@ -10,15 +13,14 @@
 //@Setter
 //@AllArgsConstructor
 //@NoArgsConstructor
-//@Entity(name = "curation_keywords")
-//public class CurationKeywords {
+//@Entity(name = "curation_type")
+//public class CurationType {
 //
 //    @Id
 //    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(name = "curation_id")
-//    private Integer curationId;
+//    private int typeId;
 //
-//    private String keyword;
+//    private String typeName;
 //
-//    private String typeId;
+//    private String typeText;
 //}
