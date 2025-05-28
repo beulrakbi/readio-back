@@ -1,4 +1,4 @@
-package com.team.readioserver.postReview.controller;
+package com.team.readioserver.interest.repository;
 
 public class a {
     public static void main(String[] args) {

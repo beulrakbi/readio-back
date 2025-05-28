@@ -1,4 +1,4 @@
-package com.team.readioserver.post.repository;
+package com.team.readioserver.qna.entity;
 
 public class a {
     public static void main(String[] args) {
