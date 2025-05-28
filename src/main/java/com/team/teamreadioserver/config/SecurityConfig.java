@@ -50,7 +50,7 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/users/login", "/users/join/**", "/video/**", "/curation/**").permitAll()  // 인증 필요없는 경로
+                        .requestMatchers("/users/login", "/users/join/**", "/video/**", "/curation/**", "search/**").permitAll()  // 인증 필요없는 경로
                         .requestMatchers(
                                 "/",
                                 "/swagger-ui/**",
