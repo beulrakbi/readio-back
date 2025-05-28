@@ -50,7 +50,7 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/users/login", "/users/join/**", "/video/**", "/curation/**", "/img/**").permitAll()  // 인증 필요없는 경로
+                        .requestMatchers("/users/login", "/users/join/**", "/video/**", "/curation/**", "/img/**", "/search/**", "/bookPage/**").permitAll()  // 인증 필요없는 경로
                         .requestMatchers(HttpMethod.GET, "/api/user/interests/categories", "/api/user/interests/keywords").permitAll()
                         .requestMatchers("/api/user/**").authenticated()
                         .requestMatchers(
