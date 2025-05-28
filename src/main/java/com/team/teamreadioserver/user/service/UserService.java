@@ -1,7 +1,6 @@
 package com.team.teamreadioserver.user.service;
 
 import com.team.teamreadioserver.user.dto.JoinRequestDTO;
-import com.team.teamreadioserver.user.dto.LoginRequestDTO;
 import com.team.teamreadioserver.user.dto.UserEditRequestDTO;
 import com.team.teamreadioserver.user.dto.UserInfoResponseDTO;
 import com.team.teamreadioserver.user.entity.User;
@@ -68,21 +67,25 @@ public class UserService {
   }
 
   // 회원정보조회
+  @Transactional(readOnly = true)
   public UserInfoResponseDTO getUserInfo(String userId) {
-    return userMapper.selectUserById(userId);
+    logger.info("getUserInfo: 사용자 ID 조회 요청 - {}", userId);
+    UserInfoResponseDTO userInfo = userMapper.selectUserById(userId);
+    if(userInfo == null) {
+      throw new IllegalArgumentException("사용자 정보를 찾을 수 없습니다." + userId);
+    }
+    logger.info("getUserInfo: 사용자 정보 조회 성공 - {}", userInfo.getUserId());
+    return userInfo;
   }
 
   // 회원정보수정
   @Transactional
   public int updateUser(UserEditRequestDTO userEditRequestDTO) {
+    // 비밀번호 입력했으면 암호화해서 저장
     if (userEditRequestDTO.getUserPwd() != null && !userEditRequestDTO.getUserPwd().isEmpty()) {
-      // 비밀번호 입력했으면 암호화해서 저장
       userEditRequestDTO.setUserPwd(passwordEncoder.encode(userEditRequestDTO.getUserPwd()));
-    } else {
-      // 비밀번호 입력 안했으면 기존 비밀번호 유지
-      String existingPwd = userMapper.selectPasswordByUserId(userEditRequestDTO.getUserId());
-      userEditRequestDTO.setUserPwd(existingPwd);
     }
+
     // 수정용 DTO로 전체 수정 가능
     return userMapper.updateUser(userEditRequestDTO);
   }

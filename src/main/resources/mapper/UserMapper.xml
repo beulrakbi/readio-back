@@ -15,14 +15,6 @@
         <result property="userEnrolldate" column="user_enrolldate"/>
     </resultMap>
 
-    <resultMap id="userInfoResponseMap" type="com.team.teamreadioserver.user.dto.UserInfoResponseDTO">
-        <result property="userId" column="user_id" />
-        <result property="userName" column="user_name" />
-        <result property="userEmail" column="user_email" />
-        <result property="userPhone" column="user_phone" />
-        <result property="userBirthday" column="user_birthday" />
-    </resultMap>
-
     <insert id="insertUser" parameterType="com.team.teamreadioserver.user.dto.JoinRequestDTO">
         INSERT INTO user (user_id, user_role, user_name, user_pwd, user_email, user_phone, user_birthday,
                           user_enrolldate)
@@ -68,23 +60,32 @@
 
     <!--회원정보 조회-->
     <select id="selectUserById" parameterType="string" resultType="com.team.teamreadioserver.user.dto.UserInfoResponseDTO">
-        SELECT user_id,
-               user_name,
-               user_email,
-               user_phone,
-               user_birthday
+        SELECT user_id as userID,
+               user_name as userName,
+               user_email as userEmail,
+               user_phone as userPhone,
+               user_birthday as userBirthday,
+               user_role as userRole
         FROM `user`
-        WHERE user_id = #{userId}
+        WHERE user_id = TRIM(#{userId})
     </select>
 
     <!--회원정보 수정-->
     <update id="updateUser" parameterType="com.team.teamreadioserver.user.dto.UserEditRequestDTO">
         UPDATE user
-        SET user_name = #{userName},
-            user_email = #{userEmail},
-            user_phone = #{userPhone},
-            user_birthday = #{userBirthday},
-            user_pwd = #{userPwd}
+        <set>
+            <if test="userEmail != null">
+                user_email = #{userEmail},
+            </if>
+            <if test="userPhone != null">
+                user_phone = #{userPhone},
+            </if>
+            <if test="userBirthday != null">
+                user_birthday = #{userBirthday},
+            </if>
+            <if test="userPwd != null and userPwd != ''"> user_pwd = #{userPwd},
+            </if>
+        </set>
         WHERE user_id = #{userId}
     </update>
 
