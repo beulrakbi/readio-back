@@ -1,4 +1,5 @@
 package com.team.teamreadioserver.user.auth.jwt;
+
 import com.team.teamreadioserver.user.auth.service.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -43,13 +44,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception e) {
                 logger.error("사용자 인증 처리 중 오류 발생", e);
                 SecurityContextHolder.clearContext();
             }
-        }else {
+        } else {
             logger.info("유효한 JWT 토큰이 없거나 토큰이 만료/비정상입니다.");
             SecurityContextHolder.clearContext();  // 인증 초기화
         }
