@@ -71,7 +71,7 @@ public class VideoService {
         return result;
     }
 
-    public VideosDTO searchVideos(String search) {
+    public VideosDTO searchVideos(String search, int page, int size) {
         Set<Video> videos = new HashSet<>();
         videos.addAll(videoRepository.findAllByDescriptionContaining(search));
         videos.addAll(videoRepository.findAllByTitleContaining(search));
@@ -84,7 +84,27 @@ public class VideoService {
             videoDTO.setTitle(cleanText);
         }
 
-        VideosDTO result = new VideosDTO(videoDTOS, videoDTOS.size());
+        int total = videoDTOS.size();
+
+        int start = (page - 1) * size;                                    // ← 추가: 시작 인덱스
+        int end = Math.min(start + size, videoDTOS.size());              // ← 추가: 끝 인덱스
+        List<VideoDTO> paged = videoDTOS.subList(start, end);            // ← 추가: 리스트 잘라내기
+
+        // DTO에 담기
+        VideosDTO result = new VideosDTO(paged, total);                  // ← 수정: paged, total 사용
+//        VideosDTO result = new VideosDTO(videoDTOS, videoDTOS.size());
+
         return result;
+    }
+
+    // 영상 재생페이지 => videoId 로 해당 비디오 조회 메서드
+    @Transactional
+    public VideoDTO getVideoById(String videoId) {
+        Video video = videoRepository.findById(videoId)
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 videoId : " + videoId));
+        VideoDTO videoDTO = modelMapper.map(video, VideoDTO.class);
+        // HTML 이스케이프 제거 등 후처리
+        videoDTO.setTitle(StringEscapeUtils.unescapeHtml4(videoDTO.getTitle()));
+        return videoDTO;
     }
 }
