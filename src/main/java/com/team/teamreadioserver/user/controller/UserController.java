@@ -89,7 +89,7 @@ public class UserController {
   }
 
   // 회원정보 조회
-  @Operation(summary = "회원정보조회", description = "회원정보 수정 시 정보를 조회해온다.")
+  @Operation(summary = "내 정보 수정-회원정보조회", description = "회원정보 수정 시 해당 회원의 정보를 조회해온다.")
   @ResponseBody
   @GetMapping("/edit")
   public ResponseEntity<UserInfoResponseDTO> getUserInfo(@AuthenticationPrincipal UserDetails userDetails) {
@@ -103,18 +103,6 @@ public class UserController {
     }
     return ResponseEntity.ok(user);
   }
-//    public UserInfoResponseDTO getUserInfo(@RequestParam String userId) {
-//        UserInfoResponseDTO dto = userMapper.selectUserById(userId);
-//        logger.info("조회된 회원 정보: {}", dto);
-//
-//        if (dto == null) {
-//            logger.warn("조회된 회원 정보가 없습니다! userId: {}", userId);
-//        }
-//
-//        return dto;
-
-  /// /        return userService.getUserInfo(userId);
-//    }
 
   // 회원정보 수정
   @Operation(summary = "회원정보 수정", description = "로그인된 사용자는 회원정보 수정이 가능하다.")
@@ -143,6 +131,8 @@ public class UserController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류로 회원정보 수정에 실패했습니다: " + e.getMessage()); // 500 Internal Server Error
     }
   }
+
+
 
 
   @GetMapping("/test")

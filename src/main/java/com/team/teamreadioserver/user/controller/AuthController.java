@@ -6,6 +6,8 @@ import com.team.teamreadioserver.user.dto.LoginRequestDTO;
 import com.team.teamreadioserver.user.dto.UserInfoResponseDTO;
 import com.team.teamreadioserver.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,8 @@ import java.util.Collection;
 @RequestMapping("/users")
 public class AuthController {
 
+  private static final Logger logger = LoggerFactory.getLogger(AuthController.class); // Logger 인스턴스 생성
+
   @Autowired
   private AuthenticationManager authenticationManager;
 
@@ -34,21 +38,26 @@ public class AuthController {
   @Autowired
   private UserService userService;
 
+  @Operation(summary = "내 정보 조회", description = "현재 로그인한 사용자의 정보를 조회합니다.")
   @GetMapping("/me")
   public ResponseEntity<UserInfoResponseDTO> getMyInfo(@AuthenticationPrincipal UserDetails userDetails) {
     if (userDetails == null) {
+      logger.warn("/users/me 요청에 인증된 사용자 정보(userDetails)가 없습니다. UNAUTHORIZED.");
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     // userDetails.getUsername() = 로그인한 사용자 ID
     String userId = userDetails.getUsername();
+    logger.info("/users/me 요청: 인증된 사용자 ID = {}", userId); // 추가된 디버깅 로그
 
     // 예시: 서비스에서 사용자 정보 조회
     UserInfoResponseDTO userInfo = userService.getUserInfo(userId);
     if (userInfo == null) {
+      logger.info("/users/me 요청 성공: 사용자 ID = {}, 사용자 이름 = {}", userInfo.getUserId(), userInfo.getUserName()); // 추가된 디버깅 로그
       return ResponseEntity.notFound().build();
     }
 
+    logger.info("/users/me 요청 성공: 사용자 ID = {}, 사용자 이름 = {}", userInfo.getUserId(), userInfo.getUserName()); // 추가된 디버깅 로그
     return ResponseEntity.ok(userInfo);
   }
 
@@ -56,7 +65,7 @@ public class AuthController {
   @Operation(summary = "로그인", description = "회원이 로그인을 합니다.")
   @PostMapping("/login")
   public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequestDTO) {
-    System.out.println("로그인 요청 username: " + loginRequestDTO.getUsername());
+    logger.info("로그인 요청 username: " + loginRequestDTO.getUsername());
 
     try {
       Authentication authentication = authenticationManager.authenticate(
@@ -67,14 +76,14 @@ public class AuthController {
 
       // 로그인한 계정 권한 로그 찍기
       Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
-      System.out.println("로그인한 계정 권한: " + authorities);
+      logger.info("로그인한 계정 권한: " + authorities);
 
       // JwtResponseDTO를 사용해서 응답
       JwtResponseDTO jwtResponse = new JwtResponseDTO(token);
       jwtResponse.setUserId(userDetails.getUsername()); // userId
-      jwtResponse.setUserName(userDetails.getUsername());
+//      jwtResponse.setUserName(userDetails.getUsername());  주석
 
-      System.out.println("로그인 성공: " + userDetails.getUsername() + ", 생성된 토큰: " + token); // 토큰 값 확인하기
+      logger.info("로그인 성공: " + userDetails.getUsername() + ", 생성된 토큰: " + token); // 토큰 값 확인하기
 
       return ResponseEntity.ok(jwtResponse); // JwtResponseDTO 객체 반환
 
