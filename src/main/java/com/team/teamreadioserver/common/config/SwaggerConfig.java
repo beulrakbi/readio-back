@@ -2,6 +2,10 @@ package com.team.teamreadioserver.common.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +22,24 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
         version = "v1"))
 @Configuration
 public class SwaggerConfig {
+
+  // Swagger에서 Authorization 테스트하고자 추가
+  // 자물쇠 모양 누르고 토큰 넣어서 테스트 가능
+  // 인증 없이도 테스트 가능
+  @Bean
+  public OpenAPI customOpenAPI() {
+    // SecurityScheme 추가 (Bearer 토큰 사용)
+    return new OpenAPI()
+        .components(new Components()
+            .addSecuritySchemes("bearerAuth",
+                new SecurityScheme()
+                    .type(SecurityScheme.Type.HTTP)
+                    .scheme("bearer")
+                    .bearerFormat("JWT")
+            ))
+
+        .addSecurityItem(new SecurityRequirement().addList("bearerAuth"));
+  }
 
 //	@Bean
 //	public GroupedOpenApi chatOpenApi() {
