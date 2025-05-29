@@ -28,4 +28,14 @@ public interface UserMapper {
 
   String selectPasswordByUserId(@Param("userId") String userId);
 
+  /**이름과 휴대폰 번호로 아이디 조회**/
+  String findIdByNameAndPhone(@Param("userName") String userName, @Param("userPhone") String userPhone);
+
+  /**아이디와 이메일로 비밀번호 재설정 가능 여부 확인**/
+  String findPwdByIdAndEmail(@Param("userId") String userId, @Param("userEmail") String userEmail);
+
+  /**비밀번호 업데이트**/
+  void updatePassword(@Param("userId") String userId, @Param("newPassword") String newPassword);
+
+
 }
