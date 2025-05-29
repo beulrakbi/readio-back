@@ -56,8 +56,8 @@ public class BookDTO {
                     result.add(bookDTO);
                 }
             }
-
             return result;
+
         } catch (Exception ex) {
             throw new RuntimeException("도서 API 응답 파싱 실패", ex);
         }

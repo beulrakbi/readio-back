@@ -43,5 +43,4 @@ public class Book {
 
     @Column(name = "book_pubdate")
     private LocalDate bookPubdate;
-
 }
