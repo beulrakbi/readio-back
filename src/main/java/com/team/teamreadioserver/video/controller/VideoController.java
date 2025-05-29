@@ -83,5 +83,4 @@ public class VideoController {
                     .body(new ResponseDTO(HttpStatus.NOT_FOUND, e.getMessage(), null));
         }
     }
-
 }
