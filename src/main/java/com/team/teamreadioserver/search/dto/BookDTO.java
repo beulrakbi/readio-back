@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,20 +26,20 @@ public class BookDTO {
 
     public static List<BookDTO> fromApiResponse(String text) {
         try {
-            // 1) JSONP 헤더/푸터 제거
+            // JSONP 헤더/푸터 제거
             int s = text.indexOf('{');
             int e = text.lastIndexOf('}');
             String json = text.substring(s, e + 1);
 
-            // 2) Jackson ObjectMapper 로 JSON 파싱
+            // Jackson ObjectMapper 로 JSON 파싱
             ObjectMapper om = new ObjectMapper();
             JsonNode root = om.readTree(json);
 
-            // 3) "item" 배열 노드 가져오기
+            // "item" 배열 노드 가져오기
             JsonNode items = root.get("item");
             List<BookDTO> result = new ArrayList<>();
 
-            // 4) 배열 순회하며 DTO 생성
+            // 배열 순회하며 DTO 생성
             if (items != null && items.isArray()) {
                 for (JsonNode node : items) {
                     BookDTO bookDTO = new BookDTO();

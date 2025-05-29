@@ -1,7 +1,6 @@
 package com.team.teamreadioserver.search.client;
 
 import com.team.teamreadioserver.search.dto.BookDTO;
-import com.team.teamreadioserver.search.entity.Book;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -39,10 +38,5 @@ public class ExternalBookApiClient {
         List<BookDTO> bookDTOS = BookDTO.fromApiResponse(body);
 
         return bookDTOS;
-    }
-
-    private String encode(String s) {
-        try { return java.net.URLEncoder.encode(s, "UTF-8"); }
-        catch (Exception e) { return s; }
     }
 }

@@ -30,6 +30,7 @@ public class BookService {
         LinkedHashSet<Book> combined = new LinkedHashSet<>();
         combined.addAll(byTitle);
         combined.addAll(byAuthor);
+
         System.out.println("page: " + page);
         System.out.println("size: " + size);
 
@@ -42,7 +43,7 @@ public class BookService {
         List<BookDTO> apiDTOs = externalClient.fetchBooks(keyword, page, size);
         System.out.println("잘 가져오나?: " + apiDTOs);
 
-        // 신규 ISBN만 걸러내서 저장
+        // 신규 ISBN 만 걸러내서 저장
         List<String> isbns = apiDTOs.stream()
                 .map(BookDTO::getBookIsbn)
                 .collect(Collectors.toList());
