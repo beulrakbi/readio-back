@@ -97,7 +97,7 @@ public class VideoService {
         return result;
     }
 
-    // 영상 재생페이지 => videoId 로 해당 비디오 조회 메서드
+    // 영상 상세페이지 => videoId 로 해당 비디오 조회 메서드
     @Transactional
     public VideoDTO getVideoById(String videoId) {
         Video video = videoRepository.findById(videoId)

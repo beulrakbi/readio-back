@@ -69,7 +69,8 @@ public class VideoController {
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "비디오 검색 성공", result));
     }
 
-    @Operation(summary = "해당 오 조회", description = "videoId로 DB 에서 비디오 정보 조회", tags = { "VideoController" })
+    // 영상 상세페이지
+    @Operation(summary = "해당 비디오 조회", description = "videoId로 DB 에서 비디오 정보 조회", tags = { "VideoController" })
     @GetMapping("/id/{videoId}")
     public ResponseEntity<ResponseDTO> getVideoById(@PathVariable String videoId) {
         try {
