@@ -7,6 +7,7 @@ import com.team.teamreadioserver.post.entity.Post;
 import com.team.teamreadioserver.post.entity.PostImg;
 import com.team.teamreadioserver.post.repository.PostImgRepository;
 import com.team.teamreadioserver.post.repository.PostRepository;
+import com.team.teamreadioserver.profile.entity.Profile;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -55,13 +56,20 @@ public class PostService {
     }
 
     @Transactional
-    public Object CreatePost(PostRequestDTO postRequestDTO, List<MultipartFile> multipartFile) {
+    public Object CreatePost(PostRequestDTO postRequestDTO, List<MultipartFile> multipartFile, Profile userProfile) {
 
         System.out.println(postRequestDTO);
         System.out.println(multipartFile);
-        Post CreatePost = modelMapper.map(postRequestDTO, Post.class);
 
-        Post savedPost = postRepository.save(CreatePost);
+        Post newPost = modelMapper.map(postRequestDTO, Post.class);
+
+        if (userProfile != null) {
+            newPost.setProfile(userProfile); // Post 엔티티에 setProfile(Profile profile) 메소드가 있다고 가정합니다.
+        } else {
+            System.err.println("주의: CreatePost 서비스에 userProfile이 null로 전달되었습니다. 컨트롤러에서 처리되었어야 합니다.");
+        }
+
+        Post savedPost = postRepository.save(newPost);
 
         ClassPathResource resource = new ClassPathResource("post");
         String staticPath;

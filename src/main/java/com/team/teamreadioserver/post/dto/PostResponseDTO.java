@@ -1,6 +1,7 @@
 package com.team.teamreadioserver.post.dto;
 
 import com.team.teamreadioserver.post.entity.Post;
+import com.team.teamreadioserver.profile.entity.Profile;
 import lombok.*;
 
 import java.util.Date;
@@ -17,7 +18,7 @@ public class PostResponseDTO {
     private String postContent;
     private String bookIsbn;
     private Date postCreatedDate;
-    private int profileId;
+    private Profile profileId;
     private int postReported;
     private String postHidden;
     private PostImgDTO postImg;

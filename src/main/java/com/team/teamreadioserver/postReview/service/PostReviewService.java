@@ -1,8 +1,6 @@
 package com.team.teamreadioserver.postReview.service;
 
 import com.team.teamreadioserver.common.common.Criteria;
-import com.team.teamreadioserver.post.dto.PostRequestDTO;
-import com.team.teamreadioserver.post.dto.PostResponseDTO;
 import com.team.teamreadioserver.post.entity.Post;
 import com.team.teamreadioserver.post.repository.PostRepository;
 import com.team.teamreadioserver.postReview.dto.PostReviewRequestDTO;
@@ -11,19 +9,18 @@ import com.team.teamreadioserver.postReview.entity.PostReview;
 import com.team.teamreadioserver.postReview.repository.PostReviewRepository;
 import com.team.teamreadioserver.profile.entity.Profile;
 import com.team.teamreadioserver.profile.repository.ProfileRepository;
-import io.swagger.v3.oas.annotations.Operation;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import org.springframework.data.domain.Pageable;
-import java.text.SimpleDateFormat;
+
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,47 +36,52 @@ public class PostReviewService {
     private final ModelMapper modelMapper;
 
     @Transactional
-    public Object insertPostReview(PostReviewRequestDTO postReviewRequestDTO, Integer postId) {
+    public Object insertPostReview(PostReviewRequestDTO postReviewRequestDTO, Integer postId, Profile authenticatedUserProfile) {
 
-        Integer profileIdFromDto = postReviewRequestDTO.getProfileId();
-        Integer profileIdToUse;
+        // 1. 전달받은 authenticatedUserProfile 유효성 검증 (컨트롤러에서 이미 했겠지만, 서비스에서도 방어적 코딩)
+        if (authenticatedUserProfile == null || authenticatedUserProfile.getProfileId() == null) {
+            log.error("[insertPostReview] 리뷰 작성자 프로필 정보(authenticatedUserProfile)가 유효하지 않습니다. profileId: {}",
+                    authenticatedUserProfile != null ? authenticatedUserProfile.getProfileId() : "null");
 
-        if (profileIdFromDto == null || profileIdFromDto == 0) {
-            log.warn("DTO로 전달된 profileId가 없거나 유효하지 않아 임시 ID '1'로 설정합니다. (DTO profileId: {})", profileIdFromDto);
-            profileIdToUse = 1; // <<--- 임시로 사용할 profileId
-        } else {
-            profileIdToUse = profileIdFromDto;
+            throw new IllegalArgumentException("리뷰 작성자 정보를 확인할 수 없습니다. (Profile 정보 누락)");
         }
-        log.info("리뷰 등록에 사용될 최종 Profile ID: {}", profileIdToUse);
-
-        int result = 0;
+        log.info("리뷰 등록 시작 - Post ID: {}, Reviewer Profile ID: {}", postId, authenticatedUserProfile.getProfileId());
 
         try {
-            Post post = postRepository.findById(postId)
-                    .orElseThrow(() -> new IllegalArgumentException("해당 게시물을 찾을 수 없습니다. id=" + postId));
+            // 2. 리뷰를 작성할 대상 게시물(Post) 조회
+            Post reviewedPost = postRepository.findById(postId)
+                    .orElseThrow(() -> {
+                        log.warn("[insertPostReview] 리뷰 대상 게시물을 찾을 수 없습니다. postId={}", postId);
+                        return new EntityNotFoundException("리뷰를 작성할 게시글을 찾을 수 없습니다: " + postId);
+                    });
 
-            Profile profile = profileRepository.findById(Long.valueOf(profileIdToUse))
-                    .orElseThrow(() -> new IllegalArgumentException("해당 프로필을 찾을 수 없습니다. id=" + postReviewRequestDTO.getProfileId()));
+            // 3. PostReviewRequestDTO를 PostReview 엔티티로 매핑
+            PostReview newReview = modelMapper.map(postReviewRequestDTO, PostReview.class);
 
-            PostReview postReview = modelMapper.map(postReviewRequestDTO, PostReview.class);
+            // 4. PostReview 엔티티에 주요 정보 설정
+            newReview.setPost(reviewedPost);
+            newReview.setProfile(authenticatedUserProfile);
+            newReview.setPostReviewDate(new Date());
 
-            postReview.setPostReviewDate(new Date());
-            postReview.setPost(post);
-            postReview.setProfile(profile);
+            // 5. PostReview 엔티티 저장
+            PostReview savedReview = postReviewRepository.save(newReview);
+            log.info("리뷰 저장 성공 - Review ID: {}, Post ID: {}, Reviewer Profile ID: {}",
+                    savedReview.getPostReviewId(), postId, authenticatedUserProfile.getProfileId());
 
-            postReviewRepository.save(postReview);
+            // 6. 성공 응답 반환 (예: 생성된 리뷰의 ID나 간단한 DTO 반환)
+            return "리뷰 입력 성공 (리뷰 ID: " + savedReview.getPostReviewId() + ")";
 
-            result = 1;
+        } catch (EntityNotFoundException enfe) {
+            log.warn("[insertPostReview] 엔티티 조회 실패: {}", enfe.getMessage());
+            throw enfe;
         } catch (IllegalArgumentException iae) {
-            log.error("[postReview insert] 잘못된 인자: {}", iae.getMessage(), iae);
+            log.warn("[insertPostReview] 잘못된 인자: {}", iae.getMessage());
             throw iae;
         } catch (Exception e) {
-            log.error("[postReview insert] Exception!! postId: {}, requestDTO: {}", postId, postReviewRequestDTO, e);
-            // 서비스 레벨에서 처리할 수 없는 예외는 다시 던져서 롤백 및 상위에서 처리
-            throw new RuntimeException("리뷰 저장 중 예상치 못한 오류가 발생했습니다.", e);
+            log.error("[insertPostReview] 리뷰 저장 중 예상치 못한 오류 발생! Post ID: {}, RequestDTO: {}, Profile ID: {}",
+                    postId, postReviewRequestDTO, authenticatedUserProfile.getProfileId(), e);
+            throw new RuntimeException("리뷰 저장 중 오류가 발생했습니다. 다시 시도해주세요.", e);
         }
-
-        return (result > 0 ) ? "리뷰 입력 성공" : "리뷰 입력 실패";
     }
 
     public long selectPostReviewTotal(int postId) {
@@ -100,21 +102,21 @@ public class PostReviewService {
         return postReviews.stream().map(postReview -> modelMapper.map(postReview, PostReviewResponseDTO.class)).collect(Collectors.toList());
     }
 
-    @Transactional
-    public Object updatePostReview(PostReviewRequestDTO postReviewRequestDTO) {
-        int result = 0;
-
-        try {
-            PostReview postReview = postReviewRepository.findById(postReviewRequestDTO.getPostReviewId()).get();
-            postReview.setPostReviewContent(postReviewRequestDTO.getPostReviewContent());
-
-            result = 1;
-        } catch (Exception e) {
-            log.error("[updatePostReview] Exception!!");
-        }
-
-        return (result > 0 ) ? "리뷰 수정 성공" : "리뷰 수정 실패";
-    }
+//    @Transactional
+//    public Object updatePostReview(PostReviewRequestDTO postReviewRequestDTO) {
+//        int result = 0;
+//
+//        try {
+//            PostReview postReview = postReviewRepository.findById(postReviewRequestDTO.getPostReviewId()).get();
+//            postReview.setPostReviewContent(postReviewRequestDTO.getPostReviewContent());
+//
+//            result = 1;
+//        } catch (Exception e) {
+//            log.error("[updatePostReview] Exception!!");
+//        }
+//
+//        return (result > 0 ) ? "리뷰 수정 성공" : "리뷰 수정 실패";
+//    }
 
     @Transactional
     public void deletePostReview(int reviewId) {
