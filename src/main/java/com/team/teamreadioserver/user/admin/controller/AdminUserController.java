@@ -38,7 +38,7 @@ public class AdminUserController {
 
   // 회원목록 조회
   @Operation(summary = "회원목록조회" , description = "회원목록 확인이 가능하다.")
-  @GetMapping("/users/listt")
+  @GetMapping("/users/list")
   public ResponseEntity<List<AdminUserViewDTO>> getAdminUserList() {
     List<AdminUserViewDTO> userList = adminUserService.getAdminUserList();
     return ResponseEntity.ok(userList);
