@@ -61,7 +61,7 @@ public class ProfileService {
             String originalName = image.getOriginalFilename();
             String extension = originalName.substring(originalName.lastIndexOf("."));
             String saveName = user.getUserId() + "_IMG" + extension;
-            String saveFolder = new File("src/main/resources/static/img").getAbsolutePath();
+            String saveFolder = new File("src/main/resources/static/img/profile").getAbsolutePath();
             String savePath = saveFolder + File.separator + saveName;
 
             try {
@@ -106,7 +106,7 @@ public class ProfileService {
                 .penName(profile.getPenName())
                 .biography(profile.getBiography())
                 .isPrivate(profile.getIsPrivate().name())
-                .imageUrl(img != null ? "/img/" + img.getSaveName() : null)
+                .imageUrl(img != null ? "/img/profile/" + img.getSaveName() : null)
                 .build();
     }
 
@@ -151,7 +151,7 @@ public class ProfileService {
         profileImgRepository.delete(img);
 
         // 실제 파일 삭제
-        String path = "src/main/resources/static/img/" + img.getSaveName();
+        String path = "src/main/resources/static/img/profile/" + img.getSaveName();
         File file = new File(path);
         if (file.exists()) {
             boolean deleted = file.delete();
@@ -172,7 +172,7 @@ public class ProfileService {
 
         profileImgRepository.delete(img);
 
-        String path = "src/main/resources/static/img/" + img.getSaveName();
+        String path = "src/main/resources/static/img/profile/" + img.getSaveName();
         File file = new File(path);
         if (file.exists()) {
             if (file.delete()) {

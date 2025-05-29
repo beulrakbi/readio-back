@@ -3,6 +3,7 @@ package com.team.teamreadioserver.config;
 import com.team.teamreadioserver.user.auth.jwt.JwtAuthenticationFilter;
 import com.team.teamreadioserver.user.auth.jwt.JwtTokenProvider;
 import com.team.teamreadioserver.user.auth.service.CustomUserDetailsService;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -10,6 +11,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -33,42 +35,50 @@ public class SecurityConfig {
     this.passwordEncoder = passwordEncoder;
   }
 
-  @Bean
-  public DaoAuthenticationProvider authenticationProvider() {
-    DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-    authProvider.setUserDetailsService(userDetailsService);
-    authProvider.setPasswordEncoder(passwordEncoder); // 필수설정~ 비밀번호 비교
-    return authProvider;
-  }
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder); // 필수설정~ 비밀번호 비교
+        return authProvider;
+    }
 
-  @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
-    http
-        .cors(cors -> cors.configurationSource(corsConfigurationSource))
-//        .and() (삭제) 람다에선 필요없음
-        .csrf(csrf -> csrf.disable())
-        .authenticationProvider(authenticationProvider())
-        .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers("/users/login", "/users/join/**", "/video/**", "/curation/**", "/img/**").permitAll()  // 인증 필요없는 경로
-                .requestMatchers(HttpMethod.GET, "/api/user/interests/categories", "/api/user/interests/keywords").permitAll()
-                .requestMatchers("/api/user/**").authenticated()
-                .requestMatchers(
-                    "/",
-                    "/swagger-ui/**",
-                    "/swagger-ui.html",
-                    "/v3/api-docs/**",
-                    "/v3/api-docs.yaml",
-                    "/swagger-resources/**",
-                    "/webjars/**"
-                ).permitAll()
-            .requestMatchers("/admin/**").permitAll()// 관리자 관련 경로 오픈(로그인 안하고 테스트할때 주석 풀고 사용하세요)
-//                .requestMatchers("/admin", "/admin/**").hasRole("ADMIN") // 관리자 관련 경로(admin으로 로그인해야만 경로에 접근 가능)
-                .anyRequest().authenticated()   // 그 외는 모두 로그인 필요
-        )
-        // JwtSecurityConfig 부분이랑 동일한 역할_JwtAuthenticationFilter를 SecurityFilterChain 안에서 등록
-        .addFilterBefore(new JwtAuthenticationFilter(tokenProvider, userDetailsService),
-            UsernamePasswordAuthenticationFilter.class);
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring()
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
+                .requestMatchers("/img/**");
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
+        http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
+//              .and() (삭제) 람다식에선 필요없음
+                .csrf(csrf -> csrf.disable())
+                .authenticationProvider(authenticationProvider())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/users/login", "/users/join/**", "/video/**", "/curation/**", "/img/**").permitAll()  // 인증 필요없는 경로
+                        .requestMatchers(HttpMethod.GET, "/api/user/interests/categories", "/api/user/interests/keywords").permitAll()
+
+                        .requestMatchers("/api/user/**").authenticated()
+                        .requestMatchers(
+                                "/",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**",
+                                "/v3/api-docs.yaml",
+                                "/swagger-resources/**",
+                                "/webjars/**"
+                        ).permitAll()
+                        .requestMatchers("/admin/**").permitAll()// 관리자 관련 경로
+//                        .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자 관련 경로
+                        .anyRequest().authenticated()   // 그 외는 모두 로그인 필요
+                )
+                // JwtSecurityConfig 부분이랑 동일한 역할_JwtAuthenticationFilter를 SecurityFilterChain 안에서 등록
+                .addFilterBefore(new JwtAuthenticationFilter(tokenProvider, userDetailsService),
+                        UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }

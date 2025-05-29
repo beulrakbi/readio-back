@@ -1,16 +1,15 @@
 package com.team.teamreadioserver.video.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Entity
 @Table(name = "curation_keywords")
 @Getter
+@Setter
 @ToString
 @RequiredArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class CurationKeywords {
 
     @Id
@@ -18,9 +17,10 @@ public class CurationKeywords {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int curationId;
 
+    @EqualsAndHashCode.Include
     @Column(name = "keyword")
     private String keyword;
 
-    @Column(name = "type")
-    private String type;
+    @Column(name = "type_id")
+    private int typeId;
 }

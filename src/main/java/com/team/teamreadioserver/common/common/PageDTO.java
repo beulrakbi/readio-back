@@ -35,7 +35,7 @@ public class PageDTO {
         this.prev = this.pageStart > 1;
 
         /* 설명. 다음 버튼 값 초기화 */
-        this.next = this.pageEnd < realEnd;
+        this.next = cri.getPageNum() < realEnd;
     }
 
     public int getPageStart() {

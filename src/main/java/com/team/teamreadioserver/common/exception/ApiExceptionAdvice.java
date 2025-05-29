@@ -1,6 +1,6 @@
 package com.team.teamreadioserver.common.exception;
 
-import com.ohgiraffers.jwtrestapi.exception.dto.ApiExceptionDTO;
+import com.team.teamreadioserver.common.exception.dto.ApiExceptionDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

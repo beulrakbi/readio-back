@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface CurationKeywordsRepository extends JpaRepository<CurationKeywords, Integer> {
 
-    List<CurationKeywords> findByType(String type);
+    List<CurationKeywords> findByTypeIdOrderByTypeId(int typeId);
 
 }
