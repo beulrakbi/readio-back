@@ -76,3 +76,5 @@ public class VideoBookmarkService {
         return videoBookmarkRepository.countByVideoId(videoId);
     }
 }
+
+// 커밋용 주석
