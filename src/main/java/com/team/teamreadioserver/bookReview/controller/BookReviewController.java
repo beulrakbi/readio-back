@@ -23,8 +23,6 @@ import java.util.List;
 public class BookReviewController {
 
     @Autowired
-    private BookReviewRepository bookReviewRepository;
-    @Autowired
     private BookReviewService bookReviewService;
 
     @Operation(summary = "리뷰 등록", description = "리뷰를 등록합니다.")
@@ -35,7 +33,7 @@ public class BookReviewController {
     }
 
     @Operation(summary = "리뷰 신고 등록", description = "리뷰를 신고합니다.")
-    @PutMapping("/reviews/{reviewId}/report")
+    @PutMapping("/{reviewId}/report")
     public ResponseEntity<Void> report(@PathVariable Integer reviewId) {
         bookReviewService.reportReview(reviewId);
         return ResponseEntity.ok().build();
@@ -52,7 +50,6 @@ public class BookReviewController {
     @GetMapping("/{bookIsbn}")
     public ResponseEntity<ResponseDTO> getAllBookReviews(@PathVariable String bookIsbn)
     {
-        System.out.println("책리뷰:" + bookReviewService.getBookReviewByBookIsbn(bookIsbn));
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "리뷰 조회 성공", bookReviewService.getBookReviewByBookIsbn(bookIsbn)));
     }
 
