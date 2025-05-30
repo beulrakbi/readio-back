@@ -69,7 +69,7 @@ public class VideoController {
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "비디오 검색 성공", result));
     }
 
-    // 영상 상세페이지
+    // 영상 상세페이지 조회
     @Operation(summary = "해당 비디오 조회", description = "videoId로 DB 에서 비디오 정보 조회", tags = { "VideoController" })
     @GetMapping("/id/{videoId}")
     public ResponseEntity<ResponseDTO> getVideoById(@PathVariable String videoId) {
@@ -81,6 +81,21 @@ public class VideoController {
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ResponseDTO(HttpStatus.NOT_FOUND, e.getMessage(), null));
+        }
+    }
+
+    @Operation(summary = "조회수 1 증가", description = "영상 재생 시작 시 조회수 1 증가", tags = { "VideoController" })
+    @PostMapping("/id/{videoId}")
+    public ResponseEntity<ResponseDTO> addView(@PathVariable String videoId){
+        try {
+            videoService.increaseViewCount(videoId);
+            return ResponseEntity.ok(
+                    new ResponseDTO(null, "조회수 증가 성공", null)
+            );
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new ResponseDTO(null, e.getMessage(), null));
         }
     }
 }

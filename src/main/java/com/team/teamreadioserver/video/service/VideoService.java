@@ -32,7 +32,7 @@ public class VideoService {
             videoDTO.setTitle(cleanText);
 
 
-            Video video = new Video(videoDTO.getVideoId(), videoDTO.getTitle(), videoDTO.getChannelTitle(), videoDTO.getDescription(), videoDTO.getThumbnail());
+            Video video = new Video(videoDTO.getVideoId(), videoDTO.getTitle(), videoDTO.getChannelTitle(), videoDTO.getDescription(), videoDTO.getThumbnail(), 0, videoDTO.getUploadDate());
             if (!videoRepository.existsById(videoDTO.getVideoId())) {
                 videoRepository.save(video);
                 result++;
@@ -106,5 +106,14 @@ public class VideoService {
         // HTML 이스케이프 제거 등 후처리
         videoDTO.setTitle(StringEscapeUtils.unescapeHtml4(videoDTO.getTitle()));
         return videoDTO;
+    }
+
+    // 영상 상세페이지 => 영상 재생시 조회수 증가 메서드
+    @Transactional
+    public void increaseViewCount(String videoId) {
+        int updated = videoRepository.incrementViewCount(videoId);
+        if(updated == 0) {
+            throw new IllegalArgumentException("존재하지 않는 videoId : " + videoId);
+        }
     }
 }
