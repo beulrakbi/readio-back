@@ -59,7 +59,7 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/users/login", "/users/join/**", "/video/**", "/curation/**", "/img/**").permitAll()  // 인증 필요없는 경로
+                        .requestMatchers("/users/login", "/users/join/**", "/video/**", "/curation/**", "/img/**", "/api/clicks/**").permitAll()  // 인증 필요없는 경로
                         .requestMatchers(HttpMethod.GET, "/api/user/interests/categories", "/api/user/interests/keywords").permitAll()
 
                         .requestMatchers("/api/user/**").authenticated()
@@ -72,8 +72,9 @@ public class SecurityConfig {
                                 "/swagger-resources/**",
                                 "/webjars/**"
                         ).permitAll()
-                        .requestMatchers("/admin/**","api/admin/").permitAll()       // 관리자 관련 경로(권한 풀고 테스트하면 403뜨는게 정상임 )
-//                       .requestMatchers("/admin/**","api/admin/").hasRole("ADMIN")   // 관리자 관련 경로(주석 해제시 해당경로는 관리자로 로그인해야 보임)
+                        .requestMatchers("/admin/**","/api/admin/**").permitAll()       // 관리자 관련 경로(권한 풀고 테스트하면 403뜨는게 정상임 )
+
+//                       .requestMatchers("/admin/**").hasRole("ADMIN")   // 관리자 관련 경로(주석 해제시 해당경로는 관리자로 로그인해야 보임)
                         .anyRequest().authenticated()   // 그 외는 모두 로그인 필요
                 )
                 // JwtSecurityConfig 부분이랑 동일한 역할_JwtAuthenticationFilter를 SecurityFilterChain 안에서 등록
