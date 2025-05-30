@@ -21,4 +21,7 @@ public class ClickLogController {
         clickLogService.saveClick(dto);
         return ResponseEntity.ok().build();
     }
+
+
+
 }
