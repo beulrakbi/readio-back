@@ -22,7 +22,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/post")
+@RequestMapping("/mylibrary")
 @CrossOrigin(origins = "http://localhost:5173", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS}, allowedHeaders = "*", allowCredentials = "true")
 public class PostController {
 
@@ -31,13 +31,13 @@ public class PostController {
     private final ProfileRepository profileRepository;
 
     @Operation(summary = "포스트 조회 요청", description = "포스트 조회가 진행됩니다.", tags = {"PostController"})
-    @GetMapping("/{postId}")
+    @GetMapping("/post/{postId}")
     public ResponseEntity<ResponseDTO> getPostDetail(@PathVariable int postId) {
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "상품 상세정보 조회 성공", postService.getPostDetail(postId)));
     }
 
     @Operation(summary = "포스트 등록 요청", description = "포스트 등록이 진행됩니다.", tags = {"PostController"})
-    @PostMapping("/writing")
+    @PostMapping("/post/writing")
     public ResponseEntity<ResponseDTO> createPost(@ModelAttribute PostRequestDTO postRequestDTO,
                                                   @RequestPart(value = "postImage", required = false) List<MultipartFile> multipartFile,
                                                   @AuthenticationPrincipal UserDetails userDetails) {
@@ -92,14 +92,14 @@ public class PostController {
     }
 
     @Operation(summary = "포스트 수정 요청", description = "포스트 수정이 진행됩니다.", tags = {"PostController"})
-    @PutMapping("/modify")
+    @PutMapping("/post/modify")
     public ResponseEntity<ResponseDTO> updatePost(@ModelAttribute PostRequestDTO postRequestDTO) {
 
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "포스트 수정 완료", postService.UpdatePost(postRequestDTO)));
     }
 
     @Operation(summary = "포스트 삭제 요청", description = "포스트 삭제가 진행됩니다.", tags = {"PostController"})
-    @DeleteMapping("/delete/{postId}")
+    @DeleteMapping("/post/delete/{postId}")
     public ResponseEntity<ResponseDTO> deletePost(@PathVariable int postId) {
 
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "포스트 삭제 완료", postService.DeletePost(postId)));
