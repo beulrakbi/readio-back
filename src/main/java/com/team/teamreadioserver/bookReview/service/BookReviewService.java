@@ -1,6 +1,7 @@
 package com.team.teamreadioserver.bookReview.service;
 
 import com.team.teamreadioserver.bookReview.dto.AllReviewResponseDTO;
+import com.team.teamreadioserver.bookReview.dto.BookReviewDTO;
 import com.team.teamreadioserver.bookReview.dto.MyReviewResponseDTO;
 import com.team.teamreadioserver.bookReview.dto.ReviewRequestDTO;
 import com.team.teamreadioserver.bookReview.entity.BookReview;
@@ -8,10 +9,12 @@ import com.team.teamreadioserver.bookReview.entity.ReviewLike;
 import com.team.teamreadioserver.bookReview.repository.BookReviewRepository;
 import com.team.teamreadioserver.bookReview.repository.LikesRepository;
 import jakarta.transaction.Transactional;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BookReviewService {
@@ -19,6 +22,8 @@ public class BookReviewService {
     private BookReviewRepository bookReviewRepository;
     @Autowired
     private LikesRepository likesRepository;
+    @Autowired
+    private ModelMapper modelMapper;
 
     //리뷰 등록
     public void addBookReview(ReviewRequestDTO reviewRequestDTO) {
@@ -89,6 +94,13 @@ public class BookReviewService {
     //리뷰 좋아요 카운트
     public Integer getLikesCount(Integer reviewId){
         return likesRepository.countLikesByReviewId(reviewId);
+    }
+
+    //책별 리뷰 조회
+    public List<BookReviewDTO> getBookReviewByBookIsbn(String bookIsbn){
+        List<BookReview> foundBookReviews = bookReviewRepository.findByBookIsbn(bookIsbn);
+        System.out.println("어쩌구" + foundBookReviews.stream().map(review -> modelMapper.map(review, BookReviewDTO.class)).collect(Collectors.toList()));
+        return foundBookReviews.stream().map(review -> modelMapper.map(review, BookReviewDTO.class)).collect(Collectors.toList());
     }
 
 }
