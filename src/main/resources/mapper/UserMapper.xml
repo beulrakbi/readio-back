@@ -96,4 +96,17 @@
         WHERE user_id = #{userId}
     </select>
 
+    <!--아이디/비밀번호 찾기-->
+    <select id="findIdByNameAndPhone" resultType="string">
+            SELECT user_id FROM user WHERE user_name = #{name} AND user_phone = #{phone}
+    </select>
+
+    <select id="findPwdByIdAndEmail" resultType="string">
+            SELECT user_id FROM user WHERE user_id = #{userId} AND user_email = #{email}
+    </select>
+
+    <update id="updatePassword">
+            UPDATE user SET user_pwd = #{newPassword} WHERE user_id = #{userId}
+    </update>
+
 </mapper>

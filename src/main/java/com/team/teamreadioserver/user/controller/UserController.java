@@ -134,6 +134,36 @@ public class UserController {
 
 
 
+  @GetMapping("/findId")
+  public ResponseEntity<?> findId(@RequestParam String name, @RequestParam String phone) {
+    String id = userService.findId(name, phone);
+    return id != null ? ResponseEntity.ok(id) : ResponseEntity.status(404).body("아이디 없음");
+  }
+
+  @PostMapping("/sendCode")
+  public ResponseEntity<?> sendCode(@RequestBody Map<String, String> req) {
+    String email = req.get("email");
+    String code = String.valueOf((int)(Math.random() * 900000) + 100000);
+    // 임시로 Redis/DB에 code 저장하고 이메일 발송
+    // 실제 구현은 EmailService 호출
+    return ResponseEntity.ok(code);
+  }
+
+  @PostMapping("/verifyUser")
+  public ResponseEntity<?> verifyUser(@RequestBody Map<String, String> req) {
+    boolean valid = userService.verifyUserForPwdReset(req.get("userId"), req.get("email"));
+    return valid ? ResponseEntity.ok("유효") : ResponseEntity.status(404).body("정보 불일치");
+  }
+
+  @PostMapping("/resetPassword")
+  public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> req) {
+    userService.resetPassword(req.get("userId"), req.get("newPassword"));
+    return ResponseEntity.ok("비밀번호 재설정 완료");
+  }
+
+
+
+
 
   @GetMapping("/test")
   public String test() {
