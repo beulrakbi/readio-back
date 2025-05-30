@@ -9,6 +9,7 @@ import com.team.teamreadioserver.qna.entity.Qna;
 import com.team.teamreadioserver.qna.repository.QnaRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -93,5 +94,11 @@ public class QnaService {
                 .collect(Collectors.toList());
     }
 
-
+    public List<QnaResponseDTO> getMyQnaList() {
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<Qna> myQnaList = qnaRepository.findByUserId(userId);
+        return myQnaList.stream()
+                .map(QnaResponseDTO::fromEntity)
+                .collect(Collectors.toList());
+    }
 }

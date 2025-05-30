@@ -90,4 +90,17 @@ public class UserService {
     return userMapper.updateUser(userEditRequestDTO);
   }
 
+  public String findId(String userName, String userPhone) {
+    return userMapper.findIdByNameAndPhone(userName, userPhone);
+  }
+
+  public boolean verifyUserForPwdReset(String userId, String userEmail) {
+    return userMapper.findPwdByIdAndEmail(userId, userEmail) != null;
+  }
+
+  public void resetPassword(String userId, String newPassword) {
+    String hashedPwd = passwordEncoder.encode(newPassword);
+    userMapper.updatePassword(userId, hashedPwd);
+  }
+
 }
