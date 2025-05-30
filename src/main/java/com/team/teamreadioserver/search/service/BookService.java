@@ -6,6 +6,7 @@ import com.team.teamreadioserver.search.dto.BooksDTO;
 import com.team.teamreadioserver.search.entity.Book;
 import com.team.teamreadioserver.search.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,7 @@ public class BookService {
 
     private final BookRepository bookRepository;
     private final ExternalBookApiClient externalClient;
+    private final ModelMapper modelMapper;
 
     @Transactional
     public BooksDTO searchBooks(String keyword, int page, int size) {
@@ -104,5 +106,11 @@ public class BookService {
                 .bookDescription(bookDTO.getBookDescription())
                 .bookPubdate(pubDate)
                 .build();
+    }
+
+    public BookDTO selectBook(String bookIsbn) {
+
+        return modelMapper.map(bookRepository.findById(bookIsbn), BookDTO.class);
+
     }
 }
