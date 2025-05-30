@@ -15,4 +15,7 @@ public interface QnaRepository extends JpaRepository<Qna,Integer> {
     List<Qna> findAllByOrderByQnaCreateAtDesc();
 
     List<Qna> findByQnaTitleContainingIgnoreCase(String faqTitle);
+
+    List<Qna> findByUserId(String userId);
+
 }
