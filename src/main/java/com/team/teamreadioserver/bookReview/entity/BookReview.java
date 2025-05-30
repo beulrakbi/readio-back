@@ -52,4 +52,7 @@ public class BookReview {
     public void report() {
         this.reportedCount++;
     }
+    public void hide() {
+        this.isHidden = IsHidden.Y;
+    }
 }
