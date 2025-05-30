@@ -9,9 +9,9 @@ import java.util.Optional;
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
 
     Optional<Profile> findByUser_UserId(String userId);
-
     // 필명 중복 확인용 (기본 필명 생성시 필요)
     boolean existsByPenName(String penName);
 
+    Profile findByProfileId(Integer profileId);
 
 }
