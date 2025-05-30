@@ -1,4 +1,4 @@
-package com.team.readioserver.post.dto;
+package com.team.readioserver.faq.service;
 
 public class a {
     public static void main(String[] args) {

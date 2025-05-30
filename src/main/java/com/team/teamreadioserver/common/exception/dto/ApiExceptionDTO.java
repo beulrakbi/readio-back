@@ -1,4 +1,4 @@
-package com.ohgiraffers.jwtrestapi.exception.dto;
+package com.team.teamreadioserver.common.exception.dto;
 
 import org.springframework.http.HttpStatus;
 

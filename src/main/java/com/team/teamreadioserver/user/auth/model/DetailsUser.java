@@ -16,7 +16,7 @@ public class DetailsUser implements UserDetails {
         this.user = user;
     }
 
-    private User getUser() {
+    public User getUser() {
         return user;
     }
 

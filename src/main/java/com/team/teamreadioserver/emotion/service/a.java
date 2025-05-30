@@ -1,4 +1,4 @@
-package com.team.readioserver.post.controller;
+package com.team.readioserver.emotion.service;
 
 public class a {
     public static void main(String[] args) {
