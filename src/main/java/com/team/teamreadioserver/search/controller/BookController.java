@@ -5,17 +5,15 @@ import com.team.teamreadioserver.search.dto.BooksDTO;
 import com.team.teamreadioserver.search.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Slf4j
 @RestController
 @RequestMapping("/search")
-@CrossOrigin(origins = {"http://localhost:5173","http://localhost:5174"})  // 프론트 도메인만 허용
+@CrossOrigin(origins = {"http://localhost:5173","http://localhost:5174"})
 @RequiredArgsConstructor
 public class BookController {
 
@@ -28,7 +26,7 @@ public class BookController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        log.info("[BookController] do searchBooks: query={}, page={}, size={}", query, page, size);
+
         if (query.isBlank()) {
             // 검색어 없으면 빈 결과 내보내기
             BooksDTO empty = new BooksDTO(List.of(), 0);

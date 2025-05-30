@@ -2,6 +2,7 @@ package com.team.teamreadioserver.video.repository;
 
 import com.team.teamreadioserver.video.entity.Video;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -18,5 +19,9 @@ public interface VideoRepository extends JpaRepository<Video, String> {
 
     Set<Video> findAllByDescriptionContaining(String search);
     Set<Video> findAllByTitleContaining(String search);
+
+    @Modifying
+    @Query("UPDATE Video v SET v.viewCount = v.viewCount + 1 WHERE v.videoId = :id")
+    int incrementViewCount(@Param("id") String videoId);
 
 }

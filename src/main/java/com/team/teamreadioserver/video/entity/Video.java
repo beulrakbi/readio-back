@@ -3,6 +3,7 @@ package com.team.teamreadioserver.video.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
 import java.util.Objects;
 
 @Entity
@@ -30,6 +31,12 @@ public class Video {
 
     @Column(name = "thumbnail")
     private String thumbnail;
+
+    @Column(name = "view_count")
+    private int viewCount;
+
+    @Column(name = "upload_date")
+    private Date uploadDate;
 
 
 }

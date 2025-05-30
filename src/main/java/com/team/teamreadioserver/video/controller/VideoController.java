@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/video")
@@ -57,11 +58,44 @@ public class VideoController {
 
     @Operation(summary = "비디오 검색", description = "비디오가 검색됩니다.", tags = { "VideoController" })
     @GetMapping("/query/{search}")
-    public ResponseEntity<ResponseDTO> searchVideoByKeyword(@PathVariable String search)
+    public ResponseEntity<ResponseDTO> searchVideoByKeyword(
+            @PathVariable String search,
+            @RequestParam(name="page", defaultValue="1") int page,    // ← 추가: 페이지 번호
+            @RequestParam(name="size", defaultValue="10") int size
+    )
     {
         log.info("[VideoController] searchVideoByKeyword");
-        VideosDTO result = videoService.searchVideos(search);
+        VideosDTO result = videoService.searchVideos(search, page, size);
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "비디오 검색 성공", result));
     }
 
+    // 영상 상세페이지 조회
+    @Operation(summary = "해당 비디오 조회", description = "videoId로 DB 에서 비디오 정보 조회", tags = { "VideoController" })
+    @GetMapping("/id/{videoId}")
+    public ResponseEntity<ResponseDTO> getVideoById(@PathVariable String videoId) {
+        try {
+            VideoDTO videoDTO = videoService.getVideoById(videoId);
+            return ResponseEntity.ok(
+                    new ResponseDTO(HttpStatus.OK, "해당 비디오 조회 성공", videoDTO)
+            );
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ResponseDTO(HttpStatus.NOT_FOUND, e.getMessage(), null));
+        }
+    }
+
+    @Operation(summary = "조회수 1 증가", description = "영상 재생 시작 시 조회수 1 증가", tags = { "VideoController" })
+    @PostMapping("/id/{videoId}")
+    public ResponseEntity<ResponseDTO> addView(@PathVariable String videoId){
+        try {
+            videoService.increaseViewCount(videoId);
+            return ResponseEntity.ok(
+                    new ResponseDTO(null, "조회수 증가 성공", null)
+            );
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new ResponseDTO(null, e.getMessage(), null));
+        }
+    }
 }

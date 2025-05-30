@@ -10,7 +10,6 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 public class BooksDTO {
-
     private List<BookDTO> books;
     private int total; // 전체 매칠된 개수
 }
