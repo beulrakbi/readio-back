@@ -90,12 +90,12 @@ public class VideoController {
         try {
             videoService.increaseViewCount(videoId);
             return ResponseEntity.ok(
-                    new ResponseDTO(null, "조회수 증가 성공", null)
+                    new ResponseDTO(HttpStatus.OK, "조회수 증가 성공", null)
             );
         } catch (IllegalArgumentException e) {
             return ResponseEntity
                     .badRequest()
-                    .body(new ResponseDTO(null, e.getMessage(), null));
+                    .body(new ResponseDTO(HttpStatus.BAD_REQUEST, e.getMessage(), null));
         }
     }
 }
