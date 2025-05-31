@@ -7,13 +7,17 @@ import com.team.teamreadioserver.postReview.dto.PostReviewRequestDTO;
 import com.team.teamreadioserver.postReview.dto.PostReviewResponseDTO;
 import com.team.teamreadioserver.postReview.entity.PostReview;
 import com.team.teamreadioserver.postReview.repository.PostReviewRepository;
+import com.team.teamreadioserver.profile.dto.ProfileResponseDTO;
 import com.team.teamreadioserver.profile.entity.Profile;
+import com.team.teamreadioserver.profile.entity.ProfileImg;
+import com.team.teamreadioserver.profile.repository.ProfileImgRepository;
 import com.team.teamreadioserver.profile.repository.ProfileRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -33,7 +37,11 @@ public class PostReviewService {
     private final PostReviewRepository postReviewRepository;
     private final PostRepository postRepository;
     private final ProfileRepository profileRepository;
+    private final ProfileImgRepository profileImgRepository;
     private final ModelMapper modelMapper;
+
+    @Value("http://localhost:8080/img/profile/")
+    private String imgUrl;
 
     @Transactional
     public Object insertPostReview(PostReviewRequestDTO postReviewRequestDTO, Integer postId, Profile authenticatedUserProfile) {
@@ -90,16 +98,48 @@ public class PostReviewService {
         return result;
     }
 
-    public Object selectPostReview(Criteria cri) {
+    public List<PostReviewResponseDTO> selectPostReview(Criteria cri) {
 
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
         Pageable paging = PageRequest.of(index, count, Sort.by("postReviewId"));
 
         Page<PostReview> result = postReviewRepository.findByPostPostId(Integer.valueOf(cri.getSearchValue()), paging);
-        List<PostReview> postReviews = (List<PostReview>) result.getContent();
+        List<PostReview> postReviews = result.getContent();
 
-        return postReviews.stream().map(postReview -> modelMapper.map(postReview, PostReviewResponseDTO.class)).collect(Collectors.toList());
+        return postReviews.stream().map(reviewEntity -> {
+            // 1. 기본 매핑 (PostReview 엔티티 -> PostReviewResponseDTO)
+            PostReviewResponseDTO reviewDTO = modelMapper.map(reviewEntity, PostReviewResponseDTO.class);
+
+            // 2. 리뷰 작성자(Profile) 정보 가져와서 DTO에 채우기
+            Profile authorProfileEntity = reviewEntity.getProfile();
+
+            if (authorProfileEntity != null) {
+                ProfileImg authorImgEntity = profileImgRepository.findByProfile(authorProfileEntity).orElse(null);
+                String authorImageUrl = null;
+                if (authorImgEntity != null && authorImgEntity.getSaveName() != null && !authorImgEntity.getSaveName().isEmpty()) {
+                    authorImageUrl = imgUrl + authorImgEntity.getSaveName();
+                    log.debug("[selectPostReview] Profile ID: {} 이미지 URL 설정: {}", authorProfileEntity.getProfileId(), authorImageUrl);
+                } else {
+                    log.debug("[selectPostReview] Profile ID: {} 프로필 이미지 정보 없음", authorProfileEntity.getProfileId());
+                }
+
+                // 프로필 이미지 URL 설정
+                ProfileResponseDTO profileDataForReview = ProfileResponseDTO.builder()
+                        .profileId(authorProfileEntity.getProfileId())
+                        .penName(authorProfileEntity.getPenName()) // ✨ 닉네임 설정
+                        .biography(authorProfileEntity.getBiography()) // 필요시 설정
+                        .isPrivate(authorProfileEntity.getIsPrivate() != null ? authorProfileEntity.getIsPrivate().name() : null) // 필요시 설정
+                        .imageUrl(authorImageUrl) // ✨ 이미지 URL 설정
+                        .build();
+
+                reviewDTO.setProfileId(profileDataForReview); // PostReviewResponseDTO의 profileId 필드에 설정
+            } else {
+                log.warn("[selectPostReview] Review ID: {} 에 연결된 작성자 프로필 정보가 없습니다.", reviewEntity.getPostReviewId());
+            }
+
+            return reviewDTO;
+        }).collect(Collectors.toList());
     }
 
 //    @Transactional

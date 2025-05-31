@@ -7,7 +7,11 @@ import com.team.teamreadioserver.post.entity.Post;
 import com.team.teamreadioserver.post.entity.PostImg;
 import com.team.teamreadioserver.post.repository.PostImgRepository;
 import com.team.teamreadioserver.post.repository.PostRepository;
+import com.team.teamreadioserver.profile.dto.ProfileRequestDTO;
+import com.team.teamreadioserver.profile.dto.ProfileResponseDTO;
 import com.team.teamreadioserver.profile.entity.Profile;
+import com.team.teamreadioserver.profile.entity.ProfileImg;
+import com.team.teamreadioserver.profile.repository.ProfileImgRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -30,15 +34,42 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final PostImgRepository postImgRepository;
+    private final ProfileImgRepository profileImgRepository;
     private final ModelMapper modelMapper;
 
     @Value("${image.image-url}")
     private String IMAGE_URL;
 
+    @Value("http://localhost:8080/img/profile/")
+    private String imgUrl;
+
     public Object getPostDetail(Integer postId) {
 
         Post post = postRepository.findById(postId).get();
         PostResponseDTO postResponseDTO = modelMapper.map(post, PostResponseDTO.class);
+
+        Profile profile = post.getProfile();
+        if (profile != null) {
+            ProfileImg authorImgEntity = profileImgRepository.findByProfile(profile).orElse(null);
+            String authorImageUrl = null;
+            if (authorImgEntity != null) {
+                authorImageUrl = imgUrl + authorImgEntity.getSaveName();
+            }
+
+            ProfileResponseDTO profileResponseDTO= ProfileResponseDTO.builder()
+                    .profileId(profile.getProfileId()) // Profile 엔티티의 PK
+                    .penName(profile.getPenName())     // Profile 엔티티의 penName
+                    .biography(profile.getBiography()) // Profile 엔티티의 biography
+                    .isPrivate(profile.getIsPrivate() != null ? profile.getIsPrivate().name() : null) // Enum 경우 .name()
+                    .imageUrl(authorImageUrl)
+                    .build();
+
+            postResponseDTO.setProfileId(profileResponseDTO);
+        }
+
+        if (postResponseDTO.getPostCreatedDate() == null && post.getPostCreateDate() != null) {
+            postResponseDTO.setPostCreatedDate(post.getPostCreateDate());
+        }
 
         if (post.getPostImg() != null) {
             PostImg postImg = post.getPostImg();
@@ -51,6 +82,8 @@ public class PostService {
 
             postResponseDTO.setPostImg(postImgDTO);
         }
+
+
 
         return postResponseDTO;
     }

@@ -103,6 +103,7 @@ public class ProfileService {
         img = profileImgRepository.findByProfile(profile).orElse(null);
 
         return ProfileResponseDTO.builder()
+                .profileId(profile.getProfileId())
                 .penName(profile.getPenName())
                 .biography(profile.getBiography())
                 .isPrivate(profile.getIsPrivate().name())
