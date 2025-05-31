@@ -30,11 +30,11 @@ public class VideoBookmarkController {
         return videoBookmarkService.addVideoBookmark(userId, videoBookmarkRequestDTO);
     }
 
-    @Operation(summary = "즐겨찾기 삭제", description = "즐겨찾기를 삭제하고 갱신된 총 북마크 수를 반환합니다.")
+    @Operation(summary = "즐겨찾기 삭제", description = "즐겨찾기를 삭제하고 갱신된 총 북마크 수 및 북마크 ID를 반환합니다.")
     @DeleteMapping("/delete/{bookmarkId}")
-    public long deleteVideoBookmark(
-            @PathVariable Integer bookmarkId,
-            @AuthenticationPrincipal UserDetails userDetails // Optional 제거, UserDetails로 복귀
+    public VideoBookmarkStatusResponseDTO deleteVideoBookmark( // long -> VideoBookmarkStatusResponseDTO
+                                                               @PathVariable Integer bookmarkId,
+                                                               @AuthenticationPrincipal UserDetails userDetails
     ) {
         String userId = userDetails.getUsername();
         return videoBookmarkService.deleteVideoBookmark(userId, bookmarkId);
@@ -65,4 +65,6 @@ public class VideoBookmarkController {
     public long getPublicTotalBookmarkCount(@PathVariable String videoId) {
         return videoBookmarkService.getTotalBookmarkCountOnlyForVideo(videoId); // 새로운 서비스 메서드 호출
     }
+
+
 }
