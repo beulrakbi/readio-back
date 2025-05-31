@@ -62,6 +62,9 @@ public class SecurityConfig {
 
                         .requestMatchers("/users/login", "/users/join/**", "/video/**", "/curation/**", "/img/**", "/search/**", "/bookPage/**", "/bookReview/**", "/reported/**", "/serviceCenter/**", "/videoBookmark/publicCount/**", "/bookBookmark/publicCount/**").permitAll()  // 인증 필요없는 경로
                         .requestMatchers(HttpMethod.GET, "/api/user/interests/categories", "/api/user/interests/keywords").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/serviceCenter/qna/question").authenticated() // 📝 질문 등록
+                                .requestMatchers(HttpMethod.PUT, "/serviceCenter/qna/update").authenticated()   // ✏️ 질문 수정
+                                .requestMatchers(HttpMethod.DELETE, "/serviceCenter/qna/delete/**").authenticated() // 🗑️ 질문 삭제
                                 // /videoBookmark/status/** (개인 북마크 상태 포함)는 인증 필요
                                 .requestMatchers("/videoBookmark/status/**").authenticated()
                                 .requestMatchers("/bookBookmark/status/**").authenticated()

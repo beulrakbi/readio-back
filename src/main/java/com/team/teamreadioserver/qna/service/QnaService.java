@@ -27,13 +27,21 @@ public class QnaService {
                 .build();
         qnaRepository.save(qna);
     }
-    
+
     //질문 수정
     @Transactional
     public void updateQna(QnaQuestionDTO qnaQuestionDTO) {
+        // 현재 로그인한 사용자 ID 가져오기
+        String currentUserId = SecurityContextHolder.getContext().getAuthentication().getName();
+
         Qna qna = qnaRepository.findById(qnaQuestionDTO.getQnaId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 질문이 없습니다."));
-        
+
+        // 작성자 검증
+        if (!qna.getUserId().equals(currentUserId)) {
+            throw new IllegalArgumentException("자신이 작성한 게시글만 수정할 수 있습니다.");
+        }
+
         qna.updateQuestion(
                 qnaQuestionDTO.getQnaTitle(),
                 qnaQuestionDTO.getQnaQuestion()
@@ -42,8 +50,16 @@ public class QnaService {
     //질문 삭제
     @Transactional
     public void deleteQna(Integer qnaId) {
+        // 현재 로그인한 사용자 ID 가져오기
+        String currentUserId = SecurityContextHolder.getContext().getAuthentication().getName();
+
         Qna qna = qnaRepository.findById(qnaId)
                 .orElseThrow(()-> new IllegalArgumentException("해당 질문이 없습니다."));
+
+        // 작성자 검증
+        if (!qna.getUserId().equals(currentUserId)) {
+            throw new IllegalArgumentException("자신이 작성한 게시글만 삭제할 수 있습니다.");
+        }
 
         qnaRepository.delete(qna);
     }
@@ -82,7 +98,9 @@ public class QnaService {
                 qna.getQnaTitle(),
                 qna.getQnaQuestion(),
                 qna.getQnaAnswer(),         // ✨ 답변도 함께 반환
-                qna.getQnaCreateAt()
+                qna.getQnaCreateAt(),
+                qna.getUserId() // 이 줄을 추가합니다.
+                // qna.getUserRole() // 만약 userRole을 Qna 엔티티에 저장한다면 추가
         );
     }
 
