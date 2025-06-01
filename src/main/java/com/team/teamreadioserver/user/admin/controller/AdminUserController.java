@@ -81,11 +81,15 @@ public class AdminUserController {
     List<AdminUserViewDTO> userList = adminUserService.getAdminUserList(searchDTO);
     int total = adminUserService.getAdminUserCount(searchDTO);
 
+    // totalPages 계산
+    int totalPages = (int) Math.ceil((double) total / size);
+
     Map<String, Object> result = new HashMap<>();
     result.put("users", userList);
     result.put("currentPage", page);
     result.put("pageSize", size);
     result.put("total", total);
+    result.put("totalPages", totalPages); // 추가
 
     return ResponseEntity.ok(result);
   }
