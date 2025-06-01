@@ -20,15 +20,14 @@ public interface VideoRepository extends JpaRepository<Video, String> {
 
     Set<Video> findAllByDescriptionContaining(String search);
     Set<Video> findAllByTitleContaining(String search);
-
-    @Modifying
-    @Transactional
-    @Query("UPDATE Video v SET v.bookmarkCount = v.bookmarkCount + 1 WHERE v.videoId = :videoId")
-    void incrementBookmarkCount(@Param("videoId") String videoId);
-
-    @Modifying
-    @Transactional
-    @Query("UPDATE Video v SET v.bookmarkCount = v.bookmarkCount - 1 WHERE v.videoId = :videoId AND v.bookmarkCount > 0")
-    void decrementBookmarkCount(@Param("videoId") String videoId);
+    @Query(value =
+            "SELECT v.*, COUNT(bv.bookmark_id) AS bookmarkCount " +
+                    "FROM video v " +
+                    "LEFT JOIN bookmark_video bv ON v.video_id = bv.video_id " +
+                    "WHERE v.video_id IN (:videoIds) " +
+                    "GROUP BY v.video_id " +
+                    "ORDER BY bookmarkCount DESC",
+            nativeQuery = true)
+    List<Object[]> findVideosSortedByBookmark(@Param("videoIds") List<String> videoIds);
 
 }

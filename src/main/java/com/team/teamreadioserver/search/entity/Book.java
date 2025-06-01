@@ -44,9 +44,4 @@ public class Book {
     @Column(name = "book_pubdate")
     private LocalDate bookPubdate;
 
-    @Column(name = "bookmark_count")
-    private Integer bookmarkCount;
-
-
-
 }

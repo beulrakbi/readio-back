@@ -32,9 +32,6 @@ public class Video {
     @Column(name = "thumbnail")
     private String thumbnail;
 
-    @Column(name = "bookmark_count")
-    private Integer bookmarkCount;
-
     @Column(name = "upload_date")
     private LocalDate uploadDate;
 }

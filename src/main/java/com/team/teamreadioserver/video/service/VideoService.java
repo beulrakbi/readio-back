@@ -33,7 +33,7 @@ public class VideoService {
             videoDTO.setTitle(cleanText);
 
 
-            Video video = new Video(videoDTO.getVideoId(), videoDTO.getTitle(), videoDTO.getChannelTitle(), videoDTO.getDescription(), videoDTO.getThumbnail(), 0, LocalDate.now() );
+            Video video = new Video(videoDTO.getVideoId(), videoDTO.getTitle(), videoDTO.getChannelTitle(), videoDTO.getDescription(), videoDTO.getThumbnail(), LocalDate.now());
             if (!videoRepository.existsById(videoDTO.getVideoId())) {
                 videoRepository.save(video);
                 result++;

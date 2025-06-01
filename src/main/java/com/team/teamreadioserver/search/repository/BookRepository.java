@@ -21,15 +21,15 @@ public interface BookRepository extends JpaRepository<Book, String> {
     // DB 에 존재하는 ISBN 인지 확인
     List<Book> findAllByBookIsbnIn(List<String> isbns);
 
-    @Modifying
-    @Transactional
-    @Query("UPDATE book b SET b.bookmarkCount = b.bookmarkCount + 1 WHERE b.bookIsbn = :isbn")
-    void incrementBookmarkCount(@Param("isbn") String isbn);
-
-    @Modifying
-    @Transactional
-    @Query("UPDATE book b SET b.bookmarkCount = b.bookmarkCount - 1 WHERE b.bookIsbn = :isbn AND b.bookmarkCount > 0")
-    void decrementBookmarkCount(@Param("isbn") String isbn);
+    @Query(value =
+            "SELECT b.*, COUNT(bb.bookmark_id) AS bookmarkCount " +
+                    "FROM book b " +
+                    "LEFT JOIN bookmark_book bb ON b.book_isbn = bb.book_isbn " +
+                    "WHERE b.book_isbn IN (:isbns) " +
+                    "GROUP BY b.book_isbn " +
+                    "ORDER BY bookmarkCount DESC",
+            nativeQuery = true)
+    List<Object[]> findBooksSortedByBookmark(@Param("isbns") List<String> isbns);
 
 
 }

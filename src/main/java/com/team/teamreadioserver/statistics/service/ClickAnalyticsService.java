@@ -12,10 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,7 +44,7 @@ public class ClickAnalyticsService {
                 ));
         List<String> contentIds = new ArrayList<>(clickMap.keySet());
 
-        // Step 2. 콘텐츠 상세 조회
+        // Step 2. 콘텐츠 상세 조회 및 bookmark 정렬
         List<ClickedContentDTO> dtos = new ArrayList<>();
         if (type.equals("book")) {
             List<Book> books = getSortedBooks(contentIds, sort);
@@ -75,7 +72,7 @@ public class ClickAnalyticsService {
             }
         }
 
-        // Step 3. 페이징 or limit 적용
+        // Step 3. limit or paging 적용
         if (limit != null) {
             return dtos.stream().limit(limit).toList();
         } else if (page != null && size != null) {
@@ -87,35 +84,33 @@ public class ClickAnalyticsService {
         return dtos;
     }
 
-    // 책 정렬
+    // 책 정렬 (bookmark는 쿼리로 정렬된 Object[] 사용)
     private List<Book> getSortedBooks(List<String> ids, String sort) {
-        List<Book> books = bookRepository.findAllByBookIsbnIn(ids);
-        return books.stream()
-                .sorted(getBookComparator(sort))
-                .toList();
+        if ("bookmark".equals(sort)) {
+            List<Object[]> rows = bookRepository.findBooksSortedByBookmark(ids);
+            return rows.stream().map(row -> (Book) row[0]).toList();
+        } else {
+            List<Book> books = bookRepository.findAllByBookIsbnIn(ids);
+            return books.stream()
+                    .sorted("date".equals(sort)
+                            ? Comparator.comparing(Book::getBookPubdate, Comparator.nullsLast(Comparator.reverseOrder()))
+                            : Comparator.comparing(Book::getBookIsbn))
+                    .toList();
+        }
     }
 
-    // 영상 정렬
+    // 영상 정렬 (bookmark는 쿼리로 정렬된 Object[] 사용)
     private List<Video> getSortedVideos(List<String> ids, String sort) {
-        List<Video> videos = videoRepository.findAllById(ids);
-        return videos.stream()
-                .sorted(getVideoComparator(sort))
-                .toList();
-    }
-
-    private Comparator<Book> getBookComparator(String sort) {
-        return switch (sort) {
-            case "bookmark" -> Comparator.comparing(Book::getBookmarkCount, Comparator.nullsLast(Comparator.reverseOrder()));
-            case "date" -> Comparator.comparing(Book::getBookPubdate, Comparator.nullsLast(Comparator.reverseOrder()));
-            default -> Comparator.comparing(Book::getBookIsbn); // 안정 정렬
-        };
-    }
-
-    private Comparator<Video> getVideoComparator(String sort) {
-        return switch (sort) {
-            case "bookmark" -> Comparator.comparing(Video::getBookmarkCount, Comparator.nullsLast(Comparator.reverseOrder()));
-            case "date" -> Comparator.comparing(Video::getUploadDate, Comparator.nullsLast(Comparator.reverseOrder()));
-            default -> Comparator.comparing(Video::getVideoId);
-        };
+        if ("bookmark".equals(sort)) {
+            List<Object[]> rows = videoRepository.findVideosSortedByBookmark(ids);
+            return rows.stream().map(row -> (Video) row[0]).toList();
+        } else {
+            List<Video> videos = videoRepository.findAllById(ids);
+            return videos.stream()
+                    .sorted("date".equals(sort)
+                            ? Comparator.comparing(Video::getUploadDate, Comparator.nullsLast(Comparator.reverseOrder()))
+                            : Comparator.comparing(Video::getVideoId))
+                    .toList();
+        }
     }
 }
