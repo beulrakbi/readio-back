@@ -1,15 +1,16 @@
 package com.team.teamreadioserver.user.admin.controller;
 
+import com.team.teamreadioserver.user.admin.dto.AdminUserListResponse;
+import com.team.teamreadioserver.user.admin.dto.AdminUserSearchDTO;
 import com.team.teamreadioserver.user.admin.dto.AdminUserViewDTO;
 import com.team.teamreadioserver.user.admin.service.AdminUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,22 +37,78 @@ public class AdminUserController {
     return ResponseEntity.ok(responseData);
   }
 
-  // 회원목록 조회
-  @Operation(summary = "회원목록조회" , description = "회원목록 확인이 가능하다.")
+  // 회원목록 조회 (정상)
+//  @Operation(summary = "회원목록조회" , description = "회원목록 확인이 가능하다.")
+//  @GetMapping("users/list")
+//  public ResponseEntity<List<AdminUserViewDTO>> getAdminUserList() {
+//    List<AdminUserViewDTO> userList = adminUserService.getAdminUserList();
+//    return ResponseEntity.ok(userList);
+
+
+
+  @Operation(summary = "회원목록조회", description = "회원 목록을 페이징 및 검색 조건으로 조회합니다.")
   @GetMapping("/users/list")
-  public ResponseEntity<List<AdminUserViewDTO>> getAdminUserList() {
-    List<AdminUserViewDTO> userList = adminUserService.getAdminUserList();
-    return ResponseEntity.ok(userList);
+  public ResponseEntity<Map<String, Object>> getUserList(
+      @RequestParam(defaultValue = "1") int page,
+      @RequestParam(defaultValue = "10") int size,
+      @RequestParam(required = false) String searchType,
+      @RequestParam(required = false) String searchValue,
+      @RequestParam(required = false) String startDate,
+      @RequestParam(required = false) String endDate,
+      @RequestParam(required = false) String userTypes,
+      @RequestParam(required = false) String reportStatus
+  ) {
+    AdminUserSearchDTO searchDTO = new AdminUserSearchDTO();
+    searchDTO.setPage(page);
+    searchDTO.setSize(size);
+    searchDTO.setSearchType(searchType);
+    searchDTO.setSearchValue(searchValue);
+    searchDTO.setStartDate(startDate);
+    searchDTO.setEndDate(endDate);
+    searchDTO.setReportStatus(reportStatus);
+    searchDTO.setUserTypesString(userTypes);  // 문자열 저장
 
+    if (searchDTO.getUserTypesString() != null && !searchDTO.getUserTypesString().isEmpty()) {
+      searchDTO.setUserTypes(
+          Arrays.asList(searchDTO.getUserTypesString().split(","))
+      );
+    }
 
-    // 회원 상세정보 조회
+    searchDTO.setReportStatus(reportStatus);
 
+    searchDTO.calculateOffset();  // 페이징용 offset 계산 필수
 
-    // 조건검색
+    List<AdminUserViewDTO> userList = adminUserService.getAdminUserList(searchDTO);
+    int total = adminUserService.getAdminUserCount(searchDTO);
 
+    Map<String, Object> result = new HashMap<>();
+    result.put("users", userList);
+    result.put("currentPage", page);
+    result.put("pageSize", size);
+    result.put("total", total);
 
-    // 회원삭제
-
-
+    return ResponseEntity.ok(result);
   }
+
+//  @GetMapping("/list")
+//  public ResponseEntity<AdminUserListResponse> getUserList(AdminUserSearchDTO searchDTO) {
+//    AdminUserListResponse response = adminUserService.getPagedAdminUserList(searchDTO);
+//    return ResponseEntity.ok(response);
+//  }
+
+  // 권한변경
+  @PutMapping("/{userId}/role")
+  public ResponseEntity<Void> changeUserRole(@PathVariable String userId, @RequestBody Map<String, String> payload) {
+    String newRole = payload.get("newRole");
+    adminUserService.changeUserRole(userId, newRole);
+    return ResponseEntity.ok().build();
+  }
+
+  @DeleteMapping("/{userId}")
+  public ResponseEntity<Void> deleteUser(@PathVariable String userId) {
+    adminUserService.deleteUser(userId);
+    return ResponseEntity.ok().build();
+  }
+
+
 }
