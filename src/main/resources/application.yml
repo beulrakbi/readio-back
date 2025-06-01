@@ -65,3 +65,12 @@ mybatis:
 
 aladin:
  ttbkey: ttbehfvls09271435001
+
+ # application.yml
+ logging:
+  level:
+   org:
+    springframework:
+     web: DEBUG
+     security: DEBUG
+   com.team.teamreadioserver: DEBUG # 사용자 패키지
