@@ -21,7 +21,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
-@Tag(name = "회원 API", description = "회원가입 관련 API")
+@Tag(name = "회원 API", description = "회원 관련 API")
 public class UserController {
 
   private final UserService userService;
@@ -132,14 +132,14 @@ public class UserController {
     }
   }
 
-
-
-  @GetMapping("/findId")
+  // 아이디 찾기
+  @GetMapping("account/findId")
   public ResponseEntity<?> findId(@RequestParam String name, @RequestParam String phone) {
     String id = userService.findId(name, phone);
     return id != null ? ResponseEntity.ok(id) : ResponseEntity.status(404).body("아이디 없음");
   }
 
+  // 인증번호 발송
   @PostMapping("/sendCode")
   public ResponseEntity<?> sendCode(@RequestBody Map<String, String> req) {
     String email = req.get("email");
@@ -149,17 +149,23 @@ public class UserController {
     return ResponseEntity.ok(code);
   }
 
+  // 비밀번호 찾기 시 게정확인
   @PostMapping("/verifyUser")
   public ResponseEntity<?> verifyUser(@RequestBody Map<String, String> req) {
     boolean valid = userService.verifyUserForPwdReset(req.get("userId"), req.get("email"));
     return valid ? ResponseEntity.ok("유효") : ResponseEntity.status(404).body("정보 불일치");
   }
 
+  // 비밀번호 초기화
   @PostMapping("/resetPassword")
   public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> req) {
     userService.resetPassword(req.get("userId"), req.get("newPassword"));
     return ResponseEntity.ok("비밀번호 재설정 완료");
   }
+
+
+
+
 
 
 
