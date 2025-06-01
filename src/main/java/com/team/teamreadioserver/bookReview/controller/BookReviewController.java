@@ -76,7 +76,12 @@ public class BookReviewController {
     @Operation(summary = "리뷰 삭제", description = "리뷰를 삭제합니다.")
     @DeleteMapping("/delete/{reviewId}")
     public ResponseEntity<String> deleteReview(@PathVariable Integer reviewId) {
-        bookReviewService.deleteReview(reviewId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+        String currentUserId = authentication.getName(); // <-- 인증된 사용자의 userId
+        bookReviewService.deleteReview(reviewId, currentUserId); // <-- currentUserId 전달
         return ResponseEntity.ok("리뷰가 삭제되었습니다.");
     }
 
@@ -103,13 +108,6 @@ public class BookReviewController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         String userId = authentication.getName();
-        // userId를 통해 profileId를 얻어야 합니다.
-        // 이 부분은 Service Layer에서 ProfileRepository를 통해 찾는 것이 더 적절합니다.
-        // 예를 들어, noticeService에 있던 userId를 @PrePersist에서 자동 세팅하는 것처럼
-        // BookReviewService.myBookReview(userId)로 파라미터 변경 후 서비스에서 profile 찾기.
-        // 아니면 여기서 직접 profileRepository 주입받아 profileId 찾기.
-        // 여기서는 예시로 profileRepository.findByUser_UserId(userId).profileId 를 사용한다고 가정.
-        // 정확한 profileId를 가져오는 로직은 사용자 시스템에 따라 달라집니다.
         Profile profile = bookReviewService.getProfileByUserId(userId); // BookReviewService에 추가할 메서드
         if (profile == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 프로필 없음
