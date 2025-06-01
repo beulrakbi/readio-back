@@ -60,11 +60,17 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        .requestMatchers("/users/login", "/users/join/**", "/video/**", "/curation/**", "/img/**", "/search/**", "/bookPage/**", "/bookReview/**", "/reported/**", "/serviceCenter/**", "/videoBookmark/publicCount/**", "/bookBookmark/publicCount/**").permitAll()  // 인증 필요없는 경로
-                        .requestMatchers(HttpMethod.GET, "/api/user/interests/categories", "/api/user/interests/keywords").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/serviceCenter/qna/question").authenticated() // 📝 질문 등록
-                                .requestMatchers(HttpMethod.PUT, "/serviceCenter/qna/update").authenticated()   // ✏️ 질문 수정
-                                .requestMatchers(HttpMethod.DELETE, "/serviceCenter/qna/delete/**").authenticated() // 🗑️ 질문 삭제
+
+                        .requestMatchers("/users/login", "/users/join/**", "/video/**", "/curation/**", "/img/**", "/search/**", "/bookPage/**", "/serviceCenter/**", "/videoBookmark/publicCount/**", "/bookBookmark/publicCount/**").permitAll()  // 인증 필요없는 경로
+                        .requestMatchers(HttpMethod.GET, "/api/user/interests/categories", "/api/user/interests/keywords", "/bookReview/**").permitAll()
+
+                                .requestMatchers(HttpMethod.POST, "/bookReview/create").authenticated()
+                                .requestMatchers(HttpMethod.PUT, "/bookReview/{reviewId}/report").authenticated()
+                                .requestMatchers(HttpMethod.DELETE, "/bookReview/delete/**").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/bookReview/reviews/{reviewId}/like").authenticated()
+                                .requestMatchers(HttpMethod.DELETE, "/bookReview/review/{reviewId}/like").authenticated()
+                                .requestMatchers("/bookReview/reviews/my").authenticated() // 내 리뷰 조회
+
                                 // /videoBookmark/status/** (개인 북마크 상태 포함)는 인증 필요
                                 .requestMatchers("/videoBookmark/status/**").authenticated()
                                 .requestMatchers("/bookBookmark/status/**").authenticated()

@@ -69,7 +69,7 @@ public class ReportedService {
         
         for (ReportedReview reportedReview : reportedReviewList) {
             BookReview review = bookReviewRepository.findByReviewId(reportedReview.getReviewId());
-            Profile profile = profileRepository.findByProfileId(review.getProfileId());
+            Profile profile = review.getProfile();
             ReportedReviewDTO reportedReviewDTO = getReportedReviewDTO(reportedReview, review, profile);
 
             result.add(reportedReviewDTO);

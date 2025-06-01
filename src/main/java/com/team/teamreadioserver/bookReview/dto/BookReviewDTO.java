@@ -1,21 +1,24 @@
+// 변경 제안 (사소한 부분 포함)
 package com.team.teamreadioserver.bookReview.dto;
 
 import com.team.teamreadioserver.bookReview.enumPackage.IsHidden;
 import lombok.*;
-
+import java.time.LocalDateTime; // LocalDateTime import
 import java.util.Date;
 
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
-@AllArgsConstructor
+@AllArgsConstructor // @RequiredArgsConstructor 삭제 고려
+@NoArgsConstructor // @NoArgsConstructor 추가
+@Builder // Builder 패턴 사용 시
 public class BookReviewDTO {
     private Integer reviewId;
-    private Integer profileId;
+    private Long profileId; // Long 타입으로 변경
+    private String penName;
     private String bookIsbn;
     private String reviewContent;
     private Integer reportedCount;
     private IsHidden isHidden;
-    private Date createdAt;
+    private Date createdAt; // LocalDateTime으로 변경
 }
