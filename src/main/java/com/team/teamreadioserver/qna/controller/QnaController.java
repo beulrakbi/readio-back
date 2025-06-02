@@ -16,6 +16,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -86,4 +88,17 @@ public class QnaController {
         List<QnaResponseDTO> result = qnaService.searchQnaByTitle(keyword);
         return ResponseEntity.ok().body(result);
     }
+
+    @Operation(summary = "Qna 질문 수정", description = "Qna 질문을 수정합니다.")
+    @PutMapping("/qna/update")
+    public ResponseEntity<String> updateQna(@RequestBody @Valid QnaQuestionDTO qnaQuestionDTO) {
+        try {
+            qnaService.updateQna(qnaQuestionDTO);
+            return ResponseEntity.ok("QNA가 성공적으로 수정되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("수정 실패: " + e.getMessage());
+        }
+    }
+
+
 }

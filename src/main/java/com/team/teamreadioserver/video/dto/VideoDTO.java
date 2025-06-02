@@ -2,6 +2,8 @@ package com.team.teamreadioserver.video.dto;
 
 import lombok.*;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @ToString
@@ -13,5 +15,7 @@ public class VideoDTO {
     private String channelTitle;
     private String description;
     private String thumbnail;
+    private int viewCount;
+    private Date uploadDate;
 
 }

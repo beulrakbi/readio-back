@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -48,9 +50,17 @@ public class Notice {
 
     @PrePersist
     public void prePersist() {
-        this.userId = "test2";
-        this.noticeCreateAt = LocalDateTime.now();
-        this.noticeView = 0;
+        if(this.noticeCreateAt == null) {
+            this.noticeCreateAt = LocalDateTime.now();
+        }
+        if(this.userId == null) {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication.isAuthenticated()) {
+                this.userId = authentication.getName();
+            } else {
+                throw new IllegalArgumentException("인증된 사용자 정보를 찾을 수 없습니다. 공지사항 작성은 로그인 후 가능합니다.");
+            }
+        }
     }
 
     public void update(String title, String content, NoticeState state, NoticeImg img) {

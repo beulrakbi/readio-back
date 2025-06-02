@@ -6,10 +6,12 @@ import com.team.teamreadioserver.bookReview.dto.ReviewRequestDTO;
 import com.team.teamreadioserver.bookReview.entity.BookReview;
 import com.team.teamreadioserver.bookReview.repository.BookReviewRepository;
 import com.team.teamreadioserver.bookReview.service.BookReviewService;
+import com.team.teamreadioserver.common.common.ResponseDTO;
 import com.team.teamreadioserver.search.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +23,6 @@ import java.util.List;
 public class BookReviewController {
 
     @Autowired
-    private BookReviewRepository bookReviewRepository;
-    @Autowired
     private BookReviewService bookReviewService;
 
     @Operation(summary = "리뷰 등록", description = "리뷰를 등록합니다.")
@@ -33,7 +33,7 @@ public class BookReviewController {
     }
 
     @Operation(summary = "리뷰 신고 등록", description = "리뷰를 신고합니다.")
-    @PutMapping("/reviews/{reviewId}/report")
+    @PutMapping("/{reviewId}/report")
     public ResponseEntity<Void> report(@PathVariable Integer reviewId) {
         bookReviewService.reportReview(reviewId);
         return ResponseEntity.ok().build();
@@ -44,6 +44,13 @@ public class BookReviewController {
     public String deleteReview(@PathVariable Integer reviewId) {
         bookReviewService.deleteReview(reviewId);
         return "리뷰가 삭제되었습니다.";
+    }
+
+    @Operation(summary = "책 별 리뷰 조회", description = "책 별 리뷰를 조회합니다.")
+    @GetMapping("/{bookIsbn}")
+    public ResponseEntity<ResponseDTO> getAllBookReviews(@PathVariable String bookIsbn)
+    {
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "리뷰 조회 성공", bookReviewService.getBookReviewByBookIsbn(bookIsbn)));
     }
 
 //    @Operation(summary = "전체 리뷰 조회", description = "전체 리뷰를 조회합니다.")

@@ -90,4 +90,42 @@ public class UserService {
         return userMapper.updateUser(userEditRequestDTO);
     }
 
+  public String findId(String userName, String userPhone) {
+    return userMapper.findIdByNameAndPhone(userName, userPhone);
+  }
+
+  public boolean verifyUserForPwdReset(String userId, String userEmail) {
+    return userMapper.findPwdByIdAndEmail(userId, userEmail) != null;
+  }
+
+  public void resetPassword(String userId, String newPassword) {
+    String hashedPwd = passwordEncoder.encode(newPassword);
+    userMapper.updatePassword(userId, hashedPwd);
+  }
+
+  // 회원 탈퇴 처리
+  public boolean deleteUser(String userId) {
+    System.out.println("userService.deleteUser 호출됨: userId=" + userId);
+    int result = userMapper.deleteUserById(userId);
+    System.out.println("삭제 결과: " + result);
+    return result > 0;
+//    return userMapper.deleteUserById(userId) > 0;
+  }
+
+  // 비밀번호 확인
+  public boolean verifyPasswordForDelete(String userId, String inputPassword) {
+    String storedHashedPassword = userMapper.getPasswordByUserId(userId);
+
+    logger.info("사용자가 입력한 비번: " + inputPassword);
+    logger.info("db에서 읽어온 비밀번호해시:" + storedHashedPassword);
+
+    if(storedHashedPassword == null) return false;
+
+    // 디버깅..
+
+    return passwordEncoder.matches(inputPassword, storedHashedPassword);
+  }
+
+
+
 }

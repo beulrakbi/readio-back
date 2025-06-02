@@ -30,4 +30,8 @@ public interface VideoRepository extends JpaRepository<Video, String> {
             nativeQuery = true)
     List<Object[]> findVideosSortedByBookmark(@Param("videoIds") List<String> videoIds);
 
+    @Modifying
+    @Query("UPDATE Video v SET v.viewCount = v.viewCount + 1 WHERE v.videoId = :id")
+    int incrementViewCount(@Param("id") String videoId);
+
 }
