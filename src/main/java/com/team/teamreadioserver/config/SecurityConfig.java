@@ -61,7 +61,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                         .requestMatchers("/users/login", "/users/join/**","/users/account/**", "/users/sendCode", "/users/verifyUser", "/users/resetPassword", "/video/**", "/curation/**", "/img/**", "/search/**", "/bookPage/**", "/bookReview/**", "/reported/**", "/serviceCenter/**", "/videoBookmark/publicCount/**").permitAll()  // 인증 필요없는 경로
-                        .requestMatchers("/users/login", "/users/join/**", "/video/**", "/curation/**", "/img/**", "/api/clicks/**").permitAll()  // 인증 필요없는 경로
                         .requestMatchers(HttpMethod.GET, "/api/user/interests/categories", "/api/user/interests/keywords").permitAll()
                                 // /videoBookmark/status/** (개인 북마크 상태 포함)는 인증 필요
                                 .requestMatchers("/videoBookmark/status/**").authenticated()
