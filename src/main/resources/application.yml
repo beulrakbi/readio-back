@@ -75,3 +75,12 @@ aladin:
     hibernate:
      jdbc:
       time_zone: UTC
+
+ # application.yml
+ logging:
+  level:
+   org:
+    springframework:
+     web: DEBUG
+     security: DEBUG
+   com.team.teamreadioserver: DEBUG # 사용자 패키지
