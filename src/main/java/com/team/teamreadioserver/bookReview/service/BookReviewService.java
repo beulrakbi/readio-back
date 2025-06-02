@@ -21,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -210,7 +211,6 @@ public class BookReviewService {
     // 책별 리뷰 조회
     public List<BookReviewDTO> getBookReviewByBookIsbn(String bookIsbn) {
         List<BookReview> foundBookReviews = bookReviewRepository.findByBookIsbn(bookIsbn);
-
         String currentUserId = null;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
@@ -252,6 +252,17 @@ public class BookReviewService {
 
             return dto;
         }).collect(Collectors.toList());
+        List<BookReviewDTO> result = new ArrayList<>();
+        for (BookReview foundBookReview : foundBookReviews)
+        {
+            Profile profile = profileRepository.findByProfileId(foundBookReview.getProfileId());
+            BookReviewDTO bookReviewDTO = new BookReviewDTO(foundBookReview.getReviewId(), foundBookReview.getProfileId(), foundBookReview.getBookIsbn(),
+                    foundBookReview.getReviewContent(), foundBookReview.getReportedCount(), foundBookReview.getIsHidden(), foundBookReview.getCreatedAt(), profile.getPenName());
+
+            result.add(bookReviewDTO);
+        }
+
+        return result;
     }
 
     public Profile getProfileByUserId(String userId) {

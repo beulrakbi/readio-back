@@ -18,6 +18,8 @@ public interface ReportedReviewRepository extends JpaRepository<ReportedReview, 
     ReportedReview findByBookReview_ReviewId(Integer reviewId);
 
     List<ReportedReview> findByUserId(String userId); // 이 userId는 ReportedReview 엔티티에 직접 있는 필드여야 합니다.
-
+    ReportedReview findByReportId(Integer reportId);
+    List<ReportedReview> findByUserId(String userId);
     Page<ReportedReview> findAllBy(Pageable pageable);
-}
+
+  }

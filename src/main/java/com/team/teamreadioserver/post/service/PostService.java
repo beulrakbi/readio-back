@@ -7,6 +7,11 @@ import com.team.teamreadioserver.post.entity.Post;
 import com.team.teamreadioserver.post.entity.PostImg;
 import com.team.teamreadioserver.post.repository.PostImgRepository;
 import com.team.teamreadioserver.post.repository.PostRepository;
+import com.team.teamreadioserver.profile.dto.ProfileRequestDTO;
+import com.team.teamreadioserver.profile.dto.ProfileResponseDTO;
+import com.team.teamreadioserver.profile.entity.Profile;
+import com.team.teamreadioserver.profile.entity.ProfileImg;
+import com.team.teamreadioserver.profile.repository.ProfileImgRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -29,15 +34,42 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final PostImgRepository postImgRepository;
+    private final ProfileImgRepository profileImgRepository;
     private final ModelMapper modelMapper;
 
     @Value("${image.image-url}")
     private String IMAGE_URL;
 
+    @Value("http://localhost:8080/img/profile/")
+    private String imgUrl;
+
     public Object getPostDetail(Integer postId) {
 
         Post post = postRepository.findById(postId).get();
         PostResponseDTO postResponseDTO = modelMapper.map(post, PostResponseDTO.class);
+
+        Profile profile = post.getProfile();
+        if (profile != null) {
+            ProfileImg authorImgEntity = profileImgRepository.findByProfile(profile).orElse(null);
+            String authorImageUrl = null;
+            if (authorImgEntity != null) {
+                authorImageUrl = imgUrl + authorImgEntity.getSaveName();
+            }
+
+            ProfileResponseDTO profileResponseDTO= ProfileResponseDTO.builder()
+                    .profileId(profile.getProfileId()) // Profile 엔티티의 PK
+                    .penName(profile.getPenName())     // Profile 엔티티의 penName
+                    .biography(profile.getBiography()) // Profile 엔티티의 biography
+                    .isPrivate(profile.getIsPrivate() != null ? profile.getIsPrivate().name() : null) // Enum 경우 .name()
+                    .imageUrl(authorImageUrl)
+                    .build();
+
+            postResponseDTO.setProfileId(profileResponseDTO);
+        }
+
+        if (postResponseDTO.getPostCreatedDate() == null && post.getPostCreateDate() != null) {
+            postResponseDTO.setPostCreatedDate(post.getPostCreateDate());
+        }
 
         if (post.getPostImg() != null) {
             PostImg postImg = post.getPostImg();
@@ -51,17 +83,26 @@ public class PostService {
             postResponseDTO.setPostImg(postImgDTO);
         }
 
+
+
         return postResponseDTO;
     }
 
     @Transactional
-    public Object CreatePost(PostRequestDTO postRequestDTO, List<MultipartFile> multipartFile) {
+    public Object CreatePost(PostRequestDTO postRequestDTO, List<MultipartFile> multipartFile, Profile userProfile) {
 
         System.out.println(postRequestDTO);
         System.out.println(multipartFile);
-        Post CreatePost = modelMapper.map(postRequestDTO, Post.class);
 
-        Post savedPost = postRepository.save(CreatePost);
+        Post newPost = modelMapper.map(postRequestDTO, Post.class);
+
+        if (userProfile != null) {
+            newPost.setProfile(userProfile); // Post 엔티티에 setProfile(Profile profile) 메소드가 있다고 가정합니다.
+        } else {
+            System.err.println("주의: CreatePost 서비스에 userProfile이 null로 전달되었습니다. 컨트롤러에서 처리되었어야 합니다.");
+        }
+
+        Post savedPost = postRepository.save(newPost);
 
         ClassPathResource resource = new ClassPathResource("post");
         String staticPath;

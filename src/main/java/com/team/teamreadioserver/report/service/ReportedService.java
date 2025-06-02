@@ -3,10 +3,15 @@ package com.team.teamreadioserver.report.service;
 import com.team.teamreadioserver.bookReview.entity.BookReview;
 import com.team.teamreadioserver.bookReview.repository.BookReviewRepository;
 import com.team.teamreadioserver.common.common.Criteria;
+import com.team.teamreadioserver.post.entity.Post;
+import com.team.teamreadioserver.post.repository.PostRepository;
 import com.team.teamreadioserver.profile.entity.Profile;
 import com.team.teamreadioserver.profile.repository.ProfileRepository;
+import com.team.teamreadioserver.report.dto.ReportedPostDTO;
 import com.team.teamreadioserver.report.dto.ReportedReviewDTO;
+import com.team.teamreadioserver.report.entity.ReportedPost;
 import com.team.teamreadioserver.report.entity.ReportedReview;
+import com.team.teamreadioserver.report.repository.ReportedPostRepository;
 import com.team.teamreadioserver.report.repository.ReportedReviewRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -30,6 +35,8 @@ public class ReportedService {
     private final BookReviewRepository bookReviewRepository;
     private final ProfileRepository profileRepository;
     private static final Logger log = LoggerFactory.getLogger(ReportedService.class);
+    private final ReportedPostRepository reportedPostRepository;
+    private final PostRepository postRepository;
 
     @Transactional
     public String hideReview(Integer reportId) // 반환 타입을 String으로 변경하여 일관성 유지
@@ -82,12 +89,46 @@ public class ReportedService {
 
             ReportedReviewDTO reportedReviewDTO = getReportedReviewDTO(reportedReview, review, profile);
             result.add(reportedReviewDTO);
+        Page<ReportedReview> reportedReviews = reportedReviewRepository.findAllBy(paging);
+        List<ReportedReview> reportedReviewList = reportedReviews.getContent();
+        List<ReportedReviewDTO> result = new ArrayList<ReportedReviewDTO>();
+        System.out.println("list: " + reportedReviewList);
+        for (ReportedReview reportedReview : reportedReviewList) {
+            BookReview review = bookReviewRepository.findByReviewId(reportedReview.getReviewId());
+            if (review != null)
+            {
+                Profile profile = profileRepository.findByProfileId(review.getProfileId());
+                ReportedReviewDTO reportedReviewDTO = this.getReportedReviewDTO(reportedReview, review, profile);
+
+                result.add(reportedReviewDTO);
+            }
+            else
+            {
+                reportedReviewRepository.delete(reportedReview);
+            }
         }
 
         return result;
     }
 
-    private static ReportedReviewDTO getReportedReviewDTO(ReportedReview reportedReview, BookReview review, Profile profile) {
+    public ReportedReviewDTO getReportedReview(Integer reportId)
+    {
+        ReportedReview reportedReview = reportedReviewRepository.findByReportId(reportId);
+        BookReview review = bookReviewRepository.findByReviewId(reportedReview.getReviewId());
+        if (review != null)
+        {
+            Profile profile = profileRepository.findByProfileId(review.getProfileId());
+            ReportedReviewDTO reportedReviewDTO = this.getReportedReviewDTO(reportedReview, review, profile);
+            return reportedReviewDTO;
+        }
+        else
+        {
+            reportedReviewRepository.delete(reportedReview);
+            return null;
+        }
+    }
+
+    private ReportedReviewDTO getReportedReviewDTO(ReportedReview reportedReview, BookReview review, Profile profile) {
         ReportedReviewDTO reportedReviewDTO = new ReportedReviewDTO();
 
         reportedReviewDTO.setReportId(reportedReview.getReportId());
@@ -108,4 +149,94 @@ public class ReportedService {
         reportedReviewDTO.setIsHidden(review.getIsHidden());
         return reportedReviewDTO;
     }
+}
+    public Object hidePost(Integer reportId)
+    {
+        int result = 0;
+
+        try {
+            ReportedPost foundReport = reportedPostRepository.findByReportId(reportId);
+            Post foundPost = postRepository.findByPostId(foundReport.getPostId());
+            foundPost.hide();
+            result = 1;
+        } catch (Exception e) {
+            log.error("[ReportedService] hidePost Fail");
+            throw e;
+        }
+
+        log.info("[ReportedService] hidePost End");
+
+        return (result > 0) ? "포스트 숨기기 성공" : "포스트 숨기기 실패";
+    }
+
+
+    public int allReportedPostNum()
+    {
+        return reportedPostRepository.findAll().size();
+    }
+
+    public Object allReportedPostWithPaging(Criteria cri)
+    {
+
+        int index = cri.getPageNum() - 1;
+        int count = cri.getAmount();
+        Pageable paging = PageRequest.of(index, count, Sort.by("reportId").descending());
+
+
+        Page<ReportedPost> reportedPosts = reportedPostRepository.findAllBy(paging);
+        List<ReportedPost> reportedPostList = reportedPosts.getContent();
+        List<ReportedPostDTO> result = new ArrayList<ReportedPostDTO>();
+        System.out.println("list: " + reportedPostList);
+        for (ReportedPost reportedPost : reportedPostList) {
+            Post post = postRepository.findByPostId(reportedPost.getPostId());
+            if (post != null)
+            {
+                Profile profile = profileRepository.findByProfileId(post.getProfile().getProfileId());
+                ReportedPostDTO reportedPostDTO = this.getReportedPostDTO(reportedPost, post, profile);
+
+                result.add(reportedPostDTO);
+            }
+            else
+            {
+                reportedPostRepository.delete(reportedPost);
+            }
+        }
+
+        return result;
+    }
+
+    public ReportedPostDTO getReportedPost(Integer reportId)
+    {
+        ReportedPost reportedPost = reportedPostRepository.findByReportId(reportId);
+        Post post = postRepository.findByPostId(reportedPost.getPostId());
+        if (post != null)
+        {
+            Profile profile = profileRepository.findByProfileId(post.getProfile().getProfileId());
+            ReportedPostDTO reportedPostDTO = this.getReportedPostDTO(reportedPost, post, profile);
+            return reportedPostDTO;
+        }
+        else
+        {
+            reportedPostRepository.delete(reportedPost);
+            return null;
+        }
+    }
+
+    private ReportedPostDTO getReportedPostDTO(ReportedPost reportedPost, Post post, Profile profile) {
+        ReportedPostDTO reportedPostDTO = new ReportedPostDTO();
+
+        reportedPostDTO.setReportId(reportedPost.getReportId());
+        reportedPostDTO.setPostId(post.getPostId());
+        reportedPostDTO.setUserId(profile.getUser().getUserId());
+        reportedPostDTO.setReportedDate(reportedPost.getReportedDate());
+
+        reportedPostDTO.setBookIsbn(post.getBookIsbn());
+        reportedPostDTO.setPostTitle(post.getPostTitle());
+        reportedPostDTO.setPostContent(post.getPostContent());
+        reportedPostDTO.setPostCreatedAt(post.getPostCreateDate());
+        reportedPostDTO.setReportedCount(post.getPostReported());
+        reportedPostDTO.setIsHidden(post.getPostHidden());
+        return reportedPostDTO;
+    }
+
 }

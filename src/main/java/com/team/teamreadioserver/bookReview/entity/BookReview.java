@@ -64,7 +64,18 @@ public class BookReview {
     public void report() {
         this.reportedCount++;
     }
-    public void hide() {
-        this.isHidden = IsHidden.Y;
+    public String hide() {
+
+        if (this.isHidden == isHidden.N)
+        {
+            this.isHidden = isHidden.Y;
+            return "숨김처리됨";
+        }
+        else
+        {
+            this.isHidden = isHidden.N;
+            return "노출처리됨";
+        }
+
     }
 }

@@ -13,7 +13,7 @@ import java.util.Date;
 public class AllReviewResponseDTO {
     private Integer reviewId; // 리뷰 ID 추가
     private String penName;   // 프로필명 추가 (profileId 대신 또는 함께)
-    // private Long profileId; // 필요하다면 profileId도 포함 가능
+    private Long profileId;
     private String reviewContent;
     private Date createdAt; // LocalDateTime으로 변경
 }
