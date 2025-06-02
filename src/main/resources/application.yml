@@ -66,6 +66,16 @@ mybatis:
 aladin:
  ttbkey: ttbehfvls09271435001
 
+ # 회원가입 시간대때문에 추가
+ spring:
+  jackson:
+   time-zone: UTC
+  jpa:
+   properties:
+    hibernate:
+     jdbc:
+      time_zone: UTC
+
  # application.yml
  logging:
   level:

@@ -81,7 +81,6 @@ public class FilteringController {
         pagingResponseDTO.setPageInfo(new PageDTO(cri, total));
 
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "필터링 그룹 전체 조회 성공", pagingResponseDTO));
-
     }
 
     @Operation (summary = "필터링 그룹 상세조회", description = "필터링 그룹이 상세 조회됩니다.", tags = { "FilteringController" })
