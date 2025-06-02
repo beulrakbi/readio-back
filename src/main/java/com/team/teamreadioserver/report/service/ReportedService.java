@@ -19,7 +19,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date; // Date import
 import java.util.List;
+import java.util.Optional; // Optional import
 
 @Service
 @AllArgsConstructor
@@ -30,23 +32,30 @@ public class ReportedService {
     private static final Logger log = LoggerFactory.getLogger(ReportedService.class);
 
     @Transactional
-    public Object hideReview(Integer reportId)
+    public String hideReview(Integer reportId) // 반환 타입을 String으로 변경하여 일관성 유지
     {
-        int result = 0;
-
         try {
-            ReportedReview foundReport = reportedReviewRepository.findByReportId(reportId);
-            BookReview foundReview = bookReviewRepository.findByReviewId(foundReport.getReviewId());
+            // ReportedReview를 reportId로 찾습니다. Optional로 받습니다.
+            ReportedReview foundReport = reportedReviewRepository.findByReportId(reportId)
+                    .orElseThrow(() -> new IllegalArgumentException("신고된 리뷰를 찾을 수 없습니다. (reportId: " + reportId + ")"));
+
+            // BookReview는 ReportedReview 객체 내부에 포함되어 있습니다.
+            // 지연 로딩일 수 있으므로, .getReviewId()를 호출하기 전에 bookReview 객체가 로드되는지 확인합니다.
+            // 보통 @Transactional 메서드 내에서는 Lazy Loading 문제가 발생하지 않습니다.
+            BookReview foundReview = foundReport.getBookReview(); // ✨ 수정된 부분: getBookReview() 사용 ✨
+
+            if (foundReview == null) {
+                throw new IllegalStateException("신고된 리뷰와 연결된 원본 리뷰를 찾을 수 없습니다.");
+            }
+
             foundReview.hide();
-            result = 1;
+            // bookReviewRepository.save(foundReview); // @Transactional이므로 명시적으로 save 안해도 됩니다.
+
+            return "리뷰 숨기기 성공";
         } catch (Exception e) {
-            log.error("[VideoService] insertVideo Fail");
-            throw e;
+            log.error("[ReportedService] hideReview Fail: " + e.getMessage(), e); // 로그 메시지 수정
+            throw e; // 예외를 다시 던져서 컨트롤러에서 처리하도록 합니다.
         }
-
-        log.info("[VideoService] insertVideo End");
-
-        return (result > 0) ? "리뷰 숨기기 성공" : "리뷰 숨기기 실패";
     }
 
 
@@ -55,23 +64,23 @@ public class ReportedService {
         return reportedReviewRepository.findAll().size();
     }
 
-    public Object allReportedReviewWithPaging(Criteria cri)
+    public List<ReportedReviewDTO> allReportedReviewWithPaging(Criteria cri) // 반환 타입 명확히 지정
     {
-
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
         Pageable paging = PageRequest.of(index, count, Sort.by("reportId").descending());
 
+        Page<ReportedReview> reportedReviewsPage = reportedReviewRepository.findAll(paging); // 메소드명 수정 findAllBy -> findAll
+        List<ReportedReviewDTO> result = new ArrayList<>();
 
-        Page<ReportedReview> reportedReviews = reportedReviewRepository.findAllBy(paging);
-        List<ReportedReview> reportedReviewList = reportedReviews.getContent();
-        List<ReportedReviewDTO> result = new ArrayList<ReportedReviewDTO>();
-        
-        for (ReportedReview reportedReview : reportedReviewList) {
-            BookReview review = bookReviewRepository.findByReviewId(reportedReview.getReviewId());
+        for (ReportedReview reportedReview : reportedReviewsPage.getContent()) {
+            // ReportedReview에서 BookReview 객체를 직접 가져옵니다.
+            BookReview review = reportedReview.getBookReview();
+
+            // Profile 객체도 review에서 직접 가져옵니다.
             Profile profile = review.getProfile();
-            ReportedReviewDTO reportedReviewDTO = getReportedReviewDTO(reportedReview, review, profile);
 
+            ReportedReviewDTO reportedReviewDTO = getReportedReviewDTO(reportedReview, review, profile);
             result.add(reportedReviewDTO);
         }
 
@@ -82,8 +91,14 @@ public class ReportedService {
         ReportedReviewDTO reportedReviewDTO = new ReportedReviewDTO();
 
         reportedReviewDTO.setReportId(reportedReview.getReportId());
-        reportedReviewDTO.setReviewId(review.getReviewId());
-        reportedReviewDTO.setUserId(profile.getUser().getUserId());
+        reportedReviewDTO.setReviewId(review.getReviewId()); // review 객체에서 reviewId 가져오기
+
+        // ✨ 중요: ReportedReview 엔티티의 userId는 '신고한' 유저의 ID를 의미해야 합니다.
+        // 만약 '신고된 리뷰 작성자의 ID'를 원한다면 review.getProfile().getUser().getUserId()를 사용해야 합니다.
+        // 현재 ReportedReview 엔티티에 신고한 유저 ID가 저장되어 있다면 reportedReview.getUserId()를 사용해야 합니다.
+        reportedReviewDTO.setUserId(reportedReview.getUserId()); // 신고한 유저의 ID
+
+        // reportedDate 필드가 ReportedReview 엔티티에 추가되었다고 가정
         reportedReviewDTO.setReportedDate(reportedReview.getReportedDate());
 
         reportedReviewDTO.setBookIsbn(review.getBookIsbn());

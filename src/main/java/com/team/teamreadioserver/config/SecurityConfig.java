@@ -67,8 +67,8 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/bookReview/create").authenticated()
                                 .requestMatchers(HttpMethod.PUT, "/bookReview/{reviewId}/report").authenticated()
                                 .requestMatchers(HttpMethod.DELETE, "/bookReview/delete/**").authenticated()
-                                .requestMatchers(HttpMethod.POST, "/bookReview/reviews/{reviewId}/like").authenticated()
-                                .requestMatchers(HttpMethod.DELETE, "/bookReview/review/{reviewId}/like").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/bookReview/{reviewId}/like").authenticated()
+                                .requestMatchers(HttpMethod.DELETE, "/bookReview/{reviewId}/like").authenticated()
                                 .requestMatchers("/bookReview/reviews/my").authenticated() // 내 리뷰 조회
 
                                 // /videoBookmark/status/** (개인 북마크 상태 포함)는 인증 필요
