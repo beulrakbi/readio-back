@@ -252,17 +252,6 @@ public class BookReviewService {
 
             return dto;
         }).collect(Collectors.toList());
-        List<BookReviewDTO> result = new ArrayList<>();
-        for (BookReview foundBookReview : foundBookReviews)
-        {
-            Profile profile = profileRepository.findByProfileId(foundBookReview.getProfileId());
-            BookReviewDTO bookReviewDTO = new BookReviewDTO(foundBookReview.getReviewId(), foundBookReview.getProfileId(), foundBookReview.getBookIsbn(),
-                    foundBookReview.getReviewContent(), foundBookReview.getReportedCount(), foundBookReview.getIsHidden(), foundBookReview.getCreatedAt(), profile.getPenName());
-
-            result.add(bookReviewDTO);
-        }
-
-        return result;
     }
 
     public Profile getProfileByUserId(String userId) {
