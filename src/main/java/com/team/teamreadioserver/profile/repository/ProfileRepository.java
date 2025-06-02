@@ -12,6 +12,6 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
     // 필명 중복 확인용 (기본 필명 생성시 필요)
     boolean existsByPenName(String penName);
 
-    Profile findByProfileId(Integer profileId);
+    Profile findByProfileId(Long profileId);
 
 }

@@ -43,7 +43,7 @@ public class BookService {
 
         // DB에 없으면 외부 API 호출
         List<BookDTO> apiDTOs = externalClient.fetchBooks(keyword, page, size);
-        System.out.println("잘 가져오나?: " + apiDTOs);
+//        System.out.println("잘 가져오나?: " + apiDTOs);
 
         // 신규 ISBN 만 걸러내서 저장
         List<String> isbns = apiDTOs.stream()
@@ -110,7 +110,9 @@ public class BookService {
 
     public BookDTO selectBook(String bookIsbn) {
 
-        return modelMapper.map(bookRepository.findById(bookIsbn), BookDTO.class);
+        Book foundBook = bookRepository.findByBookIsbn(bookIsbn);
+        BookDTO bookDTO = new BookDTO(foundBook);
+        return bookDTO;
 
     }
 }

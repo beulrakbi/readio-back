@@ -25,7 +25,7 @@ public class BookReview {
     private Integer reviewId;
 
     @Column(name = ("profile_id"))
-    private Integer profileId;
+    private Long profileId;
 
     @Column(name=("book_isbn"))
     private String bookIsbn;
@@ -46,13 +46,24 @@ public class BookReview {
     @PrePersist
     public void prePersist(){
         this.isHidden = isHidden.N;
-        this.profileId = 1;
+        this.profileId = 1L;
 //        this.reportedCount = 0;
     }
     public void report() {
         this.reportedCount++;
     }
-    public void hide() {
-        this.isHidden = IsHidden.Y;
+    public String hide() {
+
+        if (this.isHidden == isHidden.N)
+        {
+            this.isHidden = isHidden.Y;
+            return "숨김처리됨";
+        }
+        else
+        {
+            this.isHidden = isHidden.N;
+            return "노출처리됨";
+        }
+
     }
 }
