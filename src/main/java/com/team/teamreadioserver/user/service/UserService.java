@@ -1,27 +1,39 @@
 package com.team.teamreadioserver.user.service;
 
+import com.team.teamreadioserver.profile.entity.Profile;
+import com.team.teamreadioserver.profile.enums.PrivateStatus;
+import com.team.teamreadioserver.profile.repository.ProfileRepository;
 import com.team.teamreadioserver.user.dto.JoinRequestDTO;
 import com.team.teamreadioserver.user.dto.UserEditRequestDTO;
 import com.team.teamreadioserver.user.dto.UserInfoResponseDTO;
 import com.team.teamreadioserver.user.entity.User;
+import com.team.teamreadioserver.user.entity.UserRole;
 import com.team.teamreadioserver.user.mapper.UserMapper;
+import com.team.teamreadioserver.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final Logger logger = LoggerFactory.getLogger(UserService.class);
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final ProfileRepository profileRepository;
 
-    public UserService(UserMapper userMapper, PasswordEncoder passwordEncoder) {
-        this.userMapper = userMapper;
-        this.passwordEncoder = passwordEncoder;
-    }
+//    public UserService(UserMapper userMapper, PasswordEncoder passwordEncoder) {
+//        this.userMapper = userMapper;
+//        this.passwordEncoder = passwordEncoder;
+//    }
 
     // 회원가입
     @Transactional
@@ -30,7 +42,43 @@ public class UserService {
         String encodedPwd = passwordEncoder.encode(joinRequestDTO.getUserPwd());
         joinRequestDTO.setUserPwd(encodedPwd);
         userMapper.insertUser(joinRequestDTO);
+
+        LocalDate parsedBirthday = LocalDate.parse(joinRequestDTO.getUserBirthday());
+
+        // 사용자 생성
+        User user = User.builder()
+                .userId(joinRequestDTO.getUserId())
+                .userName(joinRequestDTO.getUserName())
+                .userPwd(encodedPwd)
+                .userEmail(joinRequestDTO.getUserEmail())
+                .userPhone(joinRequestDTO.getUserPhone())
+                .userBirthday(parsedBirthday)
+                .userRole(UserRole.USER) // 혹시 null 방지로 기본값 설정
+                .userEnrollDate(LocalDateTime.now())
+                .build();
+
+        userRepository.save(user);
+
+        // 필명 자동 생성
+        int suffix = 1;
+        String base = "Readio 기본 필명 ";
+        while (profileRepository.existsByPenName(base + suffix)) {
+            suffix++;
+        }
+        String defaultPenName = base + suffix;
+
+        // 프로필 생성
+        Profile profile = Profile.builder()
+                .user(user)
+                .penName(defaultPenName)
+                .biography("")
+                .isPrivate(PrivateStatus.PUBLIC)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        profileRepository.save(profile);
     }
+
 
     // 아이디 중복 체크
     public boolean isIdAvailable(String userId) {
