@@ -34,7 +34,7 @@ public class VideoBookmarkService {
         return videoBookmarkRepository.countByVideoId(videoBookmarkRequestDTO.getVideoId());
     }
 
-    public long deleteVideoBookmark(String userId, Integer bookmarkId) {
+    public VideoBookmarkStatusResponseDTO deleteVideoBookmark(String userId, Integer bookmarkId) {
         VideoBookmark bookmarkToDelete = videoBookmarkRepository.findById(bookmarkId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 즐겨찾기를 찾을 수 없습니다."));
 
@@ -45,7 +45,9 @@ public class VideoBookmarkService {
         String videoId = bookmarkToDelete.getVideoId();
         videoBookmarkRepository.deleteById(bookmarkId);
 
-        return videoBookmarkRepository.countByVideoId(videoId);
+        long totalCount = videoBookmarkRepository.countByVideoId(videoId);
+        // 삭제 후에는 isBookmarked: false, bookmarkId: null 로 반환
+        return new VideoBookmarkStatusResponseDTO(false, totalCount, null);
     }
 
     public List<VideoBookmarkResponseDTO> getUserVideoBookmarks(String userId) {
@@ -75,6 +77,8 @@ public class VideoBookmarkService {
     public long getTotalBookmarkCountOnlyForVideo(String videoId) {
         return videoBookmarkRepository.countByVideoId(videoId);
     }
+
+
 }
 
 // 커밋용 주석
