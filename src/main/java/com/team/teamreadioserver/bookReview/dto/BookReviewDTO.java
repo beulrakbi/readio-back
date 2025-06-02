@@ -12,10 +12,12 @@ import java.util.Date;
 @AllArgsConstructor
 public class BookReviewDTO {
     private Integer reviewId;
-    private Integer profileId;
+    private Long profileId;
     private String bookIsbn;
     private String reviewContent;
     private Integer reportedCount;
     private IsHidden isHidden;
     private Date createdAt;
+
+    private String penName;
 }

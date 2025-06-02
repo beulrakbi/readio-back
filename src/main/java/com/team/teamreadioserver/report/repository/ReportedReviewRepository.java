@@ -9,7 +9,6 @@ import java.util.List;
 
 public interface ReportedReviewRepository extends JpaRepository<ReportedReview, Integer> {
     ReportedReview findByReportId(Integer reportId);
-    ReportedReview findByReviewId(Integer reviewId);
     List<ReportedReview> findByUserId(String userId);
     Page<ReportedReview> findAllBy(Pageable pageable);
 }

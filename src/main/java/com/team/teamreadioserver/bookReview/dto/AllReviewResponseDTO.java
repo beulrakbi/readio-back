@@ -10,7 +10,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 public class AllReviewResponseDTO {
-    private Integer profileId;
+    private Long profileId;
     private String reviewContent;
     private Date createdAt;
 }
