@@ -66,8 +66,7 @@ public class ReportedService {
     }
 
 
-    public int allReportedReviewNum()
-    {
+    public int allReportedReviewNum() {
         return reportedReviewRepository.findAll().size();
     }
 
@@ -84,51 +83,35 @@ public class ReportedService {
             // ReportedReview에서 BookReview 객체를 직접 가져옵니다.
             BookReview review = reportedReview.getBookReview();
 
-            // Profile 객체도 review에서 직접 가져옵니다.
-            Profile profile = review.getProfile();
+            if (review != null) {
+                // Profile 객체도 review에서 직접 가져옵니다.
+                Profile profile = review.getProfile();
 
-            ReportedReviewDTO reportedReviewDTO = getReportedReviewDTO(reportedReview, review, profile);
-            result.add(reportedReviewDTO);
-        Page<ReportedReview> reportedReviews = reportedReviewRepository.findAllBy(paging);
-        List<ReportedReview> reportedReviewList = reportedReviews.getContent();
-        List<ReportedReviewDTO> result = new ArrayList<ReportedReviewDTO>();
-        System.out.println("list: " + reportedReviewList);
-        for (ReportedReview reportedReview : reportedReviewList) {
-            BookReview review = bookReviewRepository.findByReviewId(reportedReview.getReviewId());
-            if (review != null)
-            {
-                Profile profile = profileRepository.findByProfileId(review.getProfileId());
-                ReportedReviewDTO reportedReviewDTO = this.getReportedReviewDTO(reportedReview, review, profile);
-
+                ReportedReviewDTO reportedReviewDTO = getReportedReviewDTO(reportedReview, review, profile);
                 result.add(reportedReviewDTO);
-            }
-            else
-            {
+            } else {
                 reportedReviewRepository.delete(reportedReview);
             }
         }
-
         return result;
     }
 
-    public ReportedReviewDTO getReportedReview(Integer reportId)
-    {
-        ReportedReview reportedReview = reportedReviewRepository.findByReportId(reportId);
-        BookReview review = bookReviewRepository.findByReviewId(reportedReview.getReviewId());
-        if (review != null)
-        {
-            Profile profile = profileRepository.findByProfileId(review.getProfileId());
-            ReportedReviewDTO reportedReviewDTO = this.getReportedReviewDTO(reportedReview, review, profile);
+
+    public ReportedReviewDTO getReportedReview(Integer reportId) {
+        Optional<ReportedReview> reportedReview = reportedReviewRepository.findByReportId(reportId);
+        BookReview review = reportedReview.get().getBookReview();
+        if (review != null) {
+            Profile profile = profileRepository.findByProfileId(review.getProfile().getProfileId());
+            ReportedReviewDTO reportedReviewDTO = this.getReportedReviewDTO(reportedReview.get(), review, profile);
             return reportedReviewDTO;
-        }
-        else
-        {
-            reportedReviewRepository.delete(reportedReview);
+        } else {
+            reportedReviewRepository.delete(reportedReview.get());
             return null;
         }
     }
 
-    private ReportedReviewDTO getReportedReviewDTO(ReportedReview reportedReview, BookReview review, Profile profile) {
+    private ReportedReviewDTO getReportedReviewDTO(ReportedReview reportedReview, BookReview review, Profile
+            profile) {
         ReportedReviewDTO reportedReviewDTO = new ReportedReviewDTO();
 
         reportedReviewDTO.setReportId(reportedReview.getReportId());
@@ -149,9 +132,8 @@ public class ReportedService {
         reportedReviewDTO.setIsHidden(review.getIsHidden());
         return reportedReviewDTO;
     }
-}
-    public Object hidePost(Integer reportId)
-    {
+
+    public Object hidePost(Integer reportId) {
         int result = 0;
 
         try {
@@ -170,13 +152,11 @@ public class ReportedService {
     }
 
 
-    public int allReportedPostNum()
-    {
+    public int allReportedPostNum() {
         return reportedPostRepository.findAll().size();
     }
 
-    public Object allReportedPostWithPaging(Criteria cri)
-    {
+    public Object allReportedPostWithPaging(Criteria cri) {
 
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
@@ -189,15 +169,12 @@ public class ReportedService {
         System.out.println("list: " + reportedPostList);
         for (ReportedPost reportedPost : reportedPostList) {
             Post post = postRepository.findByPostId(reportedPost.getPostId());
-            if (post != null)
-            {
+            if (post != null) {
                 Profile profile = profileRepository.findByProfileId(post.getProfile().getProfileId());
                 ReportedPostDTO reportedPostDTO = this.getReportedPostDTO(reportedPost, post, profile);
 
                 result.add(reportedPostDTO);
-            }
-            else
-            {
+            } else {
                 reportedPostRepository.delete(reportedPost);
             }
         }
@@ -205,18 +182,14 @@ public class ReportedService {
         return result;
     }
 
-    public ReportedPostDTO getReportedPost(Integer reportId)
-    {
+    public ReportedPostDTO getReportedPost(Integer reportId) {
         ReportedPost reportedPost = reportedPostRepository.findByReportId(reportId);
         Post post = postRepository.findByPostId(reportedPost.getPostId());
-        if (post != null)
-        {
+        if (post != null) {
             Profile profile = profileRepository.findByProfileId(post.getProfile().getProfileId());
             ReportedPostDTO reportedPostDTO = this.getReportedPostDTO(reportedPost, post, profile);
             return reportedPostDTO;
-        }
-        else
-        {
+        } else {
             reportedPostRepository.delete(reportedPost);
             return null;
         }
@@ -239,4 +212,6 @@ public class ReportedService {
         return reportedPostDTO;
     }
 
+
 }
+
