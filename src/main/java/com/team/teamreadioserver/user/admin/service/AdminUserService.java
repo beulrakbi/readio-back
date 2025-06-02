@@ -5,7 +5,9 @@ import com.team.teamreadioserver.user.admin.dto.AdminUserSearchDTO;
 import com.team.teamreadioserver.user.admin.dto.AdminUserViewDTO;
 import com.team.teamreadioserver.user.admin.mapper.AdminMapper;
 import lombok.RequiredArgsConstructor;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -45,6 +47,7 @@ public class AdminUserService {
     return adminMapper.countAdminUserList(searchDTO); // Mapper에 count 쿼리 추가 필요
   }
 
+  @Transactional
   public void changeUserRole(String userId, String newRole) {
     adminMapper.updateUserRole(userId, newRole);
   }

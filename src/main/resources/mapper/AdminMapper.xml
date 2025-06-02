@@ -64,8 +64,7 @@
                     <when test="type == '관리자'">
                         'ADMIN'
                     </when>
-                    <otherwise>
-                        '' </otherwise>
+
                 </choose>
             </foreach>
         </if>
@@ -125,8 +124,7 @@
                     <when test="type == '관리자'">
                         'ADMIN'
                     </when>
-                    <otherwise>
-                        '' </otherwise>
+
                 </choose>
             </foreach>
         </if>
@@ -141,7 +139,6 @@
         </if>
     </select>
 
-
     <!-- 회원 권한 변경 -->
     <update id="updateUserRole">
         UPDATE user
@@ -149,6 +146,7 @@
         WHERE user_id = #{userId}
     </update>
 
+    <!-- 회원 삭제 -->
     <delete id="deleteUser">
         DELETE FROM user
         WHERE user_id = #{userId}

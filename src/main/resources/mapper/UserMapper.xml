@@ -52,6 +52,7 @@
         WHERE user_id = #{userId}
     </select>
 
+    <!--비밀번호 확인-->
     <select id="getPasswordByUserId" parameterType="string" resultType="string">
         SELECT user_pwd
         FROM `user`
@@ -117,5 +118,13 @@
         SET user_pwd = #{newPassword}
         WHERE user_id = #{userId}
     </update>
+
+    <!--회원탈퇴-->
+    <delete id="deleteUserById" parameterType="String">
+        DELETE FROM user
+        WHERE user_id = #{userId}
+    </delete>
+
+
 
 </mapper>

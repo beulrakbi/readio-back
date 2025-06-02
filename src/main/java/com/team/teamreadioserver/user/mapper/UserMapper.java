@@ -37,5 +37,7 @@ public interface UserMapper {
   /**비밀번호 업데이트**/
   void updatePassword(@Param("userId") String userId, @Param("newPassword") String newPassword);
 
+  /**회원탈퇴**/
+  int deleteUserById(@Param("userId") String userId);
 
 }

@@ -3,6 +3,7 @@ package com.team.teamreadioserver.user.admin.controller;
 import com.team.teamreadioserver.user.admin.dto.AdminUserListResponse;
 import com.team.teamreadioserver.user.admin.dto.AdminUserSearchDTO;
 import com.team.teamreadioserver.user.admin.dto.AdminUserViewDTO;
+import com.team.teamreadioserver.user.admin.dto.RoleUpdateRequestDTO;
 import com.team.teamreadioserver.user.admin.service.AdminUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -94,24 +95,21 @@ public class AdminUserController {
     return ResponseEntity.ok(result);
   }
 
-//  @GetMapping("/list")
-//  public ResponseEntity<AdminUserListResponse> getUserList(AdminUserSearchDTO searchDTO) {
-//    AdminUserListResponse response = adminUserService.getPagedAdminUserList(searchDTO);
-//    return ResponseEntity.ok(response);
-//  }
+  @Operation(summary = "회원권한변경", description = "관리자는 회원권한을 변경할 수 있다.")
+  @PutMapping("/users/{userId}/role")
+  public ResponseEntity<?> updateUserRole(@PathVariable String userId, @RequestBody RoleUpdateRequestDTO requestDTO) {
+    adminUserService.changeUserRole(userId, requestDTO.getNewRole());
+    System.out.println("변경할 권한: " + requestDTO.getNewRole()); // null 확인용 출력
 
-  // 권한변경
-  @PutMapping("/{userId}/role")
-  public ResponseEntity<Void> changeUserRole(@PathVariable String userId, @RequestBody Map<String, String> payload) {
-    String newRole = payload.get("newRole");
-    adminUserService.changeUserRole(userId, newRole);
     return ResponseEntity.ok().build();
   }
 
+  @Operation(summary = "회원 삭제", description = "관리자는 회원을 삭제할 수 있다.")
   @DeleteMapping("/{userId}")
   public ResponseEntity<Void> deleteUser(@PathVariable String userId) {
     adminUserService.deleteUser(userId);
     return ResponseEntity.ok().build();
+
   }
 
 
