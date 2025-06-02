@@ -50,6 +50,13 @@ public class Post {
     @OneToOne(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private PostImg postImg;
 
+    public void hide() {
+        if (this.postHidden.equals("Y"))
+            this.postHidden = "N";
+        else
+            this.postHidden = "Y";
+    }
+
 //    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 //    private PostReview postReview;
 }
