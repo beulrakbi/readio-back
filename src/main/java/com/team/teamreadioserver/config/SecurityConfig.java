@@ -59,15 +59,23 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
                         .requestMatchers("/users/login", "/users/join/**","/users/account/**", "/users/sendCode", "/users/verifyUser", "/users/resetPassword", "/video/**", "/curation/**", "/img/**", "/search/**", "/bookPage/**", "/bookReview/**", "/reported/**", "/serviceCenter/**", "/videoBookmark/publicCount/**").permitAll()  // 인증 필요없는 경로
                         .requestMatchers("/users/login", "/users/join/**", "/video/**", "/curation/**", "/img/**", "/api/clicks/**", "/api/follow").permitAll()  // 인증 필요없는 경로
-                        .requestMatchers(HttpMethod.GET, "/api/user/interests/categories", "/api/user/interests/keywords","/post/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/user/interests/categories", "/api/user/interests/keywords","/post/**",  "/bookReview/**").permitAll()
                                 // /videoBookmark/status/** (개인 북마크 상태 포함)는 인증 필요
                                 .requestMatchers("/videoBookmark/status/**").authenticated()
+                                .requestMatchers("/bookBookmark/status/**").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/bookReview/create").authenticated()
+                                .requestMatchers(HttpMethod.PUT, "/bookReview/{reviewId}/report").authenticated()
+                                .requestMatchers(HttpMethod.DELETE, "/bookReview/delete/**").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/bookReview/{reviewId}/like").authenticated()
+                                .requestMatchers(HttpMethod.DELETE, "/bookReview/{reviewId}/like").authenticated()
+                                .requestMatchers("/bookReview/reviews/my").authenticated() // 내 리뷰 조회
                                 // POST 및 DELETE 요청도 인증 필요
-                                .requestMatchers(HttpMethod.POST, "/videoBookmark/**","/post/**","/api/follow").authenticated()
-                                .requestMatchers(HttpMethod.DELETE, "/videoBookmark/**").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/bookBookmark/**").authenticated()
+                                .requestMatchers(HttpMethod.DELETE, "/bookBookmark/**").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/videoBookmark/**").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/post/**","/api/follow").authenticated()
                         .requestMatchers("/api/user/**").authenticated()
                         .requestMatchers(
                                 "/",
