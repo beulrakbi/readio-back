@@ -52,6 +52,7 @@
         WHERE user_id = #{userId}
     </select>
 
+    <!--비밀번호 확인-->
     <select id="getPasswordByUserId" parameterType="string" resultType="string">
         SELECT user_pwd
         FROM `user`
@@ -59,13 +60,14 @@
     </select>
 
     <!--회원정보 조회-->
-    <select id="selectUserById" parameterType="string" resultType="com.team.teamreadioserver.user.dto.UserInfoResponseDTO">
-        SELECT user_id as userID,
-               user_name as userName,
-               user_email as userEmail,
-               user_phone as userPhone,
+    <select id="selectUserById" parameterType="string"
+            resultType="com.team.teamreadioserver.user.dto.UserInfoResponseDTO">
+        SELECT user_id       as userID,
+               user_name     as userName,
+               user_email    as userEmail,
+               user_phone    as userPhone,
                user_birthday as userBirthday,
-               user_role as userRole
+               user_role     as userRole
         FROM `user`
         WHERE user_id = TRIM(#{userId})
     </select>
@@ -83,7 +85,7 @@
             <if test="userBirthday != null">
                 user_birthday = #{userBirthday},
             </if>
-            <if test="userPwd != null and userPwd != ''"> user_pwd = #{userPwd},
+            <if test="userPwd != null and userPwd != ''">user_pwd = #{userPwd},
             </if>
         </set>
         WHERE user_id = #{userId}
@@ -98,15 +100,31 @@
 
     <!--아이디/비밀번호 찾기-->
     <select id="findIdByNameAndPhone" resultType="string">
-            SELECT user_id FROM user WHERE user_name = #{name} AND user_phone = #{phone}
+        SELECT user_id
+        FROM user
+        WHERE user_name = #{userName}
+          AND user_phone = #{userPhone}
     </select>
 
     <select id="findPwdByIdAndEmail" resultType="string">
-            SELECT user_id FROM user WHERE user_id = #{userId} AND user_email = #{email}
+        SELECT user_id
+        FROM user
+        WHERE user_id = #{userId}
+          AND user_email = #{userEmail}
     </select>
 
     <update id="updatePassword">
-            UPDATE user SET user_pwd = #{newPassword} WHERE user_id = #{userId}
+        UPDATE user
+        SET user_pwd = #{newPassword}
+        WHERE user_id = #{userId}
     </update>
+
+    <!--회원탈퇴-->
+    <delete id="deleteUserById" parameterType="String">
+        DELETE FROM user
+        WHERE user_id = #{userId}
+    </delete>
+
+
 
 </mapper>

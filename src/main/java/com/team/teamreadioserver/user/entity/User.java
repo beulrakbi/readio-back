@@ -38,7 +38,6 @@ public class User {
   @Column(name = "user_phone", nullable = false, length = 15)
   private String userPhone;
 
-
   @Column(name = "user_birthday", nullable = false)
   private LocalDate userBirthday;
 
