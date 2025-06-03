@@ -29,4 +29,6 @@ public interface BookRepository extends JpaRepository<Book, String> {
     List<Object[]> findBooksSortedByBookmark(@Param("isbns") List<String> isbns);
 
 
+
+    Book findByBookIsbn(String bookIsbn);
 }

@@ -1,18 +1,15 @@
 package com.team.teamreadioserver.bookReview.repository;
 
-import com.team.teamreadioserver.bookReview.entity.BookReview;
-import com.team.teamreadioserver.bookReview.entity.ReviewLike;
-import org.apache.ibatis.annotations.Param;
+import com.team.teamreadioserver.bookReview.entity.ReviewLike; // ReviewLike 엔티티 import
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-
-import java.util.Optional;
+import org.springframework.data.repository.query.Param; // @Param import
 
 public interface LikesRepository extends JpaRepository<ReviewLike, Integer> {
-    boolean existsByReviewIdAndProfileId(Integer reviewId, Integer profileId);
+    boolean existsByBookReview_ReviewIdAndProfile_ProfileId(Integer reviewId, Long profileId);
 
-    void deleteByProfileIdAndReviewId(Integer profileId, Integer reviewId);
+    void deleteByProfile_ProfileIdAndBookReview_ReviewId(Long profileId, Integer reviewId);
 
-    @Query("SELECT COUNT(l) FROM ReviewLike l WHERE l.reviewId = :reviewId")
+    @Query("SELECT COUNT(l) FROM ReviewLike l WHERE l.bookReview.reviewId = :reviewId")
     Integer countLikesByReviewId(@Param("reviewId") Integer reviewId);
 }

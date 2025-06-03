@@ -1,3 +1,4 @@
+// src/main/java/com/team/teamreadioserver/bookmark/service/VideoBookmarkService.java
 package com.team.teamreadioserver.bookmark.service;
 
 import com.team.teamreadioserver.bookmark.dto.VideoBookmarkRequestDTO;
@@ -5,6 +6,8 @@ import com.team.teamreadioserver.bookmark.dto.VideoBookmarkResponseDTO;
 import com.team.teamreadioserver.bookmark.dto.VideoBookmarkStatusResponseDTO;
 import com.team.teamreadioserver.bookmark.entity.VideoBookmark;
 import com.team.teamreadioserver.bookmark.repository.VideoBookmarkRepository;
+import com.team.teamreadioserver.video.entity.Video;
+import com.team.teamreadioserver.video.repository.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,19 +22,27 @@ public class VideoBookmarkService {
     @Autowired
     private VideoBookmarkRepository videoBookmarkRepository;
 
+    @Autowired
+    private VideoRepository videoRepository;
+
     public long addVideoBookmark(String userId, VideoBookmarkRequestDTO videoBookmarkRequestDTO) {
-        boolean exists = videoBookmarkRepository.existsByVideoIdAndUserId(videoBookmarkRequestDTO.getVideoId(), userId);
+        // 변경된 레포지토리 메서드 이름 사용
+        boolean exists = videoBookmarkRepository.existsByVideo_VideoIdAndUserId(videoBookmarkRequestDTO.getVideoId(), userId);
         if (exists) {
             throw new IllegalArgumentException("이미 이 영상을 즐겨찾기했습니다.");
         }
 
+        Video video = videoRepository.findById(videoBookmarkRequestDTO.getVideoId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 비디오 ID입니다."));
+
         VideoBookmark videoBookmark = VideoBookmark.builder()
-                .videoId(videoBookmarkRequestDTO.getVideoId())
+                .video(video) // Video 엔티티 객체 설정
                 .userId(userId)
                 .build();
         videoBookmarkRepository.save(videoBookmark);
 
-        return videoBookmarkRepository.countByVideoId(videoBookmarkRequestDTO.getVideoId());
+        // 변경된 레포지토리 메서드 이름 사용
+        return videoBookmarkRepository.countByVideo_VideoId(videoBookmarkRequestDTO.getVideoId());
     }
 
     public VideoBookmarkStatusResponseDTO deleteVideoBookmark(String userId, Integer bookmarkId) {
@@ -42,29 +53,44 @@ public class VideoBookmarkService {
             throw new SecurityException("해당 즐겨찾기를 삭제할 권한이 없습니다.");
         }
 
-        String videoId = bookmarkToDelete.getVideoId();
+        // VideoBookmark 엔티티의 video 필드를 통해 videoId에 접근
+        String videoId = bookmarkToDelete.getVideo().getVideoId();
+
         videoBookmarkRepository.deleteById(bookmarkId);
 
-        long totalCount = videoBookmarkRepository.countByVideoId(videoId);
-        // 삭제 후에는 isBookmarked: false, bookmarkId: null 로 반환
+        // 변경된 레포지토리 메서드 이름 사용
+        long totalCount = videoBookmarkRepository.countByVideo_VideoId(videoId);
         return new VideoBookmarkStatusResponseDTO(false, totalCount, null);
     }
 
     public List<VideoBookmarkResponseDTO> getUserVideoBookmarks(String userId) {
-        return videoBookmarkRepository.findByUserId(userId).stream()
-                .map(b -> new VideoBookmarkResponseDTO(b.getVideoId(), b.getUserId()))
+        List<VideoBookmark> bookmarks = videoBookmarkRepository.findByUserId(userId);
+
+        return bookmarks.stream()
+                .map(bookmark -> {
+                    Video video = bookmark.getVideo();
+                    return VideoBookmarkResponseDTO.builder()
+                            .bookmarkId(bookmark.getBookmarkId())
+                            .videoId(video != null ? video.getVideoId() : null)
+                            .videoTitle(video != null ? video.getTitle() : "제목 없음")
+                            .channelTitle(video != null ? video.getChannelTitle() : "채널 없음")
+                            .thumbnailUrl(video != null ? video.getThumbnail() : null)
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public VideoBookmarkStatusResponseDTO getVideoBookmarkStatus(String userId, String videoId) {
-        // userId는 이제 항상 유효한 값이라고 가정 (SecurityConfig에서 authenticated() 처리)
-        boolean userHasBookmarked = videoBookmarkRepository.existsByVideoIdAndUserId(videoId, userId);
-        long totalCount = videoBookmarkRepository.countByVideoId(videoId); // totalCount는 status API에서도 제공 (프론트에서 선택적 사용)
+        // 변경된 레포지토리 메서드 이름 사용
+        boolean userHasBookmarked = videoBookmarkRepository.existsByVideo_VideoIdAndUserId(videoId, userId);
+        // 변경된 레포지토리 메서드 이름 사용
+        long totalCount = videoBookmarkRepository.countByVideo_VideoId(videoId);
 
         Integer bookmarkId = null;
         if (userHasBookmarked) {
-            Optional<VideoBookmark> userBookmark = videoBookmarkRepository.findByVideoIdAndUserId(videoId, userId);
+            // 변경된 레포지토리 메서드 이름 사용
+            Optional<VideoBookmark> userBookmark = videoBookmarkRepository.findByVideo_VideoIdAndUserId(videoId, userId);
             if (userBookmark.isPresent()) {
                 bookmarkId = userBookmark.get().getBookmarkId();
             }
@@ -72,13 +98,9 @@ public class VideoBookmarkService {
         return new VideoBookmarkStatusResponseDTO(userHasBookmarked, totalCount, bookmarkId);
     }
 
-    // 새로 추가된 메서드: 로그인 여부와 상관없이 총 북마크 개수만 조회
     @Transactional(readOnly = true)
     public long getTotalBookmarkCountOnlyForVideo(String videoId) {
-        return videoBookmarkRepository.countByVideoId(videoId);
+        // 변경된 레포지토리 메서드 이름 사용
+        return videoBookmarkRepository.countByVideo_VideoId(videoId);
     }
-
-
 }
-
-// 커밋용 주석

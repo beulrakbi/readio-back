@@ -59,6 +59,7 @@ logging:
   com.team.teamreadioserver.user.mapper: DEBUG   # UserMapper 로그 디버그 출력
   java.sql: DEBUG
   org.mybatis: DEBUG                             # MyBatis 전체 로그 디버그 출력 (선택)
+
 mybatis:
  mapper-locations: classpath:mapper/*.xml
  type-aliases-package: com.team.teamreadioserver.user.dto
@@ -75,3 +76,12 @@ aladin:
     hibernate:
      jdbc:
       time_zone: UTC
+
+ # application.yml
+ logging:
+  level:
+   org:
+    springframework:
+     web: DEBUG
+     security: DEBUG
+   com.team.teamreadioserver: DEBUG # 사용자 패키지
