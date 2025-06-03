@@ -2,10 +2,7 @@ package com.team.teamreadioserver.user.auth.jwt;
 
 import com.team.teamreadioserver.user.dto.UserInfoResponseDTO;
 import com.team.teamreadioserver.user.mapper.UserMapper;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
@@ -89,6 +86,7 @@ public class JwtTokenProvider {
             getClaimsFromToken(authToken);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
+            e.printStackTrace(); // 여기에 반드시 로그 출력 추가
             return false;
         }
     }

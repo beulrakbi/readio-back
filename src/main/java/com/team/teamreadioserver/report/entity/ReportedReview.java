@@ -1,5 +1,6 @@
 package com.team.teamreadioserver.report.entity;
 
+import com.team.teamreadioserver.bookReview.entity.BookReview;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,14 +12,16 @@ import java.util.Date;
 @ToString
 @RequiredArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ReportedReview {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "report_id")
     private int reportId;
 
-    @Column(name = "review_id")
-    private int reviewId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "review_id", referencedColumnName = "review_id", nullable = false)
+    private BookReview bookReview;
 
     @Column(name = "user_id")
     private String userId;
@@ -26,9 +29,9 @@ public class ReportedReview {
     @Column(name = "reported_date")
     private Date reportedDate;
 
-    public ReportedReview(int reviewId, String userId)
+    public ReportedReview(BookReview bookReview, String userId)
     {
-        this.reviewId = reviewId;
+        this.bookReview = bookReview;
         this.userId = userId;
         this.reportedDate = new Date();
     }

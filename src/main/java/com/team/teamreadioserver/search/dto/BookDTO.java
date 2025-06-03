@@ -2,7 +2,9 @@ package com.team.teamreadioserver.search.dto;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.team.teamreadioserver.search.entity.Book;
 import lombok.*;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +26,17 @@ public class BookDTO {
     private String bookDescription;
     private String bookPubdate;
 
+    public BookDTO(Book book)
+    {
+        this.bookIsbn = book.getBookIsbn();
+        this.bookTitle = StringEscapeUtils.unescapeHtml4(book.getBookTitle());
+        this.bookAuthor = book.getBookAuthor();
+        this.bookPublisher = book.getBookPublisher();
+        this.bookCover = book.getBookCover();
+        this.bookDescription = StringEscapeUtils.unescapeHtml4(book.getBookDescription());
+        this.bookPubdate = book.getBookPubdate().toString();
+    }
+
     public static List<BookDTO> fromApiResponse(String text) {
         try {
             // JSONP 헤더/푸터 제거
@@ -44,7 +57,7 @@ public class BookDTO {
                 for (JsonNode node : items) {
                     BookDTO bookDTO = new BookDTO();
                     bookDTO.setBookIsbn(node.path("isbn").asText());
-                    bookDTO.setBookTitle(node.path("title").asText());
+                    bookDTO.setBookTitle(StringEscapeUtils.unescapeHtml4(node.path("title").asText()));
                     bookDTO.setBookAuthor(node.path("author").asText());
                     bookDTO.setBookPublisher(node.path("publisher").asText());
                     bookDTO.setBookCover(node.path("cover").asText());

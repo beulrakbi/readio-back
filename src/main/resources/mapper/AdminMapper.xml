@@ -5,7 +5,7 @@
 
 <mapper namespace="com.team.teamreadioserver.user.admin.mapper.AdminMapper">
 
-    <!-- 관리자 회원 목록 조회 -->
+    <!--회원목록조회-->
     <select id="selectAdminUserList" resultType="com.team.teamreadioserver.user.admin.dto.AdminUserViewDTO">
         SELECT
         u.user_id AS userId,
@@ -19,14 +19,11 @@
         WHEN 'ADMIN' THEN '관리자'
         WHEN 'SUSPENDED' THEN '정지회원'
         ELSE '알수없음'
-        END AS userRoleName, -- 여기서 한글 변환
+        END AS userRoleName,
         COALESCE(r.total_report_count, 0) AS reportCount,
-        u.user_enrolldate AS userEnrollDate -- 가입일자
-
-        FROM
-        user u
-        LEFT JOIN
-        (
+        u.user_enrolldate AS userEnrollDate
+        FROM user u
+        LEFT JOIN (
         SELECT report_id AS user_id, COUNT(*) AS total_report_count
         FROM (
         SELECT report_id FROM reported_post
@@ -34,9 +31,126 @@
         SELECT report_id FROM reported_review
         ) combined_reports
         GROUP BY report_id
-        ) r
-        ON u.user_id = r.user_id
+        ) r ON u.user_id = r.user_id
+        WHERE 1=1
+
+        <if test="search.searchType != null and search.searchValue != null and search.searchValue != ''">
+            <if test="search.searchType == 'id'">
+                AND u.user_id LIKE CONCAT('%', #{search.searchValue}, '%')
+            </if>
+            <if test="search.searchType == 'email'">
+                AND u.user_email LIKE CONCAT('%', #{search.searchValue}, '%')
+            </if>
+        </if>
+
+        <if test="search.startDate != null and search.startDate != ''">
+            AND u.user_enrolldate &gt;= #{search.startDate}
+        </if>
+        <if test="search.endDate != null and search.endDate != ''">
+            AND u.user_enrolldate &lt;= #{search.endDate}
+        </if>
+
+        <!--권한 조회-->
+        <if test="search.userTypes != null and search.userTypes.size() > 0">
+            AND u.user_role IN
+            <foreach item="type" collection="search.userTypes" open="(" separator="," close=")">
+                <choose>
+                    <when test="type == '일반회원'">
+                        'USER'
+                    </when>
+                    <when test="type == '정지회원'">
+                        'SUSPENDED'
+                    </when>
+                    <when test="type == '관리자'">
+                        'ADMIN'
+                    </when>
+
+                </choose>
+            </foreach>
+        </if>
+
+        <!--신고여부조회-->
+        <if test="search.reportStatus != null and search.reportStatus != ''">
+            <if test="search.reportStatus == 'Y'">
+                AND COALESCE(r.total_report_count, 0) &gt; 0
+            </if>
+            <if test="search.reportStatus == 'N'">
+                AND COALESCE(r.total_report_count, 0) = 0
+            </if>
+        </if>
         ORDER BY reportCount DESC
-        <!--여기 수정해야됨~~~-->
+        LIMIT #{search.size} OFFSET #{search.offset}
     </select>
+
+    <select id="countAdminUserList" resultType="int">
+        SELECT COUNT(*)
+        FROM user u
+        LEFT JOIN (
+        SELECT report_id AS user_id, COUNT(*) AS total_report_count
+        FROM (
+        SELECT report_id FROM reported_post
+        UNION ALL
+        SELECT report_id FROM reported_review
+        ) combined_reports
+        GROUP BY report_id
+        ) r ON u.user_id = r.user_id
+        WHERE 1=1
+        <if test="search.searchType != null and search.searchValue != null and search.searchValue != ''">
+            <if test="search.searchType == 'id'">
+                AND u.user_id LIKE CONCAT('%', #{search.searchValue}, '%')
+            </if>
+            <if test="search.searchType == 'email'">
+                AND u.user_email LIKE CONCAT('%', #{search.searchValue}, '%')
+            </if>
+        </if>
+        <if test="search.startDate != null and search.startDate != ''">
+            AND u.user_enrolldate &gt;= #{search.startDate}
+        </if>
+        <if test="search.endDate != null and search.endDate != ''">
+            AND u.user_enrolldate &lt;= #{search.endDate}
+        </if>
+
+        <!--권한 조회-->
+        <if test="search.userTypes != null and search.userTypes.size() > 0">
+            AND u.user_role IN
+            <foreach item="type" collection="search.userTypes" open="(" separator="," close=")">
+                <choose>
+                    <when test="type == '일반회원'">
+                        'USER'
+                    </when>
+                    <when test="type == '정지회원'">
+                        'SUSPENDED'
+                    </when>
+                    <when test="type == '관리자'">
+                        'ADMIN'
+                    </when>
+
+                </choose>
+            </foreach>
+        </if>
+
+        <if test="search.reportStatus != null and search.reportStatus != ''">
+            <if test="search.reportStatus == 'Y'">
+                AND COALESCE(r.total_report_count, 0) &gt; 0
+            </if>
+            <if test="search.reportStatus == 'N'">
+                AND COALESCE(r.total_report_count, 0) = 0
+            </if>
+        </if>
+    </select>
+
+    <!-- 회원 권한 변경 -->
+    <update id="updateUserRole">
+        UPDATE user
+        SET user_role = #{newRole}
+        WHERE user_id = #{userId}
+    </update>
+
+    <!-- 회원 삭제 -->
+    <delete id="deleteUser">
+        DELETE FROM user
+        WHERE user_id = #{userId}
+    </delete>
+
+
 </mapper>

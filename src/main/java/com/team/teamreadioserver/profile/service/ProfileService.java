@@ -1,3 +1,4 @@
+// ✅ ProfileService.java
 package com.team.teamreadioserver.profile.service;
 
 import com.team.teamreadioserver.profile.dto.ProfileRequestDTO;
@@ -26,83 +27,89 @@ public class ProfileService {
     private final ProfileRepository profileRepository;
     private final UserRepository userRepository;
 
-    // 등록 + 수정
     @Transactional
-    public void upsertProfile(ProfileRequestDTO profileRequestDTO) {
-        User user = userRepository.findById(profileRequestDTO.getUserId())
+    public void upsertProfile(ProfileRequestDTO dto) {
+        User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         Profile profile = profileRepository.findByUser_UserId(user.getUserId()).orElse(null);
 
-        String penName = (profileRequestDTO.getPenName() == null || profileRequestDTO.getPenName().isEmpty())
-                ? generateDefaultPenName()
-                : profileRequestDTO.getPenName();
+        boolean isNew = (profile == null);
+        String penName;
 
-        if (profile == null) {
+        if (dto.getPenName() == null || dto.getPenName().isEmpty()) {
+            penName = generateDefaultPenName();
+        } else {
+            penName = dto.getPenName();
+            boolean isDuplicate = profileRepository.existsByPenName(penName);
+
+            // 본인의 기존 필명은 허용
+            if (isDuplicate && (isNew || !penName.equals(profile.getPenName()))) {
+                throw new IllegalArgumentException("이미 사용 중인 필명입니다.");
+            }
+        }
+
+        if (isNew) {
             profile = Profile.builder()
                     .user(user)
                     .penName(penName)
-                    .biography(profileRequestDTO.getBiography())
-                    .isPrivate("PRIVATE".equalsIgnoreCase(profileRequestDTO.getIsPrivate())
-                            ? PrivateStatus.PRIVATE : PrivateStatus.PUBLIC)
+                    .biography(dto.getBiography())
+                    .isPrivate(parsePrivateStatus(dto.getIsPrivate()))
                     .createdAt(LocalDateTime.now())
                     .build();
         } else {
             profile.setPenName(penName);
-            profile.setBiography(profileRequestDTO.getBiography());
-            profile.setIsPrivate("PRIVATE".equalsIgnoreCase(profileRequestDTO.getIsPrivate())
-                    ? PrivateStatus.PRIVATE : PrivateStatus.PUBLIC);
+            profile.setBiography(dto.getBiography());
+            profile.setIsPrivate(parsePrivateStatus(dto.getIsPrivate()));
         }
 
         profileRepository.save(profile);
-
-        MultipartFile image = profileRequestDTO.getImage();
-        if (image != null && !image.isEmpty()) {
-            String originalName = image.getOriginalFilename();
-            String extension = originalName.substring(originalName.lastIndexOf("."));
-            String saveName = user.getUserId() + "_IMG" + extension;
-            String saveFolder = new File("src/main/resources/static/img/profile").getAbsolutePath();
-            String savePath = saveFolder + File.separator + saveName;
-
-            try {
-                image.transferTo(new File(savePath));
-            } catch (IOException e) {
-                throw new RuntimeException("이미지 저장 실패", e);
-            }
-
-            profileImgRepository.deleteByProfile(profile);
-
-            ProfileImg profileImage = ProfileImg.builder()
-                    .profile(profile)
-                    .originalName(originalName)
-                    .saveName(saveName)
-                    .build();
-
-            profileImgRepository.save(profileImage);
-        }
+        saveProfileImageIfExists(dto.getImage(), user, profile);
     }
 
-    // 조회
+
+    private PrivateStatus parsePrivateStatus(String status) {
+        return "PRIVATE".equalsIgnoreCase(status) ? PrivateStatus.PRIVATE : PrivateStatus.PUBLIC;
+    }
+
+    private void saveProfileImageIfExists(MultipartFile image, User user, Profile profile) {
+        if (image == null || image.isEmpty()) return;
+
+        String originalName = image.getOriginalFilename();
+        String extension = originalName.substring(originalName.lastIndexOf("."));
+        String saveName = user.getUserId() + "_IMG" + extension;
+        String saveFolder = new File("src/main/resources/static/img/profile").getAbsolutePath();
+        String savePath = saveFolder + File.separator + saveName;
+
+        try {
+            image.transferTo(new File(savePath));
+        } catch (IOException e) {
+            throw new RuntimeException("이미지 저장 실패", e);
+        }
+
+        profileImgRepository.deleteByProfile(profile);
+
+        ProfileImg profileImage = ProfileImg.builder()
+                .profile(profile)
+                .originalName(originalName)
+                .saveName(saveName)
+                .build();
+
+        profileImgRepository.save(profileImage);
+    }
+
     @Transactional(readOnly = true)
     public ProfileResponseDTO getProfile(String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        Profile profile = profileRepository.findByUser_UserId(user.getUserId()).orElse(null);
-        ProfileImg img = null;
+        Profile profile = profileRepository.findByUser_UserId(user.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("프로필이 존재하지 않습니다."));
 
-        if (profile == null) {
-            return ProfileResponseDTO.builder()
-                    .penName(generateDefaultPenName())
-                    .biography("")
-                    .isPrivate(PrivateStatus.PUBLIC.name())
-                    .imageUrl(null)
-                    .build();
-        }
-
-        img = profileImgRepository.findByProfile(profile).orElse(null);
+        ProfileImg img = profileImgRepository.findByProfile(profile).orElse(null);
 
         return ProfileResponseDTO.builder()
+                .profileId(profile.getProfileId())
                 .penName(profile.getPenName())
                 .biography(profile.getBiography())
                 .isPrivate(profile.getIsPrivate().name())
@@ -110,7 +117,6 @@ public class ProfileService {
                 .build();
     }
 
-    // 전체 삭제
     @Transactional
     public void deleteProfile(String userId) {
         User user = userRepository.findById(userId)
@@ -123,67 +129,26 @@ public class ProfileService {
         profileRepository.delete(profile);
     }
 
-    // 이미지 단독 삭제
     @Transactional
     public void deleteProfileImage(String userId) {
-        System.out.println(" [deleteProfileImage] 호출됨 - userId: " + userId);
-
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> {
-                    System.out.println("사용자 없음");
-                    return new IllegalArgumentException("사용자를 찾을 수 없습니다.");
-                });
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         Profile profile = profileRepository.findByUser_UserId(userId)
-                .orElseThrow(() -> {
-                    System.out.println("프로필 없음");
-                    return new IllegalArgumentException("프로필이 없습니다.");
-                });
+                .orElseThrow(() -> new IllegalArgumentException("프로필이 없습니다."));
 
-        ProfileImg img = profileImgRepository.findByProfile(profile).orElse(null);
-        if (img == null) {
-            System.out.println("삭제할 이미지 없음");
-            return;
-        }
-
-        System.out.println("이미지 엔티티 있음: " + img.getSaveName());
-
-        profileImgRepository.delete(img);
-
-        // 실제 파일 삭제
-        String path = "src/main/resources/static/img/profile/" + img.getSaveName();
-        File file = new File(path);
-        if (file.exists()) {
-            boolean deleted = file.delete();
-            System.out.println(deleted ? " 파일 삭제 성공" : "파일 삭제 실패");
-        } else {
-            System.out.println(" 파일 존재하지 않음");
-        }
+        deleteProfileImageFile(profile);
     }
 
-
-    // 실제 이미지 파일 및 DB 레코드 삭제 (공통 로직)
     private void deleteProfileImageFile(Profile profile) {
         ProfileImg img = profileImgRepository.findByProfile(profile).orElse(null);
-        if (img == null) {
-            System.out.println("삭제할 이미지가 없습니다.");
-            return;
-        }
+        if (img == null) return;
 
         profileImgRepository.delete(img);
-
-        String path = "src/main/resources/static/img/profile/" + img.getSaveName();
-        File file = new File(path);
-        if (file.exists()) {
-            if (file.delete()) {
-                System.out.println("이미지 파일 삭제 성공");
-            } else {
-                System.out.println("이미지 파일 삭제 실패");
-            }
-        }
+        File file = new File("src/main/resources/static/img/profile/" + img.getSaveName());
+        if (file.exists()) file.delete();
     }
 
-    // 기본 필명 생성
     private String generateDefaultPenName() {
         int suffix = 1;
         String base = "Readio 기본 필명 ";
@@ -192,4 +157,8 @@ public class ProfileService {
         }
         return base + suffix;
     }
+    public boolean isPenNameTaken(String penName) {
+        return profileRepository.existsByPenName(penName);
+    }
+
 }

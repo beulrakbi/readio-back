@@ -1,6 +1,7 @@
 package com.team.teamreadioserver.post.entity;
 
 import com.team.teamreadioserver.postReview.entity.PostReview;
+import com.team.teamreadioserver.profile.entity.Profile;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,20 +35,31 @@ public class Post {
     @Column(name = "is_hidden")
     private String postHidden;
 
-    @Column(name = "profile_id")
-    private Integer profile;
+    @ManyToOne
+    @JoinColumn(name = "profile_id")
+    private Profile profile;
     //    @ManyToOne
 //    @JoinColumn(name = "profile_id")
     @PrePersist
     public void prePersist() {
-        this.profile = 1;
         this.postCreateDate = new Date();
         this.postReported = 0;
-        this.postHidden = "";
+        this.postHidden = "N";
     }
 
     @OneToOne(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private PostImg postImg;
+
+    public void hide() {
+        if (this.postHidden.equals("Y"))
+            this.postHidden = "N";
+        else
+            this.postHidden = "Y";
+    }
+
+    public void hide2() {
+        this.postHidden = "Y";
+    }
 
 //    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 //    private PostReview postReview;

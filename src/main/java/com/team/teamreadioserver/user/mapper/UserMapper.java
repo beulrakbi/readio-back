@@ -19,7 +19,7 @@ public interface UserMapper {
 
   User findByUserId(@Param("userId") String userId);
 
-  // UserId 로 비밀번호 조회(검증)
+  /**UserId 로 비밀번호 조회(검증)**/
   String getPasswordByUserId(@Param("userId") String userId);
 
   UserInfoResponseDTO selectUserById(@Param("userId") String userId);
@@ -37,5 +37,7 @@ public interface UserMapper {
   /**비밀번호 업데이트**/
   void updatePassword(@Param("userId") String userId, @Param("newPassword") String newPassword);
 
+  /**회원탈퇴**/
+  int deleteUserById(@Param("userId") String userId);
 
 }

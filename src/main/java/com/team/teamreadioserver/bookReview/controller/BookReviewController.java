@@ -3,17 +3,16 @@ package com.team.teamreadioserver.bookReview.controller;
 import com.team.teamreadioserver.bookReview.dto.AllReviewResponseDTO;
 import com.team.teamreadioserver.bookReview.dto.MyReviewResponseDTO;
 import com.team.teamreadioserver.bookReview.dto.ReviewRequestDTO;
-import com.team.teamreadioserver.bookReview.entity.BookReview;
-import com.team.teamreadioserver.bookReview.repository.BookReviewRepository;
 import com.team.teamreadioserver.bookReview.service.BookReviewService;
 import com.team.teamreadioserver.common.common.ResponseDTO;
-import com.team.teamreadioserver.search.service.BookService;
+import com.team.teamreadioserver.profile.entity.Profile;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,9 +26,14 @@ public class BookReviewController {
 
     @Operation(summary = "리뷰 등록", description = "리뷰를 등록합니다.")
     @PostMapping("/create")
-    public String createBookReview(@RequestBody @Valid ReviewRequestDTO reviewRequestDTO) {
-        bookReviewService.addBookReview(reviewRequestDTO);
-        return "리뷰가 성공적으로 등록되었습니다.";
+    public ResponseEntity<String> createBookReview(@RequestBody @Valid ReviewRequestDTO reviewRequestDTO) {
+        String userId = getCurrentUserId();
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+
+        bookReviewService.addBookReview(reviewRequestDTO, userId);
+        return ResponseEntity.ok("리뷰가 성공적으로 등록되었습니다.");
     }
 
     @Operation(summary = "리뷰 신고 등록", description = "리뷰를 신고합니다.")
@@ -41,58 +45,96 @@ public class BookReviewController {
 
     @Operation(summary = "리뷰 삭제", description = "리뷰를 삭제합니다.")
     @DeleteMapping("/delete/{reviewId}")
-    public String deleteReview(@PathVariable Integer reviewId) {
-        bookReviewService.deleteReview(reviewId);
-        return "리뷰가 삭제되었습니다.";
+    public ResponseEntity<String> deleteReview(@PathVariable Integer reviewId) {
+        String userId = getCurrentUserId();
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+
+        bookReviewService.deleteReview(reviewId, userId);
+        return ResponseEntity.ok("리뷰가 삭제되었습니다.");
     }
 
     @Operation(summary = "책 별 리뷰 조회", description = "책 별 리뷰를 조회합니다.")
     @GetMapping("/{bookIsbn}")
-    public ResponseEntity<ResponseDTO> getAllBookReviews(@PathVariable String bookIsbn)
-    {
-        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "리뷰 조회 성공", bookReviewService.getBookReviewByBookIsbn(bookIsbn)));
+    public ResponseEntity<ResponseDTO> getAllBookReviews(@PathVariable String bookIsbn) {
+        return ResponseEntity.ok(new ResponseDTO(HttpStatus.OK, "리뷰 조회 성공", bookReviewService.getBookReviewByBookIsbn(bookIsbn)));
     }
 
-//    @Operation(summary = "전체 리뷰 조회", description = "전체 리뷰를 조회합니다.")
-//    @GetMapping("/reviews")
-//    public List<BookReview> allReview() {
-//        return bookReviewRepository.findAll();
-//    }
-//    @Operation(summary = "나의 리뷰 조회", description = "내가 쓴 리뷰를 조회합니다.")
-//    @GetMapping("/reviews/my")
-//    public List<BookReview> myBookreview(Integer profileId) {
-//        return bookReviewRepository.findByProfileId(profileId);
-//    }
     @Operation(summary = "전체 리뷰 조회", description = "모든 리뷰를 조회합니다.")
     @GetMapping("/reviews")
-    public List<AllReviewResponseDTO> getAllReviews() {
-        return bookReviewService.allBookReview();
+    public ResponseEntity<List<AllReviewResponseDTO>> getAllReviews() {
+        List<AllReviewResponseDTO> reviews = bookReviewService.allBookReview();
+        return ResponseEntity.ok(reviews);
     }
 
     @Operation(summary = "내 리뷰 조회", description = "특정 사용자의 리뷰를 조회합니다.")
     @GetMapping("/reviews/my")
-    public List<MyReviewResponseDTO> getMyReviews(@RequestParam Integer profileId) {
-        return bookReviewService.myBookReview(profileId);
+    public ResponseEntity<?> getMyReviews() {
+        String userId = getCurrentUserId();
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+
+        Profile profile = bookReviewService.getProfileByUserId(userId);
+        if (profile == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자 프로필을 찾을 수 없습니다.");
+        }
+
+        List<MyReviewResponseDTO> myReviews = bookReviewService.myBookReview(profile.getProfileId());
+        return ResponseEntity.ok(myReviews);
     }
 
-    @Operation(summary = "좋아요 등록", description = "좋아요가 등록되었습니다.")
-    @PostMapping("/reviews/{reviewId}/like")
-    public ResponseEntity<String> likeReview(@PathVariable Integer reviewId, @RequestParam @Valid Integer profileId) {
-        bookReviewService.addLikeBookReview(reviewId, profileId);
+    @Operation(summary = "좋아요 등록", description = "리뷰에 좋아요를 등록합니다.")
+    @PostMapping("/{reviewId}/like")
+    public ResponseEntity<String> likeReview(@PathVariable Integer reviewId) {
+        String userId = getCurrentUserId();
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+
+        Profile profile = bookReviewService.getProfileByUserId(userId);
+        if (profile == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자 프로필을 찾을 수 없습니다.");
+        }
+
+        bookReviewService.addLikeBookReview(reviewId, profile.getProfileId());
         return ResponseEntity.ok("리뷰 좋아요 완료");
     }
 
-    @Operation(summary = "좋아요 해제", description = "좋아요 해제")
-    @DeleteMapping("/review/{reviewId}/like")
-    public ResponseEntity<?> deleteLike(@PathVariable Integer reviewId, @RequestParam Integer profileId) {
-        // userId와 reviewId를 기반으로 좋아요 삭제 로직 수행
-        bookReviewService.removeLikeBookReview(reviewId, profileId);
+    @Operation(summary = "좋아요 해제", description = "리뷰 좋아요를 해제합니다.")
+    @DeleteMapping("/{reviewId}/like")
+    public ResponseEntity<?> deleteLike(@PathVariable Integer reviewId) {
+        String userId = getCurrentUserId();
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+
+        Profile profile = bookReviewService.getProfileByUserId(userId);
+        if (profile == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자 프로필을 찾을 수 없습니다.");
+        }
+
+        bookReviewService.removeLikeBookReview(reviewId, profile.getProfileId());
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "좋아요 수", description = "좋아요 수 조회")
+    @Operation(summary = "좋아요 수", description = "리뷰의 좋아요 수를 조회합니다.")
     @GetMapping("/reviews/{reviewId}/likes")
-    public Integer likesCount(@RequestParam Integer reviewId) {
-        return bookReviewService.getLikesCount(reviewId);
+    public ResponseEntity<Integer> likesCount(@PathVariable Integer reviewId) {
+        Integer count = bookReviewService.getLikesCount(reviewId);
+        return ResponseEntity.ok(count);
+    }
+
+    /**
+     * 현재 로그인된 사용자의 userId를 가져오는 공통 메서드
+     * @return userId (없으면 null)
+     */
+    private String getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return null;
+        }
+        return authentication.getName();
     }
 }

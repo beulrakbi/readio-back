@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ProfileResponseDTO {
 
+    private Long profileId;
     private String penName;
     private String biography;
     private String isPrivate;
