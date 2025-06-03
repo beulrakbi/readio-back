@@ -20,4 +20,10 @@ public interface EmotionRepository extends JpaRepository<Emotion, Long> {
     // 해당 날짜에 등록된 감정이 있는지 조회
     Optional<Emotion> findByUserAndDate(User user, LocalDate date);
 
+
+
+
+    // 가장 최근 날짜(date)의, 같은 날짜 중에서는 가장 최근 생성 시간(createdAt)의 감정 1건 조회
+    Optional<Emotion> findTopByUserOrderByDateDescCreatedAtDesc(User user);
+
 }

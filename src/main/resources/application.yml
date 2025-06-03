@@ -67,6 +67,11 @@ mybatis:
 aladin:
  ttbkey: ttbehfvls09271435001
 
+openweathermap:
+ api:
+  url: https://api.openweathermap.org/data/2.5/weather
+  key: 52003f931a0d81375dba797857ece5da
+
  # 회원가입 시간대때문에 추가
  spring:
   jackson:
