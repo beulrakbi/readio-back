@@ -12,6 +12,7 @@ import com.team.teamreadioserver.profile.dto.ProfileResponseDTO;
 import com.team.teamreadioserver.profile.entity.Profile;
 import com.team.teamreadioserver.profile.entity.ProfileImg;
 import com.team.teamreadioserver.profile.repository.ProfileImgRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -175,6 +176,22 @@ public class PostService {
         postRepository.delete(post);
 
         return "포스트 삭제 완료";
+    }
+
+    @Transactional // 트랜잭션 처리를 위해 @Transactional 어노테이션 추가
+    public Object incrementReportCount(int postId) {
+        // postId로 Post 엔티티를 찾고, 없으면 예외 발생
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("Post not found with id: " + postId));
+
+        // reportCount를 1 증가
+        post.setPostReported(post.getPostReported() + 1);
+        postRepository.save(post); // 변경된 엔티티 저장
+
+        System.out.println("Post " + postId + "의 신고수가 " + post.getPostReported() + "로 증가되었습니다.");
+
+        // 필요한 경우, 증가된 신고수를 반환하거나 간단한 성공 메시지를 반환
+        return post.getPostReported(); // 또는 "신고 처리 완료" 같은 DTO 반환
     }
 }
 
