@@ -33,9 +33,23 @@ public class ProfileService {
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         Profile profile = profileRepository.findByUser_UserId(user.getUserId()).orElse(null);
-        String penName = (dto.getPenName() == null || dto.getPenName().isEmpty()) ? generateDefaultPenName() : dto.getPenName();
 
-        if (profile == null) {
+        boolean isNew = (profile == null);
+        String penName;
+
+        if (dto.getPenName() == null || dto.getPenName().isEmpty()) {
+            penName = generateDefaultPenName();
+        } else {
+            penName = dto.getPenName();
+            boolean isDuplicate = profileRepository.existsByPenName(penName);
+
+            // 본인의 기존 필명은 허용
+            if (isDuplicate && (isNew || !penName.equals(profile.getPenName()))) {
+                throw new IllegalArgumentException("이미 사용 중인 필명입니다.");
+            }
+        }
+
+        if (isNew) {
             profile = Profile.builder()
                     .user(user)
                     .penName(penName)
@@ -52,6 +66,7 @@ public class ProfileService {
         profileRepository.save(profile);
         saveProfileImageIfExists(dto.getImage(), user, profile);
     }
+
 
     private PrivateStatus parsePrivateStatus(String status) {
         return "PRIVATE".equalsIgnoreCase(status) ? PrivateStatus.PRIVATE : PrivateStatus.PUBLIC;
@@ -141,4 +156,8 @@ public class ProfileService {
         }
         return base + suffix;
     }
+    public boolean isPenNameTaken(String penName) {
+        return profileRepository.existsByPenName(penName);
+    }
+
 }
