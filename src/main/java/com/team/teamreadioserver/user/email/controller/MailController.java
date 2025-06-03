@@ -1,11 +1,14 @@
 package com.team.teamreadioserver.user.email.controller;
 
+import com.team.teamreadioserver.user.auth.service.AuthCodeStorage;
 import com.team.teamreadioserver.user.email.dto.MailDTO;
+import com.team.teamreadioserver.user.email.dto.VerifyCodeDTO;
 import com.team.teamreadioserver.user.email.service.MailService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
@@ -17,6 +20,7 @@ import java.io.UnsupportedEncodingException;
 public class MailController {
 
   private final MailService mailService;
+  private final AuthCodeStorage authCodeStorage;
 
 
   @ResponseBody
@@ -24,7 +28,16 @@ public class MailController {
   @Operation(summary = "이메일 인증 요청", description = "이메일 주소로 인증 번호를 보냅니다.")
   public String emailCheck(@RequestBody MailDTO mailDTO) throws MessagingException, UnsupportedEncodingException {
     String authCode = mailService.sendSimpleMessage(mailDTO.getEmail());
+    authCodeStorage.store(mailDTO.getEmail(), authCode);  // 여기서 저장!
     return authCode; // Response body에 값을 반환
+  }
+
+  @Operation(summary = "이메일 인증 확인", description = "이메일 인증번호가 일치한지 확인합니다.")
+  @PostMapping("/verifyCode")
+  public ResponseEntity<String> verifyCode(@RequestBody VerifyCodeDTO dto) {
+    boolean result = authCodeStorage.verify(dto.getEmail(), dto.getCode());
+    if (!result) return ResponseEntity.status(400).body("인증번호가 올바르지 않습니다.");
+    return ResponseEntity.ok("인증 성공");
   }
 
 
