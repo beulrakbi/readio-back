@@ -100,7 +100,7 @@ public class UserService {
         return userMapper.findByUserId(userId);
     }
 
-    // 로그인(비밀번호 확인)
+    // 내정보수정(비밀번호 확인)
     public boolean verifyPassword(String userId, String inputPassword) {
         String storedHashedPassword = userMapper.getPasswordByUserId(userId);
 

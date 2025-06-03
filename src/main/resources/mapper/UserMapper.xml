@@ -106,11 +106,14 @@
           AND user_phone = #{userPhone}
     </select>
 
-    <select id="findPwdByIdAndEmail" resultType="string">
-        SELECT user_id
-        FROM user
-        WHERE user_id = #{userId}
-          AND user_email = #{userEmail}
+    <!--비밀번호 찾기(아이디와 이메일 일치여부 확인)-->
+    <select id="existsByUserIdAndEmail" resultType="int">
+        SELECT EXISTS(
+            SELECT 1
+            FROM user
+            WHERE user_id = #{userId}
+              AND user_email = #{userEmail}
+        )
     </select>
 
     <update id="updatePassword">

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+// 비밀번호 찾기 시 이메일 인증할때 그 인증번호 저장
 @Component
 public class AuthCodeStorage {
 

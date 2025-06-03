@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
+// 회원가입(중복체크 포함),
 @RestController
 @RequestMapping("/users")
 @Tag(name = "회원 API", description = "회원 관련 API")
@@ -72,7 +73,7 @@ public class UserController {
         return response;
     }
 
-    // 비밀번호 확인
+    // 비밀번호 확인(내정보수정)
     @Operation(summary = "페이지 진입 전 비밀번호 확인", description = "현재 비밀번호 확인을 거친 후에 정보 수정이 가능하다.")
     @PostMapping("/verifypwd")
     public ResponseEntity<?> verifyPassword(@RequestBody Map<String, String> request) {
@@ -138,31 +139,7 @@ public class UserController {
     String id = userService.findId(name, phone);
     return id != null ? ResponseEntity.ok(id) : ResponseEntity.status(404).body("아이디 없음");
   }
-
-  // 인증번호 발송 - 아직
-//  @PostMapping("/sendCode")
-//  public ResponseEntity<?> sendCode(@RequestBody Map<String, String> req) {
-//    String email = req.get("email");
-//    String code = String.valueOf((int)(Math.random() * 900000) + 100000);
-//    // 임시로 Redis/DB에 code 저장하고 이메일 발송
-//    // 실제 구현은 EmailService 호출
-//    return ResponseEntity.ok(code);
-//  }
-//
-//  // 비밀번호 찾기 시 게정확인 - 아직
-//  @PostMapping("/verifyUser")
-//  public ResponseEntity<?> verifyUser(@RequestBody Map<String, String> req) {
-//    boolean valid = userService.verifyUserForPwdReset(req.get("userId"), req.get("email"));
-//    return valid ? ResponseEntity.ok("유효") : ResponseEntity.status(404).body("정보 불일치");
-//  }
-//
-//  // 비밀번호 초기화 - 아직
-//  @PostMapping("/resetPassword")
-//  public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> req) {
-//    userService.resetPassword(req.get("userId"), req.get("newPassword"));
-//    return ResponseEntity.ok("비밀번호 재설정 완료");
-//  }
-
+  
   // 회원 탈퇴
   @Operation(summary = "회원탈퇴", description = "회원탈퇴가 가능하다.")
   @DeleteMapping("/{userId}")
@@ -175,6 +152,7 @@ public class UserController {
     }
   }
 
+  // 회원 탈퇴 전 비밀번호 확인
   @Operation(summary = "회원탈퇴 전 비밀번호 확인", description = "회원탈퇴 전 비밀번호 확인을 거친 후 탈퇴가 가능하다.")
   @PostMapping("/verifypwd/delete")
   public ResponseEntity<?> verifyPasswordForDelete(@RequestBody Map<String, String> request) {
