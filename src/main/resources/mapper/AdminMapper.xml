@@ -24,15 +24,14 @@
         u.user_enrolldate AS userEnrollDate
         FROM user u
         LEFT JOIN (
-        SELECT report_id AS user_id, COUNT(*) AS total_report_count
+        SELECT user_id, COUNT(*) AS total_report_count
         FROM (
-        SELECT report_id FROM reported_post
+        SELECT user_id FROM reported_post
         UNION ALL
-        SELECT report_id FROM reported_review
+        SELECT user_id FROM reported_review
         ) combined_reports
-        GROUP BY report_id
+        GROUP BY user_id
         ) r ON u.user_id = r.user_id
-        WHERE 1=1
 
         <if test="search.searchType != null and search.searchValue != null and search.searchValue != ''">
             <if test="search.searchType == 'id'">
