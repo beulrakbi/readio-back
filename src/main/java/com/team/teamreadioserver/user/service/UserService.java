@@ -128,6 +128,16 @@ public class UserService {
         return userMapper.updateUser(userEditRequestDTO);
     }
 
+  // 회원정보수정 시 이메일 중복확인
+  public boolean isEmailAvailableExceptSelf(String userEmail, String currentUserId) {
+    return userMapper.countByEmailExceptSelf(userEmail, currentUserId) == 0;
+  }
+
+  // 회원정보수정 시 전화번호 중복확인
+  public boolean isPhoneAvailableExceptSelf(String userPhone, String currentUserId) {
+    return userMapper.countByPhoneExceptSelf(userPhone, currentUserId) == 0;
+  }
+
   // 아이디 찾기(이름,전화번호로)
   public String findId(String userName, String userPhone) {
     return userMapper.findIdByNameAndPhone(userName, userPhone);

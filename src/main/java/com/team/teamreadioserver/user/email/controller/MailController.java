@@ -30,15 +30,6 @@ public class MailController {
   private final UserMapper userMapper;
 
 
-//  @ResponseBody
-//  @PostMapping("/sendCode") // 프론트 매핑 완료
-//  @Operation(summary = "이메일 인증 요청", description = "이메일 주소로 인증 번호를 보냅니다.")
-//  public String emailCheck(@RequestBody MailDTO mailDTO) throws MessagingException, UnsupportedEncodingException {
-//    String authCode = mailService.sendSimpleMessage(mailDTO.getEmail());
-//    authCodeStorage.store(mailDTO.getEmail(), authCode);  // 여기서 저장!
-//    return authCode; // Response body에 값을 반환
-//  }
-
   @PostMapping("/sendCode")
   @Operation(summary = "이메일 인증 요청", description = "아이디와 이메일이 일치하면 이메일 주소로 인증 번호를 보냅니다.")
   public ResponseEntity<?> emailCheck(@RequestBody MailDTO mailDTO) throws MessagingException {

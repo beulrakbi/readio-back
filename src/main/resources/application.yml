@@ -91,8 +91,8 @@ aladin:
  mail:
   host: smtp.gmail.com
   port: 587
-  username: "qhrud647461@gamil.com"
-  password: "wyvc elxj pchj cllv"
+  username: qhrud647461@gmail.com
+  password: ptwd gsvu lpvg vaow
   properties:
    mail:
     smtp:

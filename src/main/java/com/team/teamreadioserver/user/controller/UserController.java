@@ -132,6 +132,32 @@ public class UserController {
         }
     }
 
+  // 이메일 중복확인 (회원정보 수정용)
+  @Operation(summary = "회원정보 수정 - 이메일 중복확인", description = "회원정보 수정 시 이메일 중복확인을 진행한다.")
+  @GetMapping("/edit/check-email")
+  public Map<String, Boolean> checkUserEmailForEdit(@RequestParam String userEmail,
+                                                    @AuthenticationPrincipal UserDetails userDetails) {
+    String currentUserId = userDetails.getUsername();
+    boolean isAvailable = userService.isEmailAvailableExceptSelf(userEmail, currentUserId);
+    Map<String, Boolean> response = new HashMap<>();
+    response.put("exist", !isAvailable);
+    return response;
+  }
+
+  // 전화번호 중복확인 (회원정보 수정용)
+  @Operation(summary = "회원정보 수정 - 전화번호 중복확인", description = "회원정보 수정 시 전화번호 중복확인을 진행한다.")
+  @GetMapping("/edit/check-phone")
+  public Map<String, Boolean> checkUserPhoneForEdit(@RequestParam String userPhone,
+                                                    @AuthenticationPrincipal UserDetails userDetails) {
+    String currentUserId = userDetails.getUsername();
+    boolean isAvailable = userService.isPhoneAvailableExceptSelf(userPhone, currentUserId);
+    Map<String, Boolean> response = new HashMap<>();
+    response.put("exist", !isAvailable);
+    return response;
+  }
+
+
+
   // 아이디 찾기(이름,전화번호로)
   @Operation(summary = "아이디찾기", description = "이름과 전화번호로 아이디찾기가 가능하다.")
   @GetMapping("account/findId")

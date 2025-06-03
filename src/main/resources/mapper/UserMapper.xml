@@ -98,6 +98,20 @@
         WHERE user_id = #{userId}
     </select>
 
+    <!--회원정보 수정 시 이메일 중복확인-->
+    <select id="countByEmailExceptSelf" resultType="int">
+        SELECT COUNT(*) FROM user
+        WHERE user_email = #{userEmail}
+          AND user_id != #{currentUserId}
+    </select>
+
+    <!--회원정보 수정 시 전화번호 중복확인-->
+    <select id="countByPhoneExceptSelf" resultType="int">
+        SELECT COUNT(*) FROM user
+        WHERE user_phone = #{userPhone}
+          AND user_id != #{currentUserId}
+    </select>
+
     <!--아이디 찾기(이름,휴대폰번호로)-->
     <select id="findIdByNameAndPhone" resultType="string">
         SELECT user_id
