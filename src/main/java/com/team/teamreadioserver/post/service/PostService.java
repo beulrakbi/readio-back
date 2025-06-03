@@ -12,6 +12,10 @@ import com.team.teamreadioserver.profile.dto.ProfileResponseDTO;
 import com.team.teamreadioserver.profile.entity.Profile;
 import com.team.teamreadioserver.profile.entity.ProfileImg;
 import com.team.teamreadioserver.profile.repository.ProfileImgRepository;
+import com.team.teamreadioserver.profile.repository.ProfileRepository;
+import com.team.teamreadioserver.report.entity.ReportedPost;
+import com.team.teamreadioserver.report.repository.ReportedPostRepository;
+import com.team.teamreadioserver.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +41,7 @@ public class PostService {
     private final PostImgRepository postImgRepository;
     private final ProfileImgRepository profileImgRepository;
     private final ModelMapper modelMapper;
+    private final ReportedPostRepository reportedPostRepository;
 
     @Value("${image.image-url}")
     private String IMAGE_URL;
@@ -189,6 +194,12 @@ public class PostService {
         postRepository.save(post); // 변경된 엔티티 저장
 
         System.out.println("Post " + postId + "의 신고수가 " + post.getPostReported() + "로 증가되었습니다.");
+
+        if (post.getPostReported() == 1)
+        {
+            ReportedPost reportedPost = new ReportedPost(post.getPostId(), post.getProfile().getUser().getUserId());
+            reportedPostRepository.save(reportedPost);
+        }
 
         // 필요한 경우, 증가된 신고수를 반환하거나 간단한 성공 메시지를 반환
         return post.getPostReported(); // 또는 "신고 처리 완료" 같은 DTO 반환
