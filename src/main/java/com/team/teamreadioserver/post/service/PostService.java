@@ -101,6 +101,7 @@ public class PostService {
         System.out.println(multipartFile);
 
         Post newPost = modelMapper.map(postRequestDTO, Post.class);
+        newPost.setPostHidden("N");
 
         if (userProfile != null) {
             newPost.setProfile(userProfile); // Post 엔티티에 setProfile(Profile profile) 메소드가 있다고 가정합니다.
@@ -195,10 +196,13 @@ public class PostService {
 
         System.out.println("Post " + postId + "의 신고수가 " + post.getPostReported() + "로 증가되었습니다.");
 
-        if (post.getPostReported() == 1)
-        {
+        if (post.getPostReported() == 1) {
             ReportedPost reportedPost = new ReportedPost(post.getPostId(), post.getProfile().getUser().getUserId());
             reportedPostRepository.save(reportedPost);
+        }
+        else if (post.getPostReported() > 4)
+        {
+            post.hide2();
         }
 
         // 필요한 경우, 증가된 신고수를 반환하거나 간단한 성공 메시지를 반환
