@@ -34,6 +34,7 @@ public class MailService {
     return key.toString();
   }
 
+  // 이메일 발송 레이아웃(?)
   public MimeMessage createMail(String mail, String number) throws MessagingException {
     MimeMessage message = javaMailSender.createMimeMessage();
 

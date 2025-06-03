@@ -2,8 +2,10 @@ package com.team.teamreadioserver.user.email.controller;
 
 import com.team.teamreadioserver.user.auth.service.AuthCodeStorage;
 import com.team.teamreadioserver.user.email.dto.MailDTO;
+import com.team.teamreadioserver.user.email.dto.PasswordResetDTO;
 import com.team.teamreadioserver.user.email.dto.VerifyCodeDTO;
 import com.team.teamreadioserver.user.email.service.MailService;
+import com.team.teamreadioserver.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
@@ -21,6 +23,7 @@ public class MailController {
 
   private final MailService mailService;
   private final AuthCodeStorage authCodeStorage;
+  private final UserService userService;
 
 
   @ResponseBody
@@ -39,6 +42,15 @@ public class MailController {
     if (!result) return ResponseEntity.status(400).body("인증번호가 올바르지 않습니다.");
     return ResponseEntity.ok("인증 성공");
   }
+
+  @Operation(summary = "이메일 인증 후 비밀번호 재설정", description = "이메일 인증번호가 일치한지 확인합니다.")
+  @PostMapping("/resetPassword")
+  public ResponseEntity<String> resetPassword(@RequestBody PasswordResetDTO dto) {
+    boolean success = userService.resetPassword(dto.getUserId(), dto.getNewPassword());
+    if (!success) return ResponseEntity.status(400).body("비밀번호 재설정 실패");
+    return ResponseEntity.ok("비밀번호가 성공적으로 재설정되었습니다.");
+  }
+
 
 
 

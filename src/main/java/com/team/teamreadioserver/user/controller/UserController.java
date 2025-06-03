@@ -131,8 +131,8 @@ public class UserController {
         }
     }
 
-  // 아이디 찾기
-  @Operation(summary = "아이디찾기", description = "아이디찾기가 가능하다.")
+  // 아이디 찾기(이름,전화번호로)
+  @Operation(summary = "아이디찾기", description = "이름과 전화번호로 아이디찾기가 가능하다.")
   @GetMapping("account/findId")
   public ResponseEntity<?> findId(@RequestParam String name, @RequestParam String phone) {
     String id = userService.findId(name, phone);
@@ -140,28 +140,28 @@ public class UserController {
   }
 
   // 인증번호 발송 - 아직
-  @PostMapping("/sendCode")
-  public ResponseEntity<?> sendCode(@RequestBody Map<String, String> req) {
-    String email = req.get("email");
-    String code = String.valueOf((int)(Math.random() * 900000) + 100000);
-    // 임시로 Redis/DB에 code 저장하고 이메일 발송
-    // 실제 구현은 EmailService 호출
-    return ResponseEntity.ok(code);
-  }
-
-  // 비밀번호 찾기 시 게정확인 - 아직
-  @PostMapping("/verifyUser")
-  public ResponseEntity<?> verifyUser(@RequestBody Map<String, String> req) {
-    boolean valid = userService.verifyUserForPwdReset(req.get("userId"), req.get("email"));
-    return valid ? ResponseEntity.ok("유효") : ResponseEntity.status(404).body("정보 불일치");
-  }
-
-  // 비밀번호 초기화 - 아직
-  @PostMapping("/resetPassword")
-  public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> req) {
-    userService.resetPassword(req.get("userId"), req.get("newPassword"));
-    return ResponseEntity.ok("비밀번호 재설정 완료");
-  }
+//  @PostMapping("/sendCode")
+//  public ResponseEntity<?> sendCode(@RequestBody Map<String, String> req) {
+//    String email = req.get("email");
+//    String code = String.valueOf((int)(Math.random() * 900000) + 100000);
+//    // 임시로 Redis/DB에 code 저장하고 이메일 발송
+//    // 실제 구현은 EmailService 호출
+//    return ResponseEntity.ok(code);
+//  }
+//
+//  // 비밀번호 찾기 시 게정확인 - 아직
+//  @PostMapping("/verifyUser")
+//  public ResponseEntity<?> verifyUser(@RequestBody Map<String, String> req) {
+//    boolean valid = userService.verifyUserForPwdReset(req.get("userId"), req.get("email"));
+//    return valid ? ResponseEntity.ok("유효") : ResponseEntity.status(404).body("정보 불일치");
+//  }
+//
+//  // 비밀번호 초기화 - 아직
+//  @PostMapping("/resetPassword")
+//  public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> req) {
+//    userService.resetPassword(req.get("userId"), req.get("newPassword"));
+//    return ResponseEntity.ok("비밀번호 재설정 완료");
+//  }
 
   // 회원 탈퇴
   @Operation(summary = "회원탈퇴", description = "회원탈퇴가 가능하다.")
