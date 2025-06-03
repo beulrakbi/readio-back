@@ -59,9 +59,14 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth -> auth
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                .requestMatchers("/users/login", "/users/join/**", "/users/account/**", "/users/sendCode", "/users/verifyUser", "/users/resetPassword", "/video/**", "/curation/**", "/img/**", "/search/**", "/bookPage/**", "/bookReview/**", "/reported/**", "/serviceCenter/**", "/videoBookmark/publicCount/**", "/bookBookmark/publicCount/**").permitAll()  // 인증 필요없는 경로
-                                .requestMatchers("/users/login", "/users/join/**", "/video/**", "/curation/**", "/img/**", "/api/clicks/**", "/api/follow").permitAll()  // 인증 필요없는 경로
-                                .requestMatchers(HttpMethod.GET, "/api/user/interests/categories", "/api/user/interests/keywords", "/post/**", "/bookReview/**").permitAll()
+
+                                .requestMatchers("/users/login", "/users/join/**", "/users/account/**",
+                                        "/users/sendCode", "/users/verifyUser", "/users/resetPassword",
+                                        "/video/**", "/curation/**", "/img/**", "/search/**", "/bookPage/**",
+                                        "/bookReview/**", "/reported/**", "/serviceCenter/**", "/videoBookmark/publicCount/**",
+                                        "/api/clicks/**","/bookBookmark/publicCount/**","/api/follow").permitAll()  // 인증 필요없는 경로
+                                .requestMatchers(HttpMethod.GET, "/api/user/interests/categories", "/api/user/interests/keywords",  "/post/**", "/bookReview/**").permitAll()
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                 // /videoBookmark/status/** (개인 북마크 상태 포함)는 인증 필요
                                 .requestMatchers("/videoBookmark/status/**").authenticated()
                                 .requestMatchers("/bookBookmark/status/**").authenticated()
@@ -130,6 +135,4 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
-
 }
