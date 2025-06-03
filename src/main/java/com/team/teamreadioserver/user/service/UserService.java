@@ -30,10 +30,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final ProfileRepository profileRepository;
 
-//    public UserService(UserMapper userMapper, PasswordEncoder passwordEncoder) {
-//        this.userMapper = userMapper;
-//        this.passwordEncoder = passwordEncoder;
-//    }
 
     // 회원가입
     @Transactional
@@ -43,8 +39,6 @@ public class UserService {
         joinRequestDTO.setUserPwd(encodedPwd);
         userMapper.insertUser(joinRequestDTO);
 
-        LocalDate parsedBirthday = LocalDate.parse(joinRequestDTO.getUserBirthday());
-
         // 사용자 생성
         User user = User.builder()
                 .userId(joinRequestDTO.getUserId())
@@ -52,33 +46,30 @@ public class UserService {
                 .userPwd(encodedPwd)
                 .userEmail(joinRequestDTO.getUserEmail())
                 .userPhone(joinRequestDTO.getUserPhone())
-                .userBirthday(parsedBirthday)
-                .userRole(UserRole.USER) // 혹시 null 방지로 기본값 설정
+                .userBirthday(LocalDate.parse(joinRequestDTO.getUserBirthday()))
+                .userRole(UserRole.USER)
                 .userEnrollDate(LocalDateTime.now())
                 .build();
 
         userRepository.save(user);
+        profileRepository.save(createDefaultProfile(user));
+    }
 
-        // 필명 자동 생성
+    // 필명 자동 생성
+    private Profile createDefaultProfile(User user) {
         int suffix = 1;
         String base = "Readio 기본 필명 ";
         while (profileRepository.existsByPenName(base + suffix)) {
             suffix++;
         }
-        String defaultPenName = base + suffix;
-
-        // 프로필 생성
-        Profile profile = Profile.builder()
+        return Profile.builder()
                 .user(user)
-                .penName(defaultPenName)
+                .penName(base + suffix)
                 .biography("")
                 .isPrivate(PrivateStatus.PUBLIC)
                 .createdAt(LocalDateTime.now())
                 .build();
-
-        profileRepository.save(profile);
     }
-
 
     // 회원가입 시 아이디 중복 체크
     public boolean isIdAvailable(String userId) {
@@ -149,16 +140,6 @@ public class UserService {
   }
 
 
-
-
-
-
-
-
-
-
-
-
   // 회원 탈퇴 처리
   public boolean deleteUser(String userId) {
     System.out.println("userService.deleteUser 호출됨: userId=" + userId);
@@ -181,7 +162,6 @@ public class UserService {
 
     return passwordEncoder.matches(inputPassword, storedHashedPassword);
   }
-
 
 
 }

@@ -104,4 +104,6 @@ public class PostReviewController {
                 .ok() // 또는 204 No Content (삭제 성공 시 내용 없음)
                 .body(new ResponseDTO(HttpStatus.OK, "리뷰 삭제 성공", null));
     }
+
+
 }

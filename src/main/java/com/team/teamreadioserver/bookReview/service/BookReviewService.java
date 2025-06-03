@@ -91,7 +91,7 @@ public class BookReviewService {
                     .build();
             reportedReviewRepository.save(reportedReview);
         } else if (bookReview.getReportedCount() > 4) {
-            bookReview.hide();
+            bookReview.hide2();
         }
     }
 

@@ -56,7 +56,6 @@ public class ReportedService {
             }
 
             foundReview.hide();
-            // bookReviewRepository.save(foundReview); // @Transactional이므로 명시적으로 save 안해도 됩니다.
 
             return "리뷰 숨기기 성공";
         } catch (Exception e) {
@@ -133,13 +132,16 @@ public class ReportedService {
         return reportedReviewDTO;
     }
 
+    @Transactional
     public Object hidePost(Integer reportId) {
         int result = 0;
 
         try {
             ReportedPost foundReport = reportedPostRepository.findByReportId(reportId);
             Post foundPost = postRepository.findByPostId(foundReport.getPostId());
+            System.out.println("잘 됐나?: " + foundPost.getPostHidden());
             foundPost.hide();
+            System.out.println("잘 됐나?22 : " + foundPost.getPostHidden());
             result = 1;
         } catch (Exception e) {
             log.error("[ReportedService] hidePost Fail");

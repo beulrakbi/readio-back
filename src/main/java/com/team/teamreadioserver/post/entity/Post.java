@@ -44,7 +44,7 @@ public class Post {
     public void prePersist() {
         this.postCreateDate = new Date();
         this.postReported = 0;
-        this.postHidden = "";
+        this.postHidden = "N";
     }
 
     @OneToOne(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -55,6 +55,10 @@ public class Post {
             this.postHidden = "N";
         else
             this.postHidden = "Y";
+    }
+
+    public void hide2() {
+        this.postHidden = "Y";
     }
 
 //    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
