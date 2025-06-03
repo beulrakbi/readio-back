@@ -94,6 +94,19 @@ public class SecurityConfig {
                                         "/webjars/**"
                                 ).permitAll()
                                 .requestMatchers("/admin/**", "/api/admin/**").permitAll()       // 관리자 관련 경로(권한 풀고 테스트하면 403뜨는게 정상임 )
+                                .requestMatchers(HttpMethod.POST, "/videoBookmark/**","/post/**","/api/follow").authenticated()
+                                .requestMatchers(HttpMethod.DELETE, "/videoBookmark/**","/post/**").authenticated()
+                        .requestMatchers("/api/user/**").authenticated()
+                        .requestMatchers(
+                                "/",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**",
+                                "/v3/api-docs.yaml",
+                                "/swagger-resources/**",
+                                "/webjars/**"
+                        ).permitAll()
+                        .requestMatchers("/admin/**","/api/admin/**").permitAll()       // 관리자 관련 경로(권한 풀고 테스트하면 403뜨는게 정상임 )
 //                       .requestMatchers("/admin/**").hasRole("ADMIN")   // 관리자 관련 경로(주석 해제시 해당경로는 관리자로 로그인해야 보임)
                                 .anyRequest().authenticated()   // 그 외는 모두 로그인 필요
                 )

@@ -17,7 +17,6 @@ import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/video")
-//@CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
 public class VideoController {
 
@@ -46,6 +45,7 @@ public class VideoController {
     @GetMapping("/{search}")
     public ResponseEntity<ResponseDTO> getVideoByKeyword(@PathVariable String search)
     {
+        System.out.println("search?: " + search);
         log.info("[VideoController] getVideoByKeyword");
         VideosDTO result = videoService.findVideos(search);
         if(result.getNum() > 0)
