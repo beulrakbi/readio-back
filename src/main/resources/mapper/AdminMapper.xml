@@ -73,10 +73,10 @@
 
         <!--신고여부조회-->
         <if test="search.reportStatus != null and search.reportStatus != ''">
-            <if test="search.reportStatus == 'Y'">
+            <if test='search.reportStatus == "Y"'>
                 AND COALESCE(r.total_report_count, 0) &gt; 0
             </if>
-            <if test="search.reportStatus == 'N'">
+            <if test='search.reportStatus == "N"'>
                 AND COALESCE(r.total_report_count, 0) = 0
             </if>
         </if>
@@ -88,14 +88,26 @@
         SELECT COUNT(*)
         FROM user u
         LEFT JOIN (
-        SELECT report_id AS user_id, COUNT(*) AS total_report_count
+        SELECT user_id, COUNT(*) AS total_report_count
         FROM (
-        SELECT report_id FROM reported_post
+        SELECT user_id FROM reported_post
         UNION ALL
-        SELECT report_id FROM reported_review
+        SELECT user_id FROM reported_review
         ) combined_reports
-        GROUP BY report_id
+        GROUP BY user_id
         ) r ON u.user_id = r.user_id
+
+        -- SELECT COUNT(*)
+        -- FROM user u
+        -- LEFT JOIN (
+        -- SELECT report_id AS user_id, COUNT(*) AS total_report_count
+        -- FROM (
+        -- SELECT report_id FROM reported_post
+        -- UNION ALL
+        -- SELECT report_id FROM reported_review
+        -- ) combined_reports
+        -- GROUP BY report_id
+        -- ) r ON u.user_id = r.user_id
 
         WHERE 1=1
 
@@ -134,10 +146,10 @@
         </if>
 
         <if test="search.reportStatus != null and search.reportStatus != ''">
-            <if test="search.reportStatus == 'Y'">
+            <if test='search.reportStatus == "Y"'>
                 AND COALESCE(r.total_report_count, 0) &gt; 0
             </if>
-            <if test="search.reportStatus == 'N'">
+            <if test='search.reportStatus == "N"'>
                 AND COALESCE(r.total_report_count, 0) = 0
             </if>
         </if>

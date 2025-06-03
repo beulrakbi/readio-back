@@ -67,6 +67,7 @@ public class AdminUserController {
     searchDTO.setStartDate(startDate);
     searchDTO.setEndDate(endDate);
     searchDTO.setReportStatus(reportStatus);
+//    System.out.println("reportStatus="+ reportStatus);    디버깅
     searchDTO.setUserTypesString(userTypes);  // 문자열 저장
 
     if (searchDTO.getUserTypesString() != null && !searchDTO.getUserTypesString().isEmpty()) {
