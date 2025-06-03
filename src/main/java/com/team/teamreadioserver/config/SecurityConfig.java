@@ -77,6 +77,8 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/videoBookmark/**").authenticated()
                                 .requestMatchers(HttpMethod.POST, "/videoBookmark/**").authenticated()
                                 .requestMatchers(HttpMethod.DELETE, "/videoBookmark/**").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/post/{userId}/all/**").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/post/{userId}/all").authenticated()
                                 .requestMatchers(HttpMethod.POST, "/post/**", "/api/follow").authenticated()
                                 .requestMatchers("/api/user/**").authenticated()
                                 .requestMatchers(
