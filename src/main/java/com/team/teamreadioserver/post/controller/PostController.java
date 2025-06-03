@@ -92,7 +92,7 @@ public class PostController {
     }
 
     @Operation(summary = "포스트 수정 요청", description = "포스트 수정이 진행됩니다.", tags = {"PostController"})
-    @PutMapping("/post/modify")
+    @PutMapping("/post/modify/{postId}")
     public ResponseEntity<ResponseDTO> updatePost(@ModelAttribute PostRequestDTO postRequestDTO) {
 
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "포스트 수정 완료", postService.UpdatePost(postRequestDTO)));
@@ -103,6 +103,19 @@ public class PostController {
     public ResponseEntity<ResponseDTO> deletePost(@PathVariable int postId) {
 
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "포스트 삭제 완료", postService.DeletePost(postId)));
+    }
+
+    @Operation(summary = "포스트 신고 요청", description = "포스트 신고수를 1 증가시킵니다.", tags = {"PostController"})
+    @PostMapping("/post/report/{postId}") // POST 요청으로 변경
+    public ResponseEntity<ResponseDTO> reportPost(@PathVariable int postId) {
+        System.out.println("========= PostController - reportPost 메소드 진입 =========");
+        System.out.println("신고할 PostId: " + postId);
+
+        // 서비스 계층의 메서드를 호출하여 신고수 증가 로직을 처리
+        // 반환 값으로 현재 신고수 또는 성공 메시지를 받을 수 있습니다.
+        Object serviceResult = postService.incrementReportCount(postId);
+
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "포스트 신고 완료", serviceResult));
     }
 
 }

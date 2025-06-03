@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 public class PostRequestDTO {
 
-    private Integer postId;
+    private int postId;
     private String postTitle;
     private String postContent;
     private String bookIsbn;
