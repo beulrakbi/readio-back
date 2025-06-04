@@ -1,5 +1,8 @@
 package com.team.teamreadioserver.post.controller;
 
+import com.team.teamreadioserver.common.common.Criteria;
+import com.team.teamreadioserver.common.common.PageDTO;
+import com.team.teamreadioserver.common.common.PagingResponseDTO;
 import com.team.teamreadioserver.common.common.ResponseDTO;
 import com.team.teamreadioserver.post.dto.PostRequestDTO;
 import com.team.teamreadioserver.post.service.PostService;
@@ -34,6 +37,29 @@ public class PostController {
     @GetMapping("/post/{postId}")
     public ResponseEntity<ResponseDTO> getPostDetail(@PathVariable int postId) {
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "상품 상세정보 조회 성공", postService.getPostDetail(postId)));
+    }
+
+    @Operation(summary = "포스트 개수 조회 요청", description = "포스트 개수 조회가 진행됩니다.", tags = {"PostController"})
+    @GetMapping("/post/{userId}/count")
+    public ResponseEntity<ResponseDTO> getPostsCount(@PathVariable String userId) {
+
+        int total = postService.getAllUserPost(userId);
+
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "포스트 개수 조회 성공", total));
+    }
+
+
+    @Operation(summary = "포스트 조회 요청", description = "포스트 조회가 진행됩니다.", tags = {"PostController"})
+    @GetMapping("/post/{userId}/all")
+    public ResponseEntity<ResponseDTO> getPosts(@PathVariable String userId, @RequestParam(name="offset", defaultValue = "1") String offset) {
+
+        int total = postService.getAllUserPost(userId);
+        Criteria cri = new Criteria(Integer.valueOf(offset), 3);
+        PagingResponseDTO pagingResponseDTO = new PagingResponseDTO();
+        pagingResponseDTO.setData(postService.getAllUserPostWithPaging(userId, cri));
+        pagingResponseDTO.setPageInfo(new PageDTO(cri, total));
+
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "포스트 전체 조회 성공", pagingResponseDTO));
     }
 
     @Operation(summary = "포스트 등록 요청", description = "포스트 등록이 진행됩니다.", tags = {"PostController"})

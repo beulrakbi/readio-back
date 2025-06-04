@@ -1,12 +1,15 @@
 package com.team.teamreadioserver.post.service;
 
+import com.team.teamreadioserver.common.common.Criteria;
 import com.team.teamreadioserver.post.dto.PostImgDTO;
 import com.team.teamreadioserver.post.dto.PostRequestDTO;
 import com.team.teamreadioserver.post.dto.PostResponseDTO;
 import com.team.teamreadioserver.post.entity.Post;
 import com.team.teamreadioserver.post.entity.PostImg;
 import com.team.teamreadioserver.post.repository.PostImgRepository;
+import com.team.teamreadioserver.post.repository.PostLikeRepository;
 import com.team.teamreadioserver.post.repository.PostRepository;
+import com.team.teamreadioserver.postReview.repository.PostReviewRepository;
 import com.team.teamreadioserver.profile.dto.ProfileRequestDTO;
 import com.team.teamreadioserver.profile.dto.ProfileResponseDTO;
 import com.team.teamreadioserver.profile.entity.Profile;
@@ -15,6 +18,9 @@ import com.team.teamreadioserver.profile.repository.ProfileImgRepository;
 import com.team.teamreadioserver.profile.repository.ProfileRepository;
 import com.team.teamreadioserver.report.entity.ReportedPost;
 import com.team.teamreadioserver.report.repository.ReportedPostRepository;
+import com.team.teamreadioserver.search.dto.BookDTO;
+import com.team.teamreadioserver.search.entity.Book;
+import com.team.teamreadioserver.search.repository.BookRepository;
 import com.team.teamreadioserver.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -22,6 +28,10 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,6 +39,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -42,6 +53,10 @@ public class PostService {
     private final ProfileImgRepository profileImgRepository;
     private final ModelMapper modelMapper;
     private final ReportedPostRepository reportedPostRepository;
+    private final ProfileRepository profileRepository;
+    private final BookRepository bookRepository;
+    private final PostLikeRepository postLikeRepository;
+    private final PostReviewRepository postReviewRepository;
 
     @Value("${image.image-url}")
     private String IMAGE_URL;
@@ -89,9 +104,60 @@ public class PostService {
             postResponseDTO.setPostImg(postImgDTO);
         }
 
-
-
         return postResponseDTO;
+    }
+
+    public int getAllUserPost(String userId)
+    {
+        Optional<Profile> profile = profileRepository.findByUser_UserId(userId);
+        List<Post> foundPosts = postRepository.findByProfile(profile.get());
+        return foundPosts.size();
+    }
+
+    public Object getAllUserPostWithPaging(String userId, Criteria cri)
+    {
+        int index = cri.getPageNum() - 1;
+        int count = cri.getAmount();
+        Pageable paging = PageRequest.of(index, count, Sort.by("postId").descending());
+
+        Optional<Profile> profile = profileRepository.findByUser_UserId(userId);
+        ProfileResponseDTO profileResponseDTO = modelMapper.map(profile.get(), ProfileResponseDTO.class);
+        Page<Post> foundPostsWithPaging = postRepository.findByProfile(profile.get(), paging);
+        List<Post> foundPosts = foundPostsWithPaging.getContent();
+        List<PostResponseDTO> result = new ArrayList<>();
+        for (Post post : foundPosts) {
+            PostResponseDTO postResponseDTO = new PostResponseDTO();
+            Book book = bookRepository.findByBookIsbn(post.getBookIsbn());
+            if(book != null)
+            {
+                BookDTO bookDTO = new BookDTO(book);
+                postResponseDTO.setBook(bookDTO);
+            }
+
+            PostImg img = postImgRepository.findByPost(post);
+            if (img != null)
+            {
+                PostImgDTO postImgDTO = new PostImgDTO();
+                postImgDTO.setImgId(img.getImgId());
+                postImgDTO.setOriginalName(img.getOriginalName());
+                postImgDTO.setSaveName(IMAGE_URL + img.getSavedName());
+                postImgDTO.setPostId(post.getPostId());
+                postResponseDTO.setPostImg(postImgDTO);
+            }
+            postResponseDTO.setPostId(post.getPostId());
+            postResponseDTO.setProfileId(profileResponseDTO);
+            postResponseDTO.setPostTitle(post.getPostTitle());
+            postResponseDTO.setPostContent(post.getPostContent());
+            postResponseDTO.setPostHidden(post.getPostHidden());
+            postResponseDTO.setPostCreatedDate(post.getPostCreateDate());
+            Long likes = postLikeRepository.countByPost(post);
+            Long reviews = postReviewRepository.countByPostPostId(post.getPostId());
+            postResponseDTO.setLikes(likes);
+            postResponseDTO.setReviewCount(reviews);
+            postResponseDTO.setBookIsbn(post.getBookIsbn());
+            result.add(postResponseDTO);
+        }
+        return result;
     }
 
     @Transactional
