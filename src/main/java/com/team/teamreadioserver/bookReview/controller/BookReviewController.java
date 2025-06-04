@@ -1,6 +1,7 @@
 package com.team.teamreadioserver.bookReview.controller;
 
 import com.team.teamreadioserver.bookReview.dto.AllReviewResponseDTO;
+import com.team.teamreadioserver.bookReview.dto.BookReviewDTO;
 import com.team.teamreadioserver.bookReview.dto.MyReviewResponseDTO;
 import com.team.teamreadioserver.bookReview.dto.ReviewRequestDTO;
 import com.team.teamreadioserver.bookReview.service.BookReviewService;
@@ -20,16 +21,20 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map; // Map을 사용하여 JSON 응답 구성
+import org.slf4j.Logger; // SLF4J Logger import (권장)
+import org.slf4j.LoggerFactory; // SLF4J LoggerFactory import (권장)
+import java.util.Map; // Map import 확인
 
 @RestController
 @RequestMapping("/bookReview")
 public class BookReviewController {
 
+    private static final Logger logger = LoggerFactory.getLogger(BookReviewController.class); // SLF4J Logger
+
     @Autowired
     private BookReviewService bookReviewService;
 
-    // --- 기존 코드 유지 (좋아요 관련 없는 부분) ---
-
+    // --- 기존 코드 유지 (createBookReview, report, deleteReview, getAllBookReviews, getAllReviews, getMyReviews) ---
     @Operation(summary = "리뷰 등록", description = "리뷰를 등록합니다.")
     @PostMapping("/create")
     public ResponseEntity<String> createBookReview(@RequestBody @Valid ReviewRequestDTO reviewRequestDTO) {
@@ -74,8 +79,8 @@ public class BookReviewController {
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (AccessDeniedException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage()); // 403 Forbidden
-        } catch (IllegalArgumentException e) { // getProfileByUserId에서 발생 가능
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("리뷰 삭제 중 오류 발생: " + e.getMessage());
@@ -85,8 +90,12 @@ public class BookReviewController {
     @Operation(summary = "책 별 리뷰 조회", description = "책 별 리뷰를 조회합니다.")
     @GetMapping("/{bookIsbn}")
     public ResponseEntity<ResponseDTO> getAllBookReviews(@PathVariable String bookIsbn) {
-        // 기존 ResponseDTO 사용
-        return ResponseEntity.ok(new ResponseDTO(HttpStatus.OK, "리뷰 조회 성공", bookReviewService.getBookReviewByBookIsbn(bookIsbn)));
+        logger.info("[CONTROLLER] getAllBookReviews 호출: bookIsbn={}", bookIsbn);
+        List<BookReviewDTO> reviews = bookReviewService.getBookReviewByBookIsbn(bookIsbn);
+        logger.info("[CONTROLLER] getAllBookReviews 응답 데이터 (일부): 첫 번째 리뷰의 isLiked={}, likesCount={}",
+                reviews.isEmpty() ? "N/A" : reviews.get(0).isLiked(),
+                reviews.isEmpty() ? "N/A" : reviews.get(0).getLikesCount());
+        return ResponseEntity.ok(new ResponseDTO(HttpStatus.OK, "리뷰 조회 성공", reviews));
     }
 
     @Operation(summary = "전체 리뷰 조회", description = "모든 리뷰를 조회합니다.")
@@ -109,19 +118,20 @@ public class BookReviewController {
             List<MyReviewResponseDTO> myReviews = bookReviewService.myBookReview(profile.getProfileId());
             return ResponseEntity.ok(myReviews);
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage())); // 프로필 못찾으면 404
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "내 리뷰 조회 중 오류 발생: " + e.getMessage()));
         }
     }
 
-    // --- 좋아요 관련 엔드포인트 수정 ---
 
-    @Operation(summary = "리뷰 좋아요/취소 토글", description = "리뷰에 좋아요를 누르거나 취소합니다. (하나의 엔드포인트로 처리)")
-    @PostMapping("/{reviewId}/like-toggle") // 엔드포인트명 변경 제안
+    @Operation(summary = "리뷰 좋아요/취소 토글", description = "리뷰에 좋아요를 누르거나 취소합니다.")
+    @PostMapping("/{reviewId}/like-toggle")
     public ResponseEntity<?> toggleLikeReview(@PathVariable Integer reviewId) {
+        logger.info("[CONTROLLER] toggleLikeReview 호출: reviewId={}", reviewId);
         String userId = getCurrentUserId();
         if (userId == null) {
+            logger.warn("[CONTROLLER] toggleLikeReview: 로그인이 필요합니다 (userId is null).");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "로그인이 필요합니다."));
         }
 
@@ -131,27 +141,27 @@ public class BookReviewController {
             Integer likesCount = bookReviewService.getLikesCount(reviewId);
 
             String message = isLiked ? "리뷰 좋아요 완료" : "리뷰 좋아요 취소 완료";
-            HttpStatus status = isLiked ? HttpStatus.CREATED : HttpStatus.OK; // 좋아요 추가 시 201, 취소 시 200
+            HttpStatus status = isLiked ? HttpStatus.CREATED : HttpStatus.OK;
 
-            return ResponseEntity.status(status).body(Map.of(
+            Map<String, Object> responseBody = Map.of(
                     "message", message,
                     "isLiked", isLiked,
                     "likesCount", likesCount
-            ));
+            );
+            logger.info("[CONTROLLER] toggleLikeReview 응답: {}", responseBody);
+            return ResponseEntity.status(status).body(responseBody);
         } catch (EntityNotFoundException e) {
-            // 리뷰 또는 프로필을 찾을 수 없는 경우
+            logger.error("[CONTROLLER] toggleLikeReview EntityNotFoundException: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage()));
         } catch (Exception e) {
-            // 기타 예상치 못한 오류
+            logger.error("[CONTROLLER] toggleLikeReview Exception: {}", e.getMessage(), e); // 스택 트레이스 로깅
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "좋아요 처리 중 오류 발생: " + e.getMessage()));
         }
     }
 
-    // 기존 좋아요 등록 엔드포인트 (@PostMapping("/{reviewId}/like"))는 제거
-    // 기존 좋아요 해제 엔드포인트 (@DeleteMapping("/{reviewId}/like"))는 제거
-
+    // --- (getLikesCount, getReviewLikeStatus, getCurrentUserId 기존 코드 유지) ---
     @Operation(summary = "리뷰 좋아요 수 조회", description = "리뷰의 좋아요 수를 조회합니다.")
-    @GetMapping("/{reviewId}/likes/count") // 일관성을 위해 엔드포인트 변경 제안
+    @GetMapping("/{reviewId}/likes/count")
     public ResponseEntity<?> getLikesCount(@PathVariable Integer reviewId) {
         try {
             Integer count = bookReviewService.getLikesCount(reviewId);
@@ -164,12 +174,11 @@ public class BookReviewController {
     }
 
     @Operation(summary = "리뷰 좋아요 상태 확인", description = "현재 로그인된 사용자가 특정 리뷰에 좋아요를 눌렀는지 확인합니다.")
-    @GetMapping("/{reviewId}/likes/status") // 새로운 엔드포인트 추가
+    @GetMapping("/{reviewId}/likes/status")
     public ResponseEntity<Map<String, Object>> getReviewLikeStatus(
             @PathVariable Integer reviewId
     ) {
         String userId = getCurrentUserId();
-        // 비로그인 사용자도 좋아요 상태 확인 가능하도록 (항상 false)
         if (userId == null) {
             return ResponseEntity.ok(Map.of("reviewId", reviewId, "isLiked", false));
         }
@@ -179,23 +188,18 @@ public class BookReviewController {
             boolean isLiked = bookReviewService.isReviewLikedByUser(reviewId, profile.getProfileId());
             return ResponseEntity.ok(Map.of("reviewId", reviewId, "isLiked", isLiked));
         } catch (EntityNotFoundException e) {
-            // 리뷰를 찾을 수 없거나 프로필을 찾을 수 없는 경우 (하지만 getProfileByUserId에서 에러날 경우 userId가 null 아니므로 다른 예외임)
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage(), "isLiked", false));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "좋아요 상태 조회 중 오류 발생: " + e.getMessage(), "isLiked", false));
         }
     }
 
-
-    /**
-     * 현재 로그인된 사용자의 userId를 가져오는 공통 메서드
-     * @return userId (없으면 null)
-     */
     private String getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
             return null;
         }
+        // logger.debug("[CONTROLLER] getCurrentUserId: {}", authentication.getName()); // 필요시 debug 레벨로 사용자 ID 로깅
         return authentication.getName();
     }
 }
