@@ -23,7 +23,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations(ADD_RESOURCE_LOCATION);
     }
 
-    // 여기에 CORS 설정 추가
+    // 여기에 CORS 설정 추가(SecurityConfig 에 설정 완료)
 //    @Override
 //    public void addCorsMappings(CorsRegistry registry) {
 //        registry.addMapping("/**") // 모든 요청에 대해

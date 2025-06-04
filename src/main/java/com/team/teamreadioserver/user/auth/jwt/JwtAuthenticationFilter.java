@@ -31,8 +31,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String requestURI = request.getRequestURI(); // 현재 요청 URI 로깅 추가
-        logger.info("---- JWT Filter 시작: 요청 URI = {}", requestURI); // 추가된 디버깅 로그
+        String requestURI = request.getRequestURI();
+        logger.info("---- JWT Filter 시작: 요청 URI = {}", requestURI);
+
+        //  /api/clicks 경로는 인증 없이 통과시킴
+        if (requestURI.startsWith("/api/clicks")) {
+            logger.info("✅ /api/clicks 요청은 인증 없이 통과");
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         String token = getTokenFromRequest(request);
         logger.info("JWT 토큰: " + token);        // 주석 해도 되고 안해도 되고

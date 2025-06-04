@@ -98,30 +98,48 @@
         WHERE user_id = #{userId}
     </select>
 
-    <!--아이디/비밀번호 찾기-->
+    <!--회원정보 수정 시 이메일 중복확인-->
+    <select id="countByEmailExceptSelf" resultType="int">
+        SELECT COUNT(*) FROM user
+        WHERE user_email = #{userEmail}
+          AND user_id != #{currentUserId}
+    </select>
+
+    <!--회원정보 수정 시 전화번호 중복확인-->
+    <select id="countByPhoneExceptSelf" resultType="int">
+        SELECT COUNT(*) FROM user
+        WHERE user_phone = #{userPhone}
+          AND user_id != #{currentUserId}
+    </select>
+
+    <!--아이디 찾기(이름,휴대폰번호로)-->
     <select id="findIdByNameAndPhone" resultType="string">
         SELECT user_id
-        FROM user
+        FROM `user`
         WHERE user_name = #{userName}
           AND user_phone = #{userPhone}
     </select>
 
-    <select id="findPwdByIdAndEmail" resultType="string">
-        SELECT user_id
-        FROM user
-        WHERE user_id = #{userId}
-          AND user_email = #{userEmail}
+    <!--비밀번호 찾기(아이디와 이메일 일치여부 확인 후 인증번호 발송 가능)-->
+    <select id="existsByUserIdAndEmail" resultType="int">
+        SELECT EXISTS(
+            SELECT 1
+            FROM `user`
+            WHERE user_id = #{userId}
+              AND user_email = #{userEmail}
+        )
     </select>
 
+    <!--비밀번호 찾기(비밀번호 재설정)-->
     <update id="updatePassword">
-        UPDATE user
+        UPDATE `user`
         SET user_pwd = #{newPassword}
         WHERE user_id = #{userId}
     </update>
 
     <!--회원탈퇴-->
     <delete id="deleteUserById" parameterType="String">
-        DELETE FROM user
+        DELETE FROM `user`
         WHERE user_id = #{userId}
     </delete>
 
