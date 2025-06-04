@@ -1,8 +1,9 @@
 // 변경 제안
 package com.team.teamreadioserver.bookReview.dto;
 
+import com.team.teamreadioserver.bookReview.dto.BookDetailsDTO;
+import com.team.teamreadioserver.search.dto.BookDTO;
 import lombok.*;
-import java.time.LocalDateTime; // LocalDateTime import
 import java.util.Date;
 
 @Getter
@@ -11,8 +12,9 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 public class MyReviewResponseDTO {
-    private Integer reviewId; // 리뷰 ID 추가
-    private String bookIsbn; // 책 ISBN 추가
+    private Integer reviewId;
+    private String bookIsbn;
     private String reviewContent;
-    private Date createdAt; // LocalDateTime으로 변경
+    private Date createdAt;
+    private BookDTO book; // 책 상세 정보를 담을 필드 추가
 }

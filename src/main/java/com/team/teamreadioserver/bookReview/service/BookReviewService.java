@@ -1,3 +1,4 @@
+// src/main/java/com/team/teamreadioserver/bookReview/service/BookReviewService.java
 package com.team.teamreadioserver.bookReview.service;
 
 import com.team.teamreadioserver.bookReview.dto.AllReviewResponseDTO;
@@ -12,7 +13,12 @@ import com.team.teamreadioserver.profile.entity.Profile;
 import com.team.teamreadioserver.profile.repository.ProfileRepository;
 import com.team.teamreadioserver.report.entity.ReportedReview;
 import com.team.teamreadioserver.report.repository.ReportedReviewRepository;
-import jakarta.persistence.EntityNotFoundException; // jakarta.persistence import
+
+// [확인!] BookService 및 BookDTO 임포트 (실제 프로젝트의 패키지 경로를 확인해주세요)
+import com.team.teamreadioserver.search.service.BookService; // (여러분이 구현해야 할 BookService 인터페이스)
+import com.team.teamreadioserver.search.dto.BookDTO;      // (제공해주신 BookDTO)
+
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -23,13 +29,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.Optional; // Optional import 확인
-import org.slf4j.Logger; // SLF4J Logger import (권장)
-import org.slf4j.LoggerFactory; // SLF4J LoggerFactory import (권장)
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class BookReviewService {
-    // SLF4J Logger 선언 (권장)
     private static final Logger logger = LoggerFactory.getLogger(BookReviewService.class);
 
     @Autowired
@@ -41,7 +45,11 @@ public class BookReviewService {
     @Autowired
     private ProfileRepository profileRepository;
 
-    // --- 기존 코드 유지 (addBookReview, reportReview, deleteReview, allBookReview, myBookReview) ---
+    // [필수] BookService 주입 (BookService 인터페이스의 구현체가 Spring Bean으로 등록되어 있어야 합니다)
+    @Autowired
+    private BookService bookService;
+
+    // --- 기존 메소드들 (addBookReview, reportReview, deleteReview, allBookReview) ---
     public void addBookReview(ReviewRequestDTO reviewRequestDTO, String userId) {
         Profile profile = profileRepository.findByUser_UserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자 프로필을 찾을 수 없습니다. (UserId: " + userId + ")"));
@@ -51,6 +59,7 @@ public class BookReviewService {
                 .bookIsbn(reviewRequestDTO.getBookIsbn())
                 .reviewContent(reviewRequestDTO.getReviewContent())
                 .reportedCount(0)
+                // isHidden과 createdAt은 @PrePersist로 자동 설정될 것으로 예상됩니다.
                 .build();
         bookReviewRepository.save(bookReview);
     }
@@ -58,17 +67,23 @@ public class BookReviewService {
     @Transactional
     public void reportReview(Integer reviewId) {
         BookReview bookReview = bookReviewRepository.findById(reviewId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 리뷰가 존재하지 않습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("해당 리뷰가 존재하지 않습니다. (ReviewId: " + reviewId + ")"));
 
-        bookReview.report();
+        bookReview.report(); // reportedCount 증가
 
+        // reportedCount가 1일 때만 ReportedReview 엔티티 생성 및 저장 (중복 방지)
         if (bookReview.getReportedCount() == 1) {
             ReportedReview reportedReview = ReportedReview.builder()
                     .bookReview(bookReview)
-                    .userId(bookReview.getProfile().getUser().getUserId())
+                    .userId(bookReview.getProfile().getUser().getUserId()) // 신고자 ID (현재는 리뷰 작성자 ID로 되어있으나, 실제 신고자 ID로 변경 필요할 수 있음)
                     .build();
             reportedReviewRepository.save(reportedReview);
-        } else if (bookReview.getReportedCount() > 4) {
+        }
+
+        // reportedCount가 5 이상일 때 hide 처리 (BookReview 엔티티의 hide2() 또는 hide() 사용)
+        if (bookReview.getReportedCount() >= 5) { // 5회 이상 신고 시
+            // BookReview 엔티티에 hide2() 또는 hide() 메소드가 정의되어 있어야 합니다.
+            // 제공해주신 엔티티 코드에는 hide()와 hide2()가 있었습니다.
             bookReview.hide2();
         }
     }
@@ -98,18 +113,38 @@ public class BookReviewService {
         ).toList();
     }
 
+    // --- [수정된 메소드] myBookReview ---
     public List<MyReviewResponseDTO> myBookReview(Long profileId) {
-        return bookReviewRepository.findByProfile_ProfileId(profileId).stream().map(review ->
-                MyReviewResponseDTO.builder()
-                        .reviewId(review.getReviewId())
-                        .bookIsbn(review.getBookIsbn())
-                        .reviewContent(review.getReviewContent())
-                        .createdAt(review.getCreatedAt())
-                        .build()
-        ).toList();
+        List<BookReview> reviews = bookReviewRepository.findByProfile_ProfileId(profileId);
+
+        return reviews.stream().map(review -> {
+            BookDTO bookDetails = null; // BookDTO (from search.dto) 타입으로 변경
+            String isbn = review.getBookIsbn();
+
+            if (isbn != null && !isbn.isEmpty()) {
+                try {
+                    // [필수 구현] BookService를 통해 ISBN으로 책 상세 정보를 가져옵니다.
+                    // bookService.getBookDetailsByIsbn(isbn) 메소드는 BookService 인터페이스와 그 구현체에 직접 만드셔야 합니다.
+                    bookDetails = bookService.getBookDetailsByIsbn(isbn);
+                } catch (Exception e) {
+                    logger.error("ISBN {} 에 대한 책 상세 정보를 가져오는 중 오류 발생: {}", isbn, e.getMessage());
+                    // 책 정보를 가져오지 못한 경우, bookDetails는 null로 유지되거나,
+                    // 기본 정보를 가진 BookDTO를 생성하여 할당할 수 있습니다.
+                    // 예: bookDetails = BookDTO.builder().bookTitle("정보 없음").bookAuthor("정보 없음").bookCover(null).build();
+                }
+            }
+
+            return MyReviewResponseDTO.builder()
+                    .reviewId(review.getReviewId())
+                    .bookIsbn(isbn)
+                    .reviewContent(review.getReviewContent())
+                    .createdAt(review.getCreatedAt())
+                    .book(bookDetails) // MyReviewResponseDTO에 추가된 book 필드에 조회한 BookDTO 설정
+                    .build();
+        }).collect(Collectors.toList());
     }
 
-    // 책별 리뷰 조회 (기존과 동일, DTO에 좋아요 수와 좋아요 여부 잘 설정됨)
+    // --- 기존 메소드들 (getBookReviewByBookIsbn, toggleLikeBookReview, getLikesCount, isReviewLikedByUser, getProfileByUserId) ---
     public List<BookReviewDTO> getBookReviewByBookIsbn(String bookIsbn) {
         logger.info("[SERVICE] getBookReviewByBookIsbn 호출: bookIsbn={}", bookIsbn);
         List<BookReview> foundBookReviews = bookReviewRepository.findByBookIsbn(bookIsbn);
@@ -132,6 +167,8 @@ public class BookReviewService {
             dto.setReviewContent(review.getReviewContent());
             dto.setBookIsbn(review.getBookIsbn());
             dto.setCreatedAt(review.getCreatedAt());
+            // BookReview 엔티티의 isHidden 필드(IsHidden enum 타입)를 DTO의 적절한 타입으로 변환 필요할 수 있음
+            // 여기서는 BookReviewDTO에 isHidden 필드가 있고, 타입이 호환된다고 가정합니다.
             dto.setIsHidden(review.getIsHidden());
             dto.setReportedCount(review.getReportedCount());
 
@@ -143,25 +180,20 @@ public class BookReviewService {
                 Optional<Profile> currentUserProfileOpt = profileRepository.findByUser_UserId(finalCurrentUserId);
                 if (currentUserProfileOpt.isPresent()) {
                     Long currentUserProfileId = currentUserProfileOpt.get().getProfileId();
-                    logger.info("[SERVICE] 리뷰 ID: {}, 현재 사용자 프로필 ID: {} 로 좋아요 여부 확인 시도", review.getReviewId(), currentUserProfileId);
+                    // logger.info("[SERVICE] 리뷰 ID: {}, 현재 사용자 프로필 ID: {} 로 좋아요 여부 확인 시도", review.getReviewId(), currentUserProfileId);
                     calculatedIsLiked = likesRepository.existsByBookReview_ReviewIdAndProfile_ProfileId(review.getReviewId(), currentUserProfileId);
                 } else {
                     logger.warn("[SERVICE] 사용자 ID {} 에 해당하는 프로필을 찾을 수 없습니다.", finalCurrentUserId);
                 }
             }
-            dto.setLiked(calculatedIsLiked); // Lombok @Setter에 의해 setLiked(boolean) 호출
+            dto.setLiked(calculatedIsLiked);
 
-            // System.out.println 사용 시 (기존 코드 유지 또는 아래 logger로 대체)
-            // System.out.println("DEBUG_BE: Review ID " + review.getReviewId() +
-            //         " - IsLiked calculated: " + calculatedIsLiked +
-            //         " (Current User: " + (finalCurrentUserId != null ? finalCurrentUserId : "null") + ")");
             logger.info("[SERVICE-DEBUG_BE] Review ID: {}, IsLiked calculated: {}, LikesCount: {}, Current User: {}",
                     review.getReviewId(), calculatedIsLiked, dto.getLikesCount(), (finalCurrentUserId != null ? finalCurrentUserId : "비로그인 또는 식별불가"));
 
             return dto;
         }).collect(Collectors.toList());
     }
-
 
     @Transactional
     public boolean toggleLikeBookReview(Integer reviewId, Long profileId) {
