@@ -3,10 +3,12 @@ package com.team.teamreadioserver.statistics.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
+@Setter
 @Getter
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 //클릭 통계용 DTO
 public class ClickedContentDTO {
     private String contentId;       // videoId or bookIsbn
