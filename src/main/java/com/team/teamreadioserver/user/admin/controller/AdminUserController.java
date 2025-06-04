@@ -106,7 +106,7 @@ public class AdminUserController {
   }
 
   @Operation(summary = "회원 삭제", description = "관리자는 회원을 삭제할 수 있다.")
-  @DeleteMapping("/{userId}")
+  @DeleteMapping("/users/{userId}")
   public ResponseEntity<Void> deleteUser(@PathVariable String userId) {
     adminUserService.deleteUser(userId);
     return ResponseEntity.ok().build();
