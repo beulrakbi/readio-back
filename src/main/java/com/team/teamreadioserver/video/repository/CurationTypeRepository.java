@@ -9,4 +9,5 @@ public interface CurationTypeRepository extends JpaRepository<CurationType, Inte
 
     CurationType findByTypeId(int typeId);
     List<CurationType> findAllByTypeIdLessThanEqual(int lessThan);
+    List<CurationType> findAllByTypeIdLessThanEqualOrderByTypeId(int lessThan);
 }
