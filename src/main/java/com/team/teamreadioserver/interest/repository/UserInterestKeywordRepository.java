@@ -17,19 +17,33 @@ public interface UserInterestKeywordRepository extends JpaRepository<UserInteres
 
     boolean existsByUser_UserIdAndInterestKeyword_InterestKeywordId(String userId, Long interestKeywordId);
 
+    // 1. 전체 집계 (2개 파라미터)
     @Query(value = """
     SELECT 
-        DATE_FORMAT(uik.created_at, :format) AS period, 
-        ik.interest_keyword, 
+        ik.interest_keyword AS label,
         COUNT(*) AS count
     FROM user_interest_keyword uik
     JOIN interest_keyword ik ON uik.interest_keyword_id = ik.interest_keyword_id
-    WHERE uik.created_at BETWEEN :startDate AND :endDate
+    WHERE uik.created_at BETWEEN :start AND :end
+      AND uik.status = 'ACTIVE'
+    GROUP BY ik.interest_keyword
+""", nativeQuery = true)
+    List<Object[]> findKeywordTrendTotal(@Param("start") LocalDateTime start,
+                                         @Param("end") LocalDateTime end);
+
+    // 2. 기간별 (3개 파라미터: format 포함)
+    @Query(value = """
+    SELECT 
+        DATE_FORMAT(uik.created_at, :format) AS period, 
+        ik.interest_keyword AS label, 
+        COUNT(*) AS count
+    FROM user_interest_keyword uik
+    JOIN interest_keyword ik ON uik.interest_keyword_id = ik.interest_keyword_id
+    WHERE uik.created_at BETWEEN :start AND :end
       AND uik.status = 'ACTIVE'
     GROUP BY period, ik.interest_keyword
-    ORDER BY period, count DESC
 """, nativeQuery = true)
-    List<Object[]> findKeywordTrend(@Param("startDate") LocalDateTime start,
-                                    @Param("endDate") LocalDateTime end,
+    List<Object[]> findKeywordTrend(@Param("start") LocalDateTime start,
+                                    @Param("end") LocalDateTime end,
                                     @Param("format") String format);
 }
