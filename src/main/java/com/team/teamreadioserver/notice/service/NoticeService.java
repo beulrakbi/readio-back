@@ -29,7 +29,8 @@ public class NoticeService {
                         notice.getNoticeContent(),
                         notice.getNoticeCreateAt(),
                         notice.getNoticeView(),
-                        notice.getNoticeState()
+                        notice.getNoticeState(),
+                        notice.getUserId()
                 ))
                 .collect(Collectors.toList());
     }
