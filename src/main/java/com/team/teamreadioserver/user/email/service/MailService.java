@@ -40,15 +40,29 @@ public class MailService {
 
     message.setFrom(senderEmail);
     message.setRecipients(MimeMessage.RecipientType.TO, mail);
-    message.setSubject("이메일 인증");
-    String body = "";
-    body += "<h2>요청하신 인증 번호입니다.</h2>";
-    body += "<h3>아래 인증번호를 입력해주세요</h3>";
-    body += "<h1>" + number + "</h1>";
-    body += "<h3>감사합니다.</h3>";
-    body += "<h3>READIO</h3>";
-    message.setText(body, "UTF-8", "html");
+    message.setSubject("READIO 인증번호 안내");
 
+    String body =
+        "<!DOCTYPE html>" +
+            "<html lang='ko'>" +
+            "<head><meta charset='UTF-8'><title>READIO 인증번호 안내</title></head>" +
+            "<body style=\"font-family: 'Pretendard Variable', sans-serif; background-color: #f2f2f2; padding: 30px;\">" +
+            "<div style='max-width:600px; margin:auto; background-color:#fff; padding:30px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1);'>" +
+            "<div style='background-color:#808467; text-align:center; padding:15px;'>" +
+            "<a style='font-size:40px; color:#F6EEB6; font-weight:bolder;'>READIO</a>" +
+            "</div><br/>" +
+            "<p style='font-size:16px; color:#444;'><h3>'비밀번호 재설정'을 위한 인증번호입니다.</h3>" +
+            "<strong>READIO</strong>에서 요청하신 인증번호를 안내드립니다.<br/>" +
+            "비밀번호 재설정 페이지에서 아래 인증번호를 입력하여 비밀번호 재설정이 가능합니다.</p>" +
+            "<div style='margin:30px 0; padding:20px; border:2px dashed #808467; text-align:center;'>" +
+            "<p style='margin:0; font-size:18px; color:#333;'>인증번호</p>" +
+            "<h1 style='margin:10px 0; font-size:40px; color:#131313;'>" + number + "</h1>" +
+            "</div>" +
+            "<p style='font-size:16px; color:#555;'>※ 인증번호는 30분간 유효합니다.</p><br/><br/>" +
+            "<hr/><p style='font-size:13px; color:#333;'>본 메일은 발신전용입니다.<br/>Copyright © READIO Corp.All rights reserved.</p>" +
+            "</div></body></html>";
+
+    message.setContent(body, "text/html; charset=UTF-8");
     return message;
   }
 
