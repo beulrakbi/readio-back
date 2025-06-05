@@ -28,15 +28,15 @@ public class NoticeController {
     private NoticeRepository noticeRepository;
 
     @Operation(summary = "공지 등록", description = "새로운 공지사항을 등록합니다.")
-    @PostMapping("/notice/write")
-    public String createNotice(@RequestBody @Valid NoticeRequestDTO noticeRequestDTO) {
+    @PostMapping(value = "/notice/write", consumes = {"multipart/form-data"}) // consumes 타입 변경
+    public String createNotice(@ModelAttribute @Valid NoticeRequestDTO noticeRequestDTO) { // @RequestBody -> @ModelAttribute
         noticeService.writeNotice(noticeRequestDTO);
         return "공지사항이 성공적으로 등록되었습니다.";
     }
 
     @Operation(summary = "공지사항 수정", description ="공지사항을 수정합니다.")
-    @PutMapping("/notice/update")
-    public String updateNotice(@RequestBody @Valid NoticeUpdateDTO noticeUpdateDTO) {
+    @PutMapping(value = "/notice/update", consumes = {"multipart/form-data"}) // consumes 타입 변경
+    public String updateNotice(@ModelAttribute @Valid NoticeUpdateDTO noticeUpdateDTO) { // @RequestBody -> @ModelAttribute
         noticeService.updateNotice(noticeUpdateDTO);
         return "공지사항이 성공적으로 수정되었습니다.";
     }

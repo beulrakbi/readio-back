@@ -21,6 +21,7 @@ public class NoticeResponseDTO {
     private int noticeView;
     private NoticeState noticeState;
     private String userId;
+    private String imageUrl; // 이미지 URL 필드 추가
 
     public static NoticeResponseDTO fromEntity(Notice notice) {
         NoticeResponseDTO dto = new NoticeResponseDTO();
@@ -28,9 +29,10 @@ public class NoticeResponseDTO {
         dto.noticeTitle = notice.getNoticeTitle();
         dto.noticeContent = notice.getNoticeContent();
         dto.noticeState = notice.getNoticeState();
-        dto.noticeCreateAt = notice.getNoticeCreateAt(); // 날짜 형식에 따라 변경 가능
+        dto.noticeCreateAt = notice.getNoticeCreateAt();
         dto.noticeView = notice.getNoticeView();
         dto.userId = notice.getUserId();
+        // 이미지 정보가 있을 경우 imageUrl 설정 (실제 URL은 서비스에서 세팅)
         return dto;
     }
 }
