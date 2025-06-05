@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
-
 @Service
 @RequiredArgsConstructor
 public class InterestTrendService {
@@ -29,45 +28,63 @@ public class InterestTrendService {
             String sort,
             Integer limit
     ) {
-        String format = switch (granularity.toLowerCase()) {
-            case "daily" -> "%Y-%m-%d";
-            case "weekly" -> "%Y-%u";
-            case "monthly" -> "%Y-%m";
-            default -> throw new IllegalArgumentException("Invalid granularity");
-        };
+        if (startDate == null) startDate = LocalDate.of(2000, 1, 1);
+        if (endDate == null) endDate = LocalDate.now();
 
         LocalDateTime start = startDate.atStartOfDay();
         LocalDateTime end = endDate.atTime(LocalTime.MAX);
 
+        boolean isTotal = "none".equalsIgnoreCase(granularity);
+        String format = switch (granularity.toLowerCase()) {
+            case "daily" -> "%Y-%m-%d";
+            case "weekly" -> "%Y-%u";
+            case "monthly" -> "%Y-%m";
+            case "none" -> null;
+            default -> throw new IllegalArgumentException("Invalid granularity");
+        };
+
         List<Object[]> raw;
+
         if (type.equalsIgnoreCase("keyword")) {
-            raw = keywordRepository.findKeywordTrend(start, end, format);
+            raw = isTotal
+                    ? keywordRepository.findKeywordTrendTotal(start, end)
+                    : keywordRepository.findKeywordTrend(start, end, format);
         } else if (type.equalsIgnoreCase("category")) {
-            raw = categoryRepository.findCategoryTrend(start, end, format);
+            raw = isTotal
+                    ? categoryRepository.findCategoryTrendTotal(start, end)
+                    : categoryRepository.findCategoryTrend(start, end, format);
         } else {
             throw new IllegalArgumentException("Invalid type");
         }
 
         List<InterestTrendDTO> dtos = raw.stream()
                 .map(row -> InterestTrendDTO.builder()
-                        .period((String) row[0])
-                        .label((String) row[1])
-                        .count(((Number) row[2]).longValue())
+                        .period(isTotal ? "" : (String) row[0])
+                        .label((String) row[isTotal ? 0 : 1])
+                        .count(((Number) row[isTotal ? 1 : 2]).longValue())
                         .build())
                 .collect(Collectors.toList());
 
-        // 정렬
-        Comparator<InterestTrendDTO> comparator = switch (sort) {
-            case "count" -> Comparator.comparing(InterestTrendDTO::getCount).reversed();
-            case "label" -> Comparator.comparing(InterestTrendDTO::getLabel);
-            case "date" -> Comparator.comparing(InterestTrendDTO::getPeriod);
-            default -> Comparator.comparing(InterestTrendDTO::getCount).reversed();
-        };
-        dtos = dtos.stream()
-                .sorted(comparator)
+        Map<String, Map<String, Long>> merged = new HashMap<>();
+        for (InterestTrendDTO dto : dtos) {
+            merged
+                    .computeIfAbsent(dto.getPeriod(), k -> new HashMap<>())
+                    .merge(dto.getLabel(), dto.getCount(), Long::sum);
+        }
+
+        dtos = merged.entrySet().stream()
+                .flatMap(e -> e.getValue().entrySet().stream()
+                        .map(inner -> new InterestTrendDTO(e.getKey(), inner.getKey(), inner.getValue())))
                 .collect(Collectors.toList());
 
-        //  limit 적용
+        Comparator<InterestTrendDTO> comparator = switch (sort) {
+            case "label" -> Comparator.comparing(InterestTrendDTO::getLabel);
+            case "date" -> Comparator.comparing(InterestTrendDTO::getPeriod);
+            case "count" -> Comparator.comparing(InterestTrendDTO::getCount).reversed();
+            default -> Comparator.comparing(InterestTrendDTO::getCount).reversed();
+        };
+        dtos = dtos.stream().sorted(comparator).collect(Collectors.toList());
+
         if (limit != null && limit > 0 && limit < dtos.size()) {
             return dtos.subList(0, limit);
         }
@@ -75,8 +92,7 @@ public class InterestTrendService {
         return dtos;
     }
 
-
-    //사용자 관심사 추세 비교
+    // 리팩토링된 getInterestDiff()
     public List<InterestDiffDTO> getInterestDiff(
             String type,
             String month1,
@@ -84,7 +100,6 @@ public class InterestTrendService {
             String sort,
             Integer limit
     ) {
-        // 월의 시작/끝 구하기
         LocalDate date1 = LocalDate.parse(month1 + "-01");
         LocalDateTime start1 = date1.atStartOfDay();
         LocalDateTime end1 = date1.withDayOfMonth(date1.lengthOfMonth()).atTime(LocalTime.MAX);
@@ -94,7 +109,6 @@ public class InterestTrendService {
         LocalDateTime end2 = date2.withDayOfMonth(date2.lengthOfMonth()).atTime(LocalTime.MAX);
 
         List<Object[]> raw1, raw2;
-
         if (type.equalsIgnoreCase("keyword")) {
             raw1 = keywordRepository.findKeywordTrend(start1, end1, "%Y-%m");
             raw2 = keywordRepository.findKeywordTrend(start2, end2, "%Y-%m");
@@ -106,14 +120,37 @@ public class InterestTrendService {
         }
 
         // Map<label, count>
-        Map<String, Long> map1 = raw1.stream().collect(Collectors.toMap(row -> (String) row[1], row -> ((Number) row[2]).longValue()));
-        Map<String, Long> map2 = raw2.stream().collect(Collectors.toMap(row -> (String) row[1], row -> ((Number) row[2]).longValue()));
+        Map<String, Long> map1 = raw1.stream()
+                .collect(Collectors.groupingBy(
+                        row -> (String) row[1],
+                        Collectors.summingLong(row -> ((Number) row[2]).longValue())
+                ));
+        Map<String, Long> map2 = raw2.stream()
+                .collect(Collectors.groupingBy(
+                        row -> (String) row[1],
+                        Collectors.summingLong(row -> ((Number) row[2]).longValue())
+                ));
 
-        Set<String> allLabels = new HashSet<>();
-        allLabels.addAll(map1.keySet());
-        allLabels.addAll(map2.keySet());
+        // 각 월의 Top N label 뽑기
+        List<String> topMonth1Labels = map1.entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .limit(limit != null ? limit : Long.MAX_VALUE)
+                .map(Map.Entry::getKey)
+                .toList();
 
-        List<InterestDiffDTO> result = allLabels.stream()
+        List<String> topMonth2Labels = map2.entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .limit(limit != null ? limit : Long.MAX_VALUE)
+                .map(Map.Entry::getKey)
+                .toList();
+
+        // 두 월의 label 합집합
+        Set<String> topLabels = new HashSet<>();
+        topLabels.addAll(topMonth1Labels);
+        topLabels.addAll(topMonth2Labels);
+
+        // ⬇합집합 기준 DTO 생성
+        List<InterestDiffDTO> result = topLabels.stream()
                 .map(label -> {
                     long count1 = map1.getOrDefault(label, 0L);
                     long count2 = map2.getOrDefault(label, 0L);
@@ -126,19 +163,14 @@ public class InterestTrendService {
                 })
                 .collect(Collectors.toList());
 
-        // 정렬
+        // 정렬 기준 적용 (정렬은 전체에 대해 수행)
         Comparator<InterestDiffDTO> comparator = switch (sort) {
             case "month1" -> Comparator.comparing(InterestDiffDTO::getCountMonth1).reversed();
             case "month2" -> Comparator.comparing(InterestDiffDTO::getCountMonth2).reversed();
             case "label" -> Comparator.comparing(InterestDiffDTO::getLabel);
-            default -> Comparator.comparing(InterestDiffDTO::getDiff).reversed(); // 기본: diff
+            default -> Comparator.comparing(InterestDiffDTO::getDiff).reversed();
         };
-        result = result.stream().sorted(comparator).collect(Collectors.toList());
 
-        if (limit != null && limit > 0 && limit < result.size()) {
-            return result.subList(0, limit);
-        }
-        return result;
+        return result.stream().sorted(comparator).toList();
     }
-
 }

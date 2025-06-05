@@ -11,6 +11,8 @@ public interface FilteringGroupRepository extends JpaRepository<FilteringGroup, 
 
     List<FilteringGroup> findAllBy();
 
+    List<FilteringGroup> findAllByOrderByTypeIdDesc();
+
     Page<FilteringGroup> findAllBy(Pageable paging);
 
     FilteringGroup findByGroupId(int groupId);

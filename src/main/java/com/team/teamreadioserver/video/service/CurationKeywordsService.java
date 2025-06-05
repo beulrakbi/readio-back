@@ -56,11 +56,11 @@ public class CurationKeywordsService {
     }
 
     public List<CurationTypeDTO> selectAllCurationTypes() {
-
-        List<CurationTypeDTO> result = curationTypeRepository.findAll().stream().map(type -> modelMapper.map(type, CurationTypeDTO.class)).collect(Collectors.toList());
+        List<CurationTypeDTO> result = curationTypeRepository.findAllByTypeIdLessThanEqual(100).stream().map(type -> modelMapper.map(type, CurationTypeDTO.class)).collect(Collectors.toList());
         Collections.shuffle(result);
         return result;
     }
+
 
     public List<CurationDTO> selectAllCurationTypesAndKeywords() {
 

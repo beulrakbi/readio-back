@@ -33,12 +33,16 @@ public class FilteringGroup {
     @Column(name = "is_active")
     private String isActive;
 
-    public FilteringGroup(String title, String content)
+    @Column(name = "type_id")
+    private int typeId;
+
+    public FilteringGroup(String title, String content, int typeId)
     {
         this.title = title;
         this.content = content;
         this.createAt = new Date();
         this.isActive = "N";
+        this.typeId = typeId;
     }
 
     public void modifyFilteringGroupActiveState()
@@ -49,10 +53,11 @@ public class FilteringGroup {
             this.isActive = "Y";
     }
 
-    public void modifyFilteringGroup(String newTitle, String newContent)
+    public void modifyFilteringGroup(String newTitle, String newContent, int newTypeId)
     {
         this.title = newTitle;
         this.content = newContent;
+        this.typeId = newTypeId;
     }
 
 }

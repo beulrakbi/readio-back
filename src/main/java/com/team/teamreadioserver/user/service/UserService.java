@@ -30,10 +30,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final ProfileRepository profileRepository;
 
-//    public UserService(UserMapper userMapper, PasswordEncoder passwordEncoder) {
-//        this.userMapper = userMapper;
-//        this.passwordEncoder = passwordEncoder;
-//    }
 
     // 회원가입
     @Transactional
@@ -75,41 +71,40 @@ public class UserService {
                 .build();
     }
 
-    // 아이디 중복 체크
+    // 회원가입 시 아이디 중복 체크
     public boolean isIdAvailable(String userId) {
         return userMapper.countByUserId(userId) == 0;
     }
 
-    // 이메일 중복 체크
+    // 회원가입 시 이메일 중복 체크
     public boolean isEmailAvailable(String userEmail) {
         return userMapper.countByUserEmail(userEmail) == 0;
     }
 
-    // 전화번호 중복 체크
+    // 회원가입 시 전화번호 중복 체크
     public boolean isPhoneAvailable(String userPhone) {
         return userMapper.countByUserPhone(userPhone) == 0;
     }
 
-    // 로그인 시 아이디 조회하기
+    // 로그인(아이디 확인)
     public User findByUserId(String userId) {
         return userMapper.findByUserId(userId);
     }
 
-    // 비밀번호 확인
+    // 내정보수정(비밀번호 확인)
     public boolean verifyPassword(String userId, String inputPassword) {
         String storedHashedPassword = userMapper.getPasswordByUserId(userId);
 
+        // 디버깅
         logger.info("사용자가 입력한 비번: " + inputPassword);
         logger.info("db에서 읽어온 비밀번호해시:" + storedHashedPassword);
 
         if(storedHashedPassword == null) return false;
 
-        // 디버깅..
-
         return passwordEncoder.matches(inputPassword, storedHashedPassword);
     }
 
-    // 회원정보조회
+    // 회원정보조회(내 정보 수정 진입 시)
     @Transactional(readOnly = true)
     public UserInfoResponseDTO getUserInfo(String userId) {
         logger.info("getUserInfo: 사용자 ID 조회 요청 - {}", userId);
@@ -133,18 +128,27 @@ public class UserService {
         return userMapper.updateUser(userEditRequestDTO);
     }
 
+  // 회원정보수정 시 이메일 중복확인
+  public boolean isEmailAvailableExceptSelf(String userEmail, String currentUserId) {
+    return userMapper.countByEmailExceptSelf(userEmail, currentUserId) == 0;
+  }
+
+  // 회원정보수정 시 전화번호 중복확인
+  public boolean isPhoneAvailableExceptSelf(String userPhone, String currentUserId) {
+    return userMapper.countByPhoneExceptSelf(userPhone, currentUserId) == 0;
+  }
+
+  // 아이디 찾기(이름,전화번호로)
   public String findId(String userName, String userPhone) {
     return userMapper.findIdByNameAndPhone(userName, userPhone);
   }
 
-  public boolean verifyUserForPwdReset(String userId, String userEmail) {
-    return userMapper.findPwdByIdAndEmail(userId, userEmail) != null;
+  public boolean resetPassword(String userId, String newPassword) {
+    String hashedPwd = passwordEncoder.encode(newPassword);
+    int updatedRows = userMapper.updatePassword(userId, hashedPwd);
+    return updatedRows > 0;
   }
 
-  public void resetPassword(String userId, String newPassword) {
-    String hashedPwd = passwordEncoder.encode(newPassword);
-    userMapper.updatePassword(userId, hashedPwd);
-  }
 
   // 회원 탈퇴 처리
   public boolean deleteUser(String userId) {
@@ -155,7 +159,7 @@ public class UserService {
 //    return userMapper.deleteUserById(userId) > 0;
   }
 
-  // 비밀번호 확인
+  // 탈퇴 시 비밀번호 확인
   public boolean verifyPasswordForDelete(String userId, String inputPassword) {
     String storedHashedPassword = userMapper.getPasswordByUserId(userId);
 

@@ -45,6 +45,16 @@ public class CurationKeywordsController {
                 new ResponseDTO(HttpStatus.OK, "큐레이션 타입 조회 성공", result));
     }
 
+    @Operation(summary = "큐레이션 타입 정렬 조회", description = "큐레이션 타입이 정렬되어 조회됩니다.", tags = { "CurationKeywordsController" })
+    @GetMapping("/admin/curationTypes")
+    public ResponseEntity<ResponseDTO> selectAllCurationTypesForAdmin()
+    {
+        log.info("[CurationKeywordsController] selectAllCurationTypesForAdmin");
+        List<CurationTypeDTO> result = curationKeywordsService.selectAllCurationTypesOrderByTypeId();
+        return ResponseEntity.ok().body(
+                new ResponseDTO(HttpStatus.OK, "큐레이션 타입 정렬 조회 성공", result));
+    }
+
 
 
     @Operation(summary = "큐레이션 타입 및 키워드 조회", description = "큐레이션 타입과 키워드가 조회됩니다.", tags = { "CurationKeywordsController" })

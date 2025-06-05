@@ -59,14 +59,15 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth -> auth
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
                                 .requestMatchers("/users/login", "/users/join/**", "/users/account/**",
                                         "/users/sendCode", "/users/verifyUser", "/users/resetPassword",
                                         "/video/**", "/curation/**", "/img/**", "/search/**", "/bookPage/**",
                                         "/bookReview/**", "/reported/**", "/serviceCenter/**", "/videoBookmark/publicCount/**",
-                                        "/api/clicks/**","/bookBookmark/publicCount/**","/api/follow").permitAll()  // 인증 필요없는 경로
-                                .requestMatchers(HttpMethod.GET, "/api/user/interests/categories", "/api/user/interests/keywords",  "/post/**", "/bookReview/**").permitAll()
-                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                        "/api/clicks/**","/bookBookmark/publicCount/**","/api/follow",
+                                    "/api/email/sendCode", "/api/email/verifyCode", "/api/email/resetPassword").permitAll()  // 인증 필요없는 경로
+
+                                .requestMatchers(HttpMethod.GET, "/api/user/interests/categories", "/api/user/interests/keywords",  "/post/**", "/bookReview/**").permitAll()   // 인증 필요없는 경로
+
                                 // /videoBookmark/status/** (개인 북마크 상태 포함)는 인증 필요
                                 .requestMatchers("/videoBookmark/status/**").authenticated()
                                 .requestMatchers("/bookBookmark/status/**").authenticated()
@@ -76,12 +77,16 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/bookReview/{reviewId}/like").authenticated()
                                 .requestMatchers(HttpMethod.DELETE, "/bookReview/{reviewId}/like").authenticated()
                                 .requestMatchers("/bookReview/reviews/my").authenticated() // 내 리뷰 조회
+
                                 // POST 및 DELETE 요청도 인증 필요
                                 .requestMatchers(HttpMethod.POST, "/bookBookmark/**").authenticated()
                                 .requestMatchers(HttpMethod.DELETE, "/bookBookmark/**").authenticated()
                                 .requestMatchers(HttpMethod.GET, "/videoBookmark/**").authenticated()
                                 .requestMatchers(HttpMethod.POST, "/videoBookmark/**").authenticated()
                                 .requestMatchers(HttpMethod.DELETE, "/videoBookmark/**").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/post/{userId}/all/**").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/post/{userId}/all").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/post/{userId}/count").authenticated()
                                 .requestMatchers(HttpMethod.POST, "/post/**", "/api/follow").authenticated()
                                 .requestMatchers("/api/user/**").authenticated()
                                 .requestMatchers(
@@ -93,20 +98,7 @@ public class SecurityConfig {
                                         "/swagger-resources/**",
                                         "/webjars/**"
                                 ).permitAll()
-                                .requestMatchers("/admin/**", "/api/admin/**").permitAll()       // 관리자 관련 경로(권한 풀고 테스트하면 403뜨는게 정상임 )
-                                .requestMatchers(HttpMethod.POST, "/videoBookmark/**","/post/**","/api/follow").authenticated()
-                                .requestMatchers(HttpMethod.DELETE, "/videoBookmark/**","/post/**").authenticated()
-                        .requestMatchers("/api/user/**").authenticated()
-                        .requestMatchers(
-                                "/",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/v3/api-docs/**",
-                                "/v3/api-docs.yaml",
-                                "/swagger-resources/**",
-                                "/webjars/**"
-                        ).permitAll()
-                        .requestMatchers("/admin/**","/api/admin/**").permitAll()       // 관리자 관련 경로(권한 풀고 테스트하면 403뜨는게 정상임 )
+                                .requestMatchers("/admin/**", "/admin/filtering/**", "/admin/curationType/**", "/api/admin/**").permitAll()       // 관리자 관련 경로
 //                       .requestMatchers("/admin/**").hasRole("ADMIN")   // 관리자 관련 경로(주석 해제시 해당경로는 관리자로 로그인해야 보임)
                                 .anyRequest().authenticated()   // 그 외는 모두 로그인 필요
                 )
@@ -135,4 +127,6 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
+
 }
