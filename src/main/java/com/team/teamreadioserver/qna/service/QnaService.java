@@ -6,11 +6,11 @@ import com.team.teamreadioserver.qna.dto.QnaQuestionDTO;
 import com.team.teamreadioserver.qna.dto.QnaResponseDTO;
 import com.team.teamreadioserver.qna.entity.Qna;
 import com.team.teamreadioserver.qna.repository.QnaRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.Authentication; // Authentication import 추가
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -138,5 +138,10 @@ public class QnaService {
         return myQnaList.stream()
                 .map(QnaResponseDTO::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true) // 데이터 변경이 없으므로 readOnly = true 설정
+    public long getUnansweredQnaCount() {
+        return qnaRepository.countByQnaAnswerIsNull();
     }
 }

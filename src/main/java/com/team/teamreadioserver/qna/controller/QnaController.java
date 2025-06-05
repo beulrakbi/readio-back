@@ -16,12 +16,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/serviceCenter")
@@ -97,6 +100,20 @@ public class QnaController {
             return ResponseEntity.ok("QNA가 성공적으로 수정되었습니다.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("수정 실패: " + e.getMessage());
+        }
+    }
+
+    @Operation(summary = "답변이 없는 Q&A 개수 조회", description = "답변이 아직 등록되지 않은 Q&A 게시글의 개수를 조회합니다.")
+    @GetMapping("/admin/qna/unanswered-count") // 프론트엔드에서 요청할 URL
+//    @PreAuthorize("hasRole('ROLE_ADMIN')") // 관리자만 접근 가능하도록 설정 (보안 설정에 따라 변경될 수 있음)
+    public ResponseEntity<Map<String, Long>> getUnansweredQnaCount() {
+        try {
+            long count = qnaService.getUnansweredQnaCount();
+            // JSON 응답 형식: {"unansweredCount": N}
+            return ResponseEntity.ok(Collections.singletonMap("unansweredCount", count));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap("error", -1L)); // 에러 발생 시 -1 또는 다른 적절한 값 반환
         }
     }
 }
