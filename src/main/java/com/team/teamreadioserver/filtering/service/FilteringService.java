@@ -19,6 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -169,6 +170,27 @@ public class FilteringService {
             log.error("[FilteringService] removeFilteringGroup() Fail");
         }
         return (result > 0) ? "필터링 그룹 삭제 성공" : "필터링 그룹 삭제 실패";
+    }
+
+    public List<FilteringDTO> getFilters(int typeId) {
+
+        List<FilteringGroup> groups = filteringGroupRepository.findByTypeIdAndIsActive(typeId,"Y");
+        List<Filtering> filterings = new ArrayList<>();
+        for (FilteringGroup filteringGroup : groups) {
+            filterings.addAll(filteringRepository.findByGroupId(filteringGroup.getGroupId()));
+        }
+        List<FilteringDTO> result = new ArrayList<>();
+        for (Filtering filtering : filterings) {
+            FilteringDTO dto = modelMapper.map(filtering, FilteringDTO.class);
+            dto.setFilteringId(filtering.getFilteringId());
+            dto.setGroupId(filtering.getGroupId());
+            dto.setKeyword(filtering.getKeyword());
+            dto.setVideoId(filtering.getVideoId());
+
+            result.add(dto);
+        }
+
+        return result;
     }
 
 }
