@@ -1,7 +1,6 @@
 package com.team.teamreadioserver.notice.service;
 
 import com.team.teamreadioserver.notice.dto.NoticeRequestDTO;
-//import com.team.teamreadioserver.notice.dto.NoticeUpdateDTO;
 import com.team.teamreadioserver.notice.dto.NoticeResponseDTO;
 import com.team.teamreadioserver.notice.dto.NoticeUpdateDTO;
 import com.team.teamreadioserver.notice.entity.Notice;
@@ -50,10 +49,9 @@ public class NoticeService {
             notice.setNoticeImg(img);
         }
 
-
-
         noticeRepository.save(notice);
     }
+
     @Transactional
     public void updateNotice(NoticeUpdateDTO updateDTO) {
         Notice notice = noticeRepository.findById(updateDTO.getNoticeId())
@@ -82,10 +80,17 @@ public class NoticeService {
         noticeRepository.delete(notice);
     }
 
+    @Transactional // 트랜잭션 추가
     public NoticeResponseDTO detail(Integer noticeId) {
-        return noticeRepository.findById(noticeId)
-                .map(NoticeResponseDTO::fromEntity)
+        Notice notice = noticeRepository.findById(noticeId)
                 .orElseThrow(() -> new IllegalArgumentException("공지사항이 존재하지 않습니다."));
+
+        // 조회수 1 증가
+        notice.setNoticeView(notice.getNoticeView() + 1);
+        // save를 명시적으로 호출할 필요 없음: @Transactional 어노테이션이 붙은 메서드 내에서 엔티티의 상태가 변경되면
+        // 트랜잭션이 커밋될 때 자동으로 변경사항이 데이터베이스에 반영됩니다 (Dirty Checking).
+
+        return NoticeResponseDTO.fromEntity(notice);
     }
 
     public List<NoticeResponseDTO> searchNoticesByTitle(String keyword) {
@@ -95,6 +100,4 @@ public class NoticeService {
                 .map(NoticeResponseDTO::fromEntity)
                 .collect(Collectors.toList());
     }
-
-
 }
