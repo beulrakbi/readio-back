@@ -37,7 +37,7 @@ public class BookService {
         System.out.println("size: " + size);
 
         // DB에 결과가 있으면, size 파라미터로 페이징
-        if (!combined.isEmpty()) {
+        if (combined.size() >= size) {
             return toPagedDto(new ArrayList<>(combined), page, size);
         }
 
