@@ -22,6 +22,9 @@ public interface FollowRepository extends CrudRepository<Follow, Integer> {
     long countByFollower(Profile follower);
     long countByFollowing(Profile following);
 
-    // 팔로우 관계 삭제 (언팔로우 시)
-    void deleteByFollowerAndFollowing(Profile follower, Profile following);
+    // 특정 프로필이 팔로우하는 모든 팔로우 관계를 조회 (following_profile_id 포함)
+    List<Follow> findByFollower_ProfileId(Long followerProfileId);
+
+    // 특정 팔로우 관계가 존재하는지 확인 (중복 팔로우 방지 등)
+    Optional<Follow> findByFollower_ProfileIdAndFollowing_ProfileId(Integer followerProfileId, Integer followingProfileId);
 }

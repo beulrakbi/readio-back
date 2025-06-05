@@ -81,6 +81,12 @@ aladin:
      security: DEBUG
    com.team.teamreadioserver: DEBUG # 사용자 패키지
 
+  spring:
+   jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect # MySQL 8 버전 예시
+    # properties:
+    #  hibernate:
+    #    dialect: org.hibernate.dialect.MySQL8Dialect
 
  mail:
   host: smtp.gmail.com
