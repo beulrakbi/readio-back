@@ -3,7 +3,9 @@ package com.team.teamreadioserver.profile.repository;
 import com.team.teamreadioserver.profile.entity.Profile;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
@@ -13,5 +15,8 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
     boolean existsByPenName(String penName);
 
     Profile findByProfileId(Long profileId);
+
+    // 주어진 사용자 ID(Set) 목록에 해당하는 모든 Profile 엔티티를 찾는 메서드 (감정/관심사 기반 추천에 사용)
+    List<Profile> findByUser_UserIdIn(Set<String> userIds);
 
 }

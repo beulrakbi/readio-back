@@ -1,6 +1,7 @@
 package com.team.teamreadioserver.interest.repository;
 
 import com.team.teamreadioserver.interest.entity.UserInterestKeyword;
+import com.team.teamreadioserver.interest.enums.InterestStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -8,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 public interface UserInterestKeywordRepository extends JpaRepository<UserInterestKeyword, Long> {
 
@@ -32,4 +34,10 @@ public interface UserInterestKeywordRepository extends JpaRepository<UserInteres
     List<Object[]> findKeywordTrend(@Param("startDate") LocalDateTime start,
                                     @Param("endDate") LocalDateTime end,
                                     @Param("format") String format);
+
+    // 특정 사용자의 활성화된 관심 키워드를 찾는 메서드
+    List<UserInterestKeyword> findByUserAndStatus(com.team.teamreadioserver.user.entity.User user, InterestStatus status);
+
+    // 주어진 관심 키워드 ID 목록에 해당하는 활성화된 사용자 관심 키워드를 찾는 메서드 (같은 관심사 가진 사용자 찾기)
+    List<UserInterestKeyword> findByInterestKeyword_InterestKeywordIdInAndStatus(Set<Long> interestKeywordIds, InterestStatus status);
 }
