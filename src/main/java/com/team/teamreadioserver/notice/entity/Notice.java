@@ -1,7 +1,6 @@
 package com.team.teamreadioserver.notice.entity;
 
 import com.team.teamreadioserver.notice.enumPackage.NoticeState;
-import io.swagger.v3.oas.annotations.info.Info;
 import jakarta.persistence.*;
 
 import lombok.AllArgsConstructor;
@@ -11,7 +10,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Builder
@@ -77,4 +75,8 @@ public class Notice {
         }
     }
 
+    // ✨ 조회수 증가를 위한 setter 추가
+    public void setNoticeView(int noticeView) {
+        this.noticeView = noticeView;
+    }
 }

@@ -22,8 +22,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-//로그인 엔드포인트
+//로그인 컨트롤러 (로그인 엔드포인트)
 @RestController
 @RequestMapping("/users")
 public class AuthController {
@@ -69,7 +71,7 @@ public class AuthController {
 
     try {
       Authentication authentication = authenticationManager.authenticate(
-              new UsernamePasswordAuthenticationToken(loginRequestDTO.getUsername(), loginRequestDTO.getPassword())
+          new UsernamePasswordAuthenticationToken(loginRequestDTO.getUsername(), loginRequestDTO.getPassword())
       );
       UserDetails userDetails = (UserDetails) authentication.getPrincipal();
       String token = tokenProvider.generateToken(authentication.getName());
@@ -87,18 +89,32 @@ public class AuthController {
 
       return ResponseEntity.ok(jwtResponse); // JwtResponseDTO 객체 반환
 
-    } catch (UsernameNotFoundException e) { // <--- 예외를 구체적으로 처리
-      System.err.println("로그인 실패 (사용자 없음): " + e.getMessage()); // System.err로 변경
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 실패: 아이디를 찾을 수 없습니다.");
+//    } catch (UsernameNotFoundException e) { // <--- 예외를 구체적으로 처리했으나 보안때문에 주석 처리함
+//      Map<String, String> errorResponse = new HashMap<>();
+//      errorResponse.put("message", "아이디를 찾을 수 없습니다.");
+//      System.err.println("로그인 실패 (사용자 없음): " + e.getMessage()); // System.err로 변경
+//      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+//
+//    } catch (BadCredentialsException e) { // <--- 예외를 구체적으로 처리했으나 보안때문에 주석 처리함
+//      Map<String, String> errorResponse = new HashMap<>();
+//      errorResponse.put("message", "비밀번호가 일치하지 않습니다.");
+//      System.err.println("로그인 실패 (비밀번호 불일치): " + e.getMessage()); // System.err로 변경
+//      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
 
-    } catch (BadCredentialsException e) { // <--- 예외를 구체적으로 처리
-      System.err.println("로그인 실패 (비밀번호 불일치): " + e.getMessage()); // System.err로 변경
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 실패: 비밀번호가 올바르지 않습니다.");
+    } catch (UsernameNotFoundException | BadCredentialsException e) {
+      // 아이디가 없거나 비밀번호가 틀렸을 때 모두 같은 메시지 반환
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", "아이디 또는 비밀번호가 일치하지 않습니다.");
+      System.err.println("로그인 실패 (인증 실패): " + e.getMessage());
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+
 
     } catch (Exception e) { // <--- 그 외 예상치 못한 예외
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", "서버 오류가 발생했습니다.");
       e.printStackTrace(); // 스택 트레이스 출력 (가장 중요)
       System.err.println("로그인 실패 (예상치 못한 오류): " + e.getMessage()); // System.err로 변경
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("로그인 실패: 서버 오류가 발생했습니다."); // 500으로 변경
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("errorResponse"); // 500으로 변경
     }
   }
 

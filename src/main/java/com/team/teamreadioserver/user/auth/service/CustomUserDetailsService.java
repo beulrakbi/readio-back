@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-//MyBatis 연동 사용자 조회
+// MyBatis 연동 사용자 조회
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {

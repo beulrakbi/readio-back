@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.team.teamreadioserver.post.entity.Post;
 import com.team.teamreadioserver.profile.dto.ProfileResponseDTO;
 import com.team.teamreadioserver.profile.entity.Profile;
+import com.team.teamreadioserver.search.dto.BookDTO;
 import lombok.*;
 
 import java.util.Date;
@@ -25,6 +26,11 @@ public class PostResponseDTO {
     private int postReported;
     private String postHidden;
     private PostImgDTO postImg;
+
+
+    private BookDTO book;
+    private Long likes;
+    private Long reviewCount;
 
 
 //    public PostResponseDTO(Post post) {

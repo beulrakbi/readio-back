@@ -7,6 +7,9 @@ import com.team.teamreadioserver.statistics.repository.ClickLogRepository;
 import com.team.teamreadioserver.video.entity.Video;
 import com.team.teamreadioserver.video.repository.VideoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -23,94 +26,68 @@ public class ClickAnalyticsService {
     private final BookRepository bookRepository;
     private final VideoRepository videoRepository;
 
-    public List<ClickedContentDTO> getClickedContentList(
+    public Page<ClickedContentDTO> getClickedContentList(
             String type,
             String sort,
             LocalDate startDate,
             LocalDate endDate,
-            Integer limit,
-            Integer page,
-            Integer size
+            Pageable pageable
     ) {
         LocalDateTime start = startDate.atStartOfDay();
         LocalDateTime end = endDate.atTime(LocalTime.MAX);
 
-        // Step 1. 클릭 수 집계
-        List<Object[]> rawClickData = clickLogRepository.findTopClickedContent(type, start, end);
-        Map<String, Long> clickMap = rawClickData.stream()
-                .collect(Collectors.toMap(
-                        row -> (String) row[0],
-                        row -> (Long) row[1]
-                ));
-        List<String> contentIds = new ArrayList<>(clickMap.keySet());
 
-        // Step 2. 콘텐츠 상세 조회 및 bookmark 정렬
-        List<ClickedContentDTO> dtos = new ArrayList<>();
-        if (type.equals("book")) {
-            List<Book> books = getSortedBooks(contentIds, sort);
-            for (Book b : books) {
-                dtos.add(ClickedContentDTO.builder()
-                        .contentId(b.getBookIsbn())
-                        .contentType("book")
+        // Step 1. 클릭 수 조회 (Object[] → DTO로 수동 매핑
+        int offset = pageable.getPageNumber() * pageable.getPageSize();
+        int limit = pageable.getPageSize();
+
+        List<Object[]> rawData = clickLogRepository.findTopClickedContentWithPaging(type, start, end, limit, offset);
+        long totalCount = clickLogRepository.countTotalClickedContent(type, start, end);
+
+        List<ClickedContentDTO> baseDtos = rawData.stream().map(row ->
+                ClickedContentDTO.builder()
+                        .contentId((String) row[0])
+                        .contentType((String) row[1])
+                        .clickCount(((Number) row[2]).longValue()) // 안전 처리
+                        .title("")
+                        .thumbnail("")
+                        .source("")
+                        .build()
+        ).collect(Collectors.toList());
+
+        // Step 2. 콘텐츠 상세 조회
+        List<String> ids = baseDtos.stream().map(ClickedContentDTO::getContentId).toList();
+
+        Map<String, Book> bookMap = "book".equals(type)
+                ? bookRepository.findAllByBookIsbnIn(ids).stream().collect(Collectors.toMap(Book::getBookIsbn, b -> b))
+                : Collections.emptyMap();
+
+        Map<String, Video> videoMap = "video".equals(type)
+                ? videoRepository.findAllById(ids).stream().collect(Collectors.toMap(Video::getVideoId, v -> v))
+                : Collections.emptyMap();
+
+
+        // Step 3. builder로 재조합된 리스트 생성
+        List<ClickedContentDTO> enrichedDtos = baseDtos.stream().map(dto -> {
+            if ("book".equals(dto.getContentType()) && bookMap.containsKey(dto.getContentId())) {
+                Book b = bookMap.get(dto.getContentId());
+                return dto.toBuilder()
                         .title(b.getBookTitle())
                         .thumbnail(b.getBookCover())
                         .source(b.getBookAuthor())
-                        .clickCount(clickMap.getOrDefault(b.getBookIsbn(), 0L))
-                        .build());
-            }
-        } else if (type.equals("video")) {
-            List<Video> videos = getSortedVideos(contentIds, sort);
-            for (Video v : videos) {
-                dtos.add(ClickedContentDTO.builder()
-                        .contentId(v.getVideoId())
-                        .contentType("video")
+                        .build();
+            } else if ("video".equals(dto.getContentType()) && videoMap.containsKey(dto.getContentId())) {
+                Video v = videoMap.get(dto.getContentId());
+                return dto.toBuilder()
                         .title(v.getTitle())
                         .thumbnail(v.getThumbnail())
                         .source(v.getChannelTitle())
-                        .clickCount(clickMap.getOrDefault(v.getVideoId(), 0L))
-                        .build());
+                        .build();
             }
-        }
+            return dto;
+        }).toList();
 
-        // Step 3. limit or paging 적용
-        if (limit != null) {
-            return dtos.stream().limit(limit).toList();
-        } else if (page != null && size != null) {
-            int from = page * size;
-            int to = Math.min(from + size, dtos.size());
-            return dtos.subList(from, to);
-        }
+        return new PageImpl<>(enrichedDtos, pageable, totalCount);
 
-        return dtos;
-    }
-
-    // 책 정렬 (bookmark는 쿼리로 정렬된 Object[] 사용)
-    private List<Book> getSortedBooks(List<String> ids, String sort) {
-        if ("bookmark".equals(sort)) {
-            List<Object[]> rows = bookRepository.findBooksSortedByBookmark(ids);
-            return rows.stream().map(row -> (Book) row[0]).toList();
-        } else {
-            List<Book> books = bookRepository.findAllByBookIsbnIn(ids);
-            return books.stream()
-                    .sorted("date".equals(sort)
-                            ? Comparator.comparing(Book::getBookPubdate, Comparator.nullsLast(Comparator.reverseOrder()))
-                            : Comparator.comparing(Book::getBookIsbn))
-                    .toList();
-        }
-    }
-
-    // 영상 정렬 (bookmark는 쿼리로 정렬된 Object[] 사용)
-    private List<Video> getSortedVideos(List<String> ids, String sort) {
-        if ("bookmark".equals(sort)) {
-            List<Object[]> rows = videoRepository.findVideosSortedByBookmark(ids);
-            return rows.stream().map(row -> (Video) row[0]).toList();
-        } else {
-            List<Video> videos = videoRepository.findAllById(ids);
-            return videos.stream()
-                    .sorted("date".equals(sort)
-                            ? Comparator.comparing(Video::getUploadDate, Comparator.nullsLast(Comparator.reverseOrder()))
-                            : Comparator.comparing(Video::getVideoId))
-                    .toList();
-        }
     }
 }

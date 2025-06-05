@@ -31,4 +31,10 @@ public class ReportedPost {
     @Column(name = "reported_date")
     private Date reportedDate;
 
+    public ReportedPost(int postId, String userId) {
+        this.postId = postId;
+        this.userId = userId;
+        this.reportedDate = new Date();
+    }
+
 }

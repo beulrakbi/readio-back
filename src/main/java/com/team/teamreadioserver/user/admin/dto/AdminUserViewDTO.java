@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 //관리자 조회용 DTO
 @Getter
@@ -21,4 +20,6 @@ public class AdminUserViewDTO {
   private int reportCount;    // 신고 횟수(리뷰랑 포스트 둘다? )
   @JsonFormat(shape = JsonFormat.Shape.STRING)
   private LocalDateTime userEnrollDate;   // 가입일자
+
 }
+

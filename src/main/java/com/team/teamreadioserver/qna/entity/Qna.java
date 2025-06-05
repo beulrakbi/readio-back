@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Builder
@@ -37,26 +36,30 @@ public class Qna {
 
     @PrePersist
     public void prePersist() {
-        if (this.qnaCreateAt == null) { // 혹시라도 이미 설정된 값이 없으면
+        if (this.qnaCreateAt == null) {
             this.qnaCreateAt = LocalDateTime.now();
         }
-        if (this.userId == null) { // 혹시라도 이미 설정된 값이 없으면
+        if (this.userId == null) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication != null && authentication.isAuthenticated()) {
-                this.userId = authentication.getName(); // 로그인한 아이디가 들어감
+                this.userId = authentication.getName();
             } else {
                 throw new IllegalStateException("인증된 사용자 정보를 찾을 수 없습니다. FAQ 작성은 로그인 후 가능합니다.");
             }
         }
     }
 
-
     public void updateQuestion(String title, String question) {
         this.qnaTitle = title;
         this.qnaQuestion = question;
     }
-    public void createAnswer(String Answer){
-        this.qnaAnswer = Answer;
+
+    public void createAnswer(String answer){ // 파라미터 이름을 `answer`로 수정
+        this.qnaAnswer = answer;
     }
 
+    // ✨ 조회수 증가를 위한 setter 추가
+    public void setQnaView(int qnaView) {
+        this.qnaView = qnaView;
+    }
 }

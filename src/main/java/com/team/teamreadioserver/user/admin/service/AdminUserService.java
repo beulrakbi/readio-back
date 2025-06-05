@@ -17,11 +17,9 @@ public class AdminUserService {
 
   private final AdminMapper adminMapper;
 
-//  public List<AdminUserViewDTO> getAdminUserList() {
-//    return adminMapper.selectAdminUserList();
-//  }
-
   public List<AdminUserViewDTO> getAdminUserList(AdminUserSearchDTO searchDTO) {
+//    System.out.println("DEBUG: AdminUserSearchDTO received by Service: "+ searchDTO.getReportStatus());  디버깅
+
     return adminMapper.selectAdminUserList(searchDTO);
   }
 

@@ -9,14 +9,11 @@ import java.util.List;
 
 @Mapper
 public interface AdminMapper {
-  
-  // 관리자-회원목록 조회(삭제)
-  //List<AdminUserViewDTO> selectAdminUserList();
 
-  // 검색/페이징 포함된 목록 조회 추가
+  // 관리자-회원목록조회(페이징 포함)
   List<AdminUserViewDTO> selectAdminUserList(@Param("search") AdminUserSearchDTO searchDTO);
 
-  // 관리자-회원검색
+  // 관리자-조건검색
   int countAdminUserList(@Param("search") AdminUserSearchDTO searchDTO);
 
   // 관리자-회원권한변경

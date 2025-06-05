@@ -33,5 +33,13 @@ public class ProfileController {
         return ResponseEntity.ok("프로필 이미지가 삭제되었습니다.");
     }
 
+    @GetMapping("/penname/check")
+    public ResponseEntity<?> checkPenName(@RequestParam("value") String penName) {
+        boolean available = !profileService.isPenNameTaken(penName);
+        return ResponseEntity.ok().body(
+                java.util.Collections.singletonMap("available", available)
+        );
+    }
+
 
 }
