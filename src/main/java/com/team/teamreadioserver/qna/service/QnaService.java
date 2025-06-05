@@ -119,6 +119,7 @@ public class QnaService {
                 qna.getQnaQuestion(),
                 qna.getQnaAnswer(),
                 qna.getQnaCreateAt(),
+                qna.getQnaView(),
                 qna.getUserId()
         );
     }
