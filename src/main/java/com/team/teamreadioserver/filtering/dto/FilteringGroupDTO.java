@@ -16,5 +16,6 @@ public class FilteringGroupDTO {
     private String content;
     private Date createAt;
     private String isActive;
+    private int typeId;
 
 }

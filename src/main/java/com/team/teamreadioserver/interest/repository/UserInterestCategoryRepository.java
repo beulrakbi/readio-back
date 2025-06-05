@@ -20,20 +20,34 @@ public interface UserInterestCategoryRepository extends JpaRepository<UserIntere
 
     boolean existsByUser_UserIdAndInterestCategory_InterestId(String userId, Long interestId);
 
+    // 1. 전체 집계 (2개 파라미터)
     @Query(value = """
     SELECT 
-        DATE_FORMAT(ui.created_at, :format) AS period, 
-        ic.interest_category, 
+        i.interest_category AS label, 
         COUNT(*) AS count
     FROM user_interest ui
-    JOIN interest_category ic ON ui.interest_id = ic.interest_id
-    WHERE ui.created_at BETWEEN :startDate AND :endDate
+    JOIN interest i ON ui.interest_id = i.interest_id
+    WHERE ui.created_at BETWEEN :start AND :end
       AND ui.status = 'ACTIVE'
-    GROUP BY period, ic.interest_category
-    ORDER BY period, count DESC 
+    GROUP BY i.interest_category
 """, nativeQuery = true)
-    List<Object[]> findCategoryTrend(@Param("startDate") LocalDateTime startDate,
-                                     @Param("endDate") LocalDateTime endDate,
+    List<Object[]> findCategoryTrendTotal(@Param("start") LocalDateTime start,
+                                          @Param("end") LocalDateTime end);
+
+    // 2. 기간별 (3개 파라미터: format 포함)
+    @Query(value = """
+    SELECT 
+        DATE_FORMAT(ui.created_at, :format) AS period,
+        i.interest_category AS label,
+        COUNT(*) AS count
+    FROM user_interest ui
+    JOIN interest i ON ui.interest_id = i.interest_id
+    WHERE ui.created_at BETWEEN :start AND :end
+      AND ui.status = 'ACTIVE'
+    GROUP BY period, i.interest_category
+""", nativeQuery = true)
+    List<Object[]> findCategoryTrend(@Param("start") LocalDateTime start,
+                                     @Param("end") LocalDateTime end,
                                      @Param("format") String format);
 
     // 특정 사용자의 활성화된 관심 카테고리를 찾는 메서드

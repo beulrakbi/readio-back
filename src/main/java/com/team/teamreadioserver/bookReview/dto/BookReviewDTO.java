@@ -1,28 +1,29 @@
-// 변경 제안 (사소한 부분 포함)
 package com.team.teamreadioserver.bookReview.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty; // Jackson 어노테이션 import
 import com.team.teamreadioserver.bookReview.enumPackage.IsHidden;
 import lombok.*;
-import java.time.LocalDateTime; // LocalDateTime import
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
 @Setter
 @ToString
-@AllArgsConstructor // @RequiredArgsConstructor 삭제 고려
-@NoArgsConstructor // @NoArgsConstructor 추가
-@Builder // Builder 패턴 사용 시
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class BookReviewDTO {
     private Integer reviewId;
-    private Long profileId; // Long 타입으로 변경
+    private Long profileId;
     private String penName;
     private String bookIsbn;
     private String reviewContent;
     private Integer reportedCount;
     private IsHidden isHidden;
-    private Date createdAt; // LocalDateTime으로 변경
+    private Date createdAt;
     private String reviewerUserId;
 
-    private boolean isLiked;    // 현재 사용자가 이 리뷰에 좋아요를 눌렀는지 여부
+    @JsonProperty("isLiked") // JSON으로 변환될 때 필드명을 "isLiked"로 명시
+    private boolean isLiked;  // getter는 isLiked(), setter는 setLiked()가 생성됨 (Lombok)
     private Integer likesCount;
 }

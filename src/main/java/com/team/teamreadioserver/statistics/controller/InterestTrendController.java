@@ -23,10 +23,10 @@ public class InterestTrendController {
      */
     @GetMapping("/summary/interest-trend")
     public ResponseEntity<List<InterestTrendDTO>> getInterestTrend(
-            @RequestParam String type,  // "keyword" or "category"
-            @RequestParam String granularity, // "daily", "weekly", "monthly"
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
+            @RequestParam String type,
+            @RequestParam String granularity,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
             @RequestParam(defaultValue = "count") String sort,
             @RequestParam(required = false) Integer limit
     ) {
@@ -35,6 +35,7 @@ public class InterestTrendController {
         );
         return ResponseEntity.ok(result);
     }
+
 
     /**
      * 두 달 간 관심 키워드/카테고리 비교

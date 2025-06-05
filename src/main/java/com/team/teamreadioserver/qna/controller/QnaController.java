@@ -48,7 +48,7 @@ public class QnaController {
     @Operation(summary = "Qna답변 삭제", description = "Qna답변을 삭제합니다.")
     @PutMapping("/qna/Answer/delete")
     public ResponseEntity<String> deleteAnswer(@RequestBody @Valid QnaAnswerDTO qnaAnswerDTO) {
-        qnaService.updateQnaAnswer(qnaAnswerDTO);
+        qnaService.deleteQnaAnswer(qnaAnswerDTO); // ✨ deleteAnswer 메서드 호출하도록 수정
         return ResponseEntity.ok("답변이 삭제되었습니다.");
     }
 
@@ -78,7 +78,7 @@ public class QnaController {
     @Operation(summary = "qna상세페이지 조회", description = "qna 상세페이지가 조회됩니다.")
     @GetMapping("/qna/detail/{qnaId}")
     public ResponseEntity<QnaDetailDTO> getQnaDetail(@PathVariable Integer qnaId) {
-        QnaDetailDTO detailDTO = qnaService.getQnaDetail(qnaId);
+        QnaDetailDTO detailDTO = qnaService.getQnaDetail(qnaId); // ✨ 여기서 조회수가 증가됩니다.
         return ResponseEntity.ok(detailDTO);
     }
 
@@ -99,6 +99,4 @@ public class QnaController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("수정 실패: " + e.getMessage());
         }
     }
-
-
 }

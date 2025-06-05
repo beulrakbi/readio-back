@@ -20,6 +20,7 @@ public class NoticeResponseDTO {
     private LocalDateTime noticeCreateAt;
     private int noticeView;
     private NoticeState noticeState;
+    private String userId;
 
     public static NoticeResponseDTO fromEntity(Notice notice) {
         NoticeResponseDTO dto = new NoticeResponseDTO();
@@ -29,6 +30,7 @@ public class NoticeResponseDTO {
         dto.noticeState = notice.getNoticeState();
         dto.noticeCreateAt = notice.getNoticeCreateAt(); // 날짜 형식에 따라 변경 가능
         dto.noticeView = notice.getNoticeView();
+        dto.userId = notice.getUserId();
         return dto;
     }
 }

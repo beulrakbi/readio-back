@@ -67,6 +67,7 @@ public class AdminUserController {
     searchDTO.setStartDate(startDate);
     searchDTO.setEndDate(endDate);
     searchDTO.setReportStatus(reportStatus);
+//    System.out.println("reportStatus="+ reportStatus);    디버깅
     searchDTO.setUserTypesString(userTypes);  // 문자열 저장
 
     if (searchDTO.getUserTypesString() != null && !searchDTO.getUserTypesString().isEmpty()) {
@@ -105,7 +106,7 @@ public class AdminUserController {
   }
 
   @Operation(summary = "회원 삭제", description = "관리자는 회원을 삭제할 수 있다.")
-  @DeleteMapping("/{userId}")
+  @DeleteMapping("/users/{userId}")
   public ResponseEntity<Void> deleteUser(@PathVariable String userId) {
     adminUserService.deleteUser(userId);
     return ResponseEntity.ok().build();

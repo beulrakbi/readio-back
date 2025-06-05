@@ -61,7 +61,7 @@ public class FilteringService {
         int result = 0;
         FilteringGroup filteringGroup;
         try {
-            filteringGroup = new FilteringGroup(filteringGroupDTO.getTitle(), filteringGroupDTO.getContent());
+            filteringGroup = new FilteringGroup(filteringGroupDTO.getTitle(), filteringGroupDTO.getContent(), filteringGroupDTO.getTypeId());
             filteringGroupRepository.save(filteringGroup);
             result = 1;
         } catch (Exception e) {
@@ -101,7 +101,7 @@ public class FilteringService {
             FilteringGroup foundFilteringGroup = filteringGroupRepository.findByGroupId(filteringGroupDTO.getGroupId());
             List<Filtering> foundFilters = filteringRepository.findByGroupId(filteringGroupDTO.getGroupId());
             List<Filtering> newFilters = filteringDTOS.stream().map(filter -> modelMapper.map(filter, Filtering.class)).collect(Collectors.toList());
-            foundFilteringGroup.modifyFilteringGroup(filteringGroupDTO.getTitle(), filteringGroupDTO.getContent());
+            foundFilteringGroup.modifyFilteringGroup(filteringGroupDTO.getTitle(), filteringGroupDTO.getContent(), filteringGroupDTO.getTypeId());
 
             for (Filtering oldFilter : foundFilters) {
                 if (!newFilters.contains(oldFilter))
