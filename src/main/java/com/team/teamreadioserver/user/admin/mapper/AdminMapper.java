@@ -22,6 +22,7 @@ public interface AdminMapper {
   // 관리자-회원삭제
   void deleteUser(@Param("userId") String userId);
 
-
+  // 관리자-전체 회원 수
+  int countAllUser();
 
 }
