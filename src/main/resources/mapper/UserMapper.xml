@@ -62,14 +62,17 @@
     <!--회원정보 조회-->
     <select id="selectUserById" parameterType="string"
             resultType="com.team.teamreadioserver.user.dto.UserInfoResponseDTO">
-        SELECT user_id       as userID,
-               user_name     as userName,
-               user_email    as userEmail,
-               user_phone    as userPhone,
-               user_birthday as userBirthday,
-               user_role     as userRole
-        FROM `user`
-        WHERE user_id = TRIM(#{userId})
+        SELECT
+        u.user_id       AS userId,
+        u.user_name     AS userName,
+        u.user_email    AS userEmail,
+        u.user_phone    AS userPhone,
+        u.user_birthday AS userBirthday,
+        u.user_role     AS userRole,
+        p.profile_id    AS profileId
+        FROM user u
+        LEFT JOIN profile p ON u.user_id = p.user_id
+        WHERE u.user_id = TRIM(#{userId})
     </select>
 
     <!--회원정보 수정-->

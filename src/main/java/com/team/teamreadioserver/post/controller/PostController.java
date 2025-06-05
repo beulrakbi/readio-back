@@ -5,6 +5,7 @@ import com.team.teamreadioserver.common.common.PageDTO;
 import com.team.teamreadioserver.common.common.PagingResponseDTO;
 import com.team.teamreadioserver.common.common.ResponseDTO;
 import com.team.teamreadioserver.post.dto.PostRequestDTO;
+import com.team.teamreadioserver.post.dto.PostSummaryDTO;
 import com.team.teamreadioserver.post.service.PostService;
 import com.team.teamreadioserver.profile.entity.Profile;
 import com.team.teamreadioserver.profile.repository.ProfileRepository;
@@ -143,5 +144,17 @@ public class PostController {
 
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "포스트 신고 완료", serviceResult));
     }
+    //소혜
+    @Operation(summary = "월별 포스트 요약 조회", description = "profileId와 년월로 포스트 개수를 조회합니다.")
+    @GetMapping("/post/summary")
+    public ResponseEntity<ResponseDTO> getMonthlyPostSummary(
+            @RequestParam Long profileId,
+            @RequestParam int year,
+            @RequestParam int month
+    ) {
+        List<PostSummaryDTO> summaryList = postService.getMonthlyPostSummary(profileId, year, month);
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "포스트 요약 조회 성공", summaryList));
+    }
+
 
 }

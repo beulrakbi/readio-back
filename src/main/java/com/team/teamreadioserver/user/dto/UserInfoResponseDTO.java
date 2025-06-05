@@ -18,6 +18,7 @@ public class UserInfoResponseDTO {
   private String userPhone;
   private LocalDate userBirthday;
   private String userRole;
+  private Long profileId;
 
   @Override
   public String toString() {

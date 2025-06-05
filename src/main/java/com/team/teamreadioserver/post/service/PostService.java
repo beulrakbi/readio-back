@@ -4,6 +4,7 @@ import com.team.teamreadioserver.common.common.Criteria;
 import com.team.teamreadioserver.post.dto.PostImgDTO;
 import com.team.teamreadioserver.post.dto.PostRequestDTO;
 import com.team.teamreadioserver.post.dto.PostResponseDTO;
+import com.team.teamreadioserver.post.dto.PostSummaryDTO;
 import com.team.teamreadioserver.post.entity.Post;
 import com.team.teamreadioserver.post.entity.PostImg;
 import com.team.teamreadioserver.post.repository.PostImgRepository;
@@ -37,11 +38,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
+import java.time.ZoneId;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -274,5 +273,29 @@ public class PostService {
         // 필요한 경우, 증가된 신고수를 반환하거나 간단한 성공 메시지를 반환
         return post.getPostReported(); // 또는 "신고 처리 완료" 같은 DTO 반환
     }
+
+    //소혜
+    public List<PostSummaryDTO> getMonthlyPostSummary(Long profileId, int year, int month) {
+        List<Post> posts = postRepository.findByProfileIdAndYearAndMonth(profileId, year, month);
+
+        Map<String, List<Post>> grouped = posts.stream()
+                .collect(Collectors.groupingBy(p ->
+                        p.getPostCreateDate()
+                                .toInstant()
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDate()
+                                .toString()
+                ));
+
+        return grouped.entrySet().stream()
+                .map(entry -> new PostSummaryDTO(
+                        entry.getKey(),
+                        entry.getValue().size(),
+                        entry.getValue().stream().map(Post::getPostId).collect(Collectors.toList())
+                ))
+                .sorted(Comparator.comparing(PostSummaryDTO::getDate))
+                .collect(Collectors.toList());
+    }
+
 }
 
