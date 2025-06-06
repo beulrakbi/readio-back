@@ -8,22 +8,31 @@ import com.team.teamreadioserver.bookReview.entity.BookReview;
 import com.team.teamreadioserver.bookReview.entity.ReviewLike;
 import com.team.teamreadioserver.bookReview.repository.BookReviewRepository;
 import com.team.teamreadioserver.bookReview.repository.LikesRepository;
+import com.team.teamreadioserver.common.common.Criteria;
 import com.team.teamreadioserver.profile.entity.Profile;
 import com.team.teamreadioserver.profile.repository.ProfileRepository;
 import com.team.teamreadioserver.report.service.ReportedService; // ⭐ ReportedService 임포트
 
 // [확인!] BookService 및 BookDTO 임포트 (실제 프로젝트의 패키지 경로를 확인해주세요)
-import com.team.teamreadioserver.search.service.BookService;
-import com.team.teamreadioserver.search.dto.BookDTO;
+import com.team.teamreadioserver.search.entity.Book;
+import com.team.teamreadioserver.search.repository.BookRepository;
+import com.team.teamreadioserver.search.service.BookService; // (여러분이 구현해야 할 BookService 인터페이스)
+import com.team.teamreadioserver.search.dto.BookDTO;      // (제공해주신 BookDTO)
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -46,6 +55,8 @@ public class BookReviewService {
     // [필수] BookService 주입 (BookService 인터페이스의 구현체가 Spring Bean으로 등록되어 있어야 합니다)
     @Autowired
     private BookService bookService;
+    @Autowired
+    private BookRepository bookRepository;
 
     // 리뷰 등록
     public void addBookReview(ReviewRequestDTO reviewRequestDTO, String userId) {
@@ -106,35 +117,78 @@ public class BookReviewService {
         ).toList();
     }
 
-    // 내 리뷰 조회
-    public List<MyReviewResponseDTO> myBookReview(Long profileId) {
-        List<BookReview> reviews = bookReviewRepository.findByProfile_ProfileId(profileId);
+    public int myBookReviewCounts(String userId)
+    {
+        return bookReviewRepository.countByProfile(profileRepository.findByUser_UserId(userId).get());
+    }
 
-        return reviews.stream().map(review -> {
-            BookDTO bookDetails = null; // BookDTO (from search.dto) 타입으로 변경
-            String isbn = review.getBookIsbn();
+    public List<MyReviewResponseDTO> myReviewCounts(String userId) {
+        Optional<Profile> profile = profileRepository.findByUser_UserId(userId);
+        List<BookReview> reviews = bookReviewRepository.findByProfile_ProfileId(profile.get().getProfileId());
+        List<MyReviewResponseDTO> result = new ArrayList<>();
+        for (BookReview review : reviews) {
+            MyReviewResponseDTO myReviewResponseDTO = new MyReviewResponseDTO();
+            result.add(myReviewResponseDTO);
+        }
+        return result;
+    }
 
-            if (isbn != null && !isbn.isEmpty()) {
-                try {
-                    // [필수 구현] BookService를 통해 ISBN으로 책 상세 정보를 가져옵니다.
-                    // bookService.getBookDetailsByIsbn(isbn) 메소드는 BookService 인터페이스와 그 구현체에 직접 만드셔야 합니다.
-                    bookDetails = bookService.getBookDetailsByIsbn(isbn);
-                } catch (Exception e) {
-                    logger.error("ISBN {} 에 대한 책 상세 정보를 가져오는 중 오류 발생: {}", isbn, e.getMessage());
-                    // 책 정보를 가져오지 못한 경우, bookDetails는 null로 유지되거나,
-                    // 기본 정보를 가진 BookDTO를 생성하여 할당할 수 있습니다.
-                    // 예: bookDetails = BookDTO.builder().bookTitle("정보 없음").bookAuthor("정보 없음").bookCover(null).build();
-                }
+    // --- [수정된 메소드] myBookReview ---
+    public List<MyReviewResponseDTO> myBookReview(String userId, Criteria cri) {
+
+        int index = cri.getPageNum() - 1;
+        int count = cri.getAmount();
+        Pageable paging = PageRequest.of(index, count, Sort.by("reviewId").descending());
+
+        Optional<Profile> profile = profileRepository.findByUser_UserId(userId);
+        Page<BookReview> pageReviews = bookReviewRepository.findAllByProfile(profile.get(), paging);
+        List<BookReview> reviews = pageReviews.getContent();
+        List<MyReviewResponseDTO> result = new ArrayList<>();
+        for (BookReview review : reviews) {
+            MyReviewResponseDTO myReviewResponseDTO = new MyReviewResponseDTO();
+            Book book = bookRepository.findByBookIsbn(review.getBookIsbn());
+            if (book != null)
+            {
+                BookDTO bookDTO = new BookDTO(book);
+                myReviewResponseDTO.setBook(bookDTO);
             }
+            int likes = likesRepository.countLikesByReviewId(review.getReviewId());
+            myReviewResponseDTO.setReviewId(review.getReviewId());
+            myReviewResponseDTO.setReviewContent(review.getReviewContent());
+            myReviewResponseDTO.setCreatedAt(review.getCreatedAt());
+            myReviewResponseDTO.setBookIsbn(review.getBookIsbn());
+            myReviewResponseDTO.setLikes(likes);
 
-            return MyReviewResponseDTO.builder()
-                    .reviewId(review.getReviewId())
-                    .bookIsbn(isbn)
-                    .reviewContent(review.getReviewContent())
-                    .createdAt(review.getCreatedAt())
-                    .book(bookDetails) // MyReviewResponseDTO에 추가된 book 필드에 조회한 BookDTO 설정
-                    .build();
-        }).collect(Collectors.toList());
+            result.add(myReviewResponseDTO);
+        }
+
+        return result;
+
+//        return reviews.stream().map(review -> {
+//            BookDTO bookDetails = null; // BookDTO (from search.dto) 타입으로 변경
+//            String isbn = review.getBookIsbn();
+//
+//            if (isbn != null && !isbn.isEmpty()) {
+//                try {
+//                    // [필수 구현] BookService를 통해 ISBN으로 책 상세 정보를 가져옵니다.
+//                    // bookService.getBookDetailsByIsbn(isbn) 메소드는 BookService 인터페이스와 그 구현체에 직접 만드셔야 합니다.
+//                    bookDetails = bookService.getBookDetailsByIsbn(isbn);
+//                } catch (Exception e) {
+//                    logger.error("ISBN {} 에 대한 책 상세 정보를 가져오는 중 오류 발생: {}", isbn, e.getMessage());
+//                    // 책 정보를 가져오지 못한 경우, bookDetails는 null로 유지되거나,
+//                    // 기본 정보를 가진 BookDTO를 생성하여 할당할 수 있습니다.
+//                    // 예: bookDetails = BookDTO.builder().bookTitle("정보 없음").bookAuthor("정보 없음").bookCover(null).build();
+//                }
+//            }
+//
+//            return MyReviewResponseDTO.builder()
+//                    .reviewId(review.getReviewId())
+//                    .bookIsbn(isbn)
+//                    .reviewContent(review.getReviewContent())
+//                    .createdAt(review.getCreatedAt())
+//                    .book(bookDetails) // MyReviewResponseDTO에 추가된 book 필드에 조회한 BookDTO 설정
+//                    .build();
+//        }).collect(Collectors.toList());
     }
 
     // ISBN으로 책 리뷰 조회

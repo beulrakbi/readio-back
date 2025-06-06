@@ -1,6 +1,7 @@
 package com.team.teamreadioserver.video.controller;
 
 import com.team.teamreadioserver.common.common.ResponseDTO;
+import com.team.teamreadioserver.filtering.entity.Filtering;
 import com.team.teamreadioserver.video.dto.CurationDTO;
 import com.team.teamreadioserver.video.dto.VideoDTO;
 import com.team.teamreadioserver.video.dto.VideosDTO;
@@ -54,12 +55,12 @@ public class VideoController {
     }
 
     @Operation(summary = "비디오 조회", description = "비디오가 조회됩니다.", tags = { "VideoController" })
-    @GetMapping("/{search}")
-    public ResponseEntity<ResponseDTO> getVideoByKeyword(@PathVariable String search)
+    @GetMapping("/{search}/{type}")
+    public ResponseEntity<ResponseDTO> getVideoByKeyword(@PathVariable String search, @PathVariable String type)
     {
         System.out.println("search?: " + search);
         log.info("[VideoController] getVideoByKeyword");
-        VideosDTO result = videoService.findVideos(search);
+        VideosDTO result = videoService.findVideos(search, type);
         if(result.getNum() > 0)
         {
             return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "비디오 조회 성공", result));

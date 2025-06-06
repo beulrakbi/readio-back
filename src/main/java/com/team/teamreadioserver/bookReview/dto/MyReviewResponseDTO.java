@@ -17,4 +17,5 @@ public class MyReviewResponseDTO {
     private String reviewContent;
     private Date createdAt;
     private BookDTO book; // 책 상세 정보를 담을 필드 추가
+    private int likes;
 }
