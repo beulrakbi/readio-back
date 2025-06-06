@@ -54,5 +54,9 @@ public class AdminUserService {
     adminMapper.deleteUser(userId);
   }
 
+  public int getUserCount() {
+    return adminMapper.countAllUser();
+  }
+
 
 }

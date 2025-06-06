@@ -15,4 +15,5 @@ public interface LikesRepository extends JpaRepository<ReviewLike, Integer> {
     // 특정 리뷰의 좋아요 수 카운트
     @Query("SELECT COUNT(l) FROM ReviewLike l WHERE l.bookReview.reviewId = :reviewId")
     Integer countLikesByReviewId(@Param("reviewId") Integer reviewId);
+    void deleteByBookReview_ReviewId(Integer reviewId);
 }
