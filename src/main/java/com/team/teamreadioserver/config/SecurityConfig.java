@@ -74,8 +74,8 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/bookReview/create").authenticated()
                                 .requestMatchers(HttpMethod.PUT, "/bookReview/{reviewId}/report").authenticated()
                                 .requestMatchers(HttpMethod.DELETE, "/bookReview/delete/**").authenticated()
-                                .requestMatchers(HttpMethod.POST, "/bookReview/{reviewId}/like").authenticated()
-                                .requestMatchers(HttpMethod.DELETE, "/bookReview/{reviewId}/like").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/bookReview/{reviewId}/**").authenticated()
+                                .requestMatchers(HttpMethod.DELETE, "/bookReview/{reviewId}/**").authenticated()
                                 .requestMatchers(HttpMethod.GET, "/mylibrary/reviews/**").authenticated() // 내 리뷰 조회
 
                                 // POST 및 DELETE 요청도 인증 필요
