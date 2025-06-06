@@ -3,6 +3,7 @@ package com.team.teamreadioserver.report.entity;
 import com.team.teamreadioserver.bookReview.entity.BookReview;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
 
@@ -27,6 +28,7 @@ public class ReportedReview {
     private String userId;
 
     @Column(name = "reported_date")
+    @CreationTimestamp
     private Date reportedDate;
 
     public ReportedReview(BookReview bookReview, String userId)

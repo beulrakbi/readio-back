@@ -55,10 +55,12 @@ public class PostController {
     public ResponseEntity<ResponseDTO> getPosts(@PathVariable String userId, @RequestParam(name="offset", defaultValue = "1") String offset) {
 
         int total = postService.getAllUserPost(userId);
+        System.out.println("total post: " + total);
         Criteria cri = new Criteria(Integer.valueOf(offset), 3);
         PagingResponseDTO pagingResponseDTO = new PagingResponseDTO();
         pagingResponseDTO.setData(postService.getAllUserPostWithPaging(userId, cri));
         pagingResponseDTO.setPageInfo(new PageDTO(cri, total));
+        System.out.println("pageResponseDTO post: " + pagingResponseDTO);
 
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "포스트 전체 조회 성공", pagingResponseDTO));
     }

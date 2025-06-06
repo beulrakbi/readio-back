@@ -1,8 +1,8 @@
 package com.team.teamreadioserver.report.service;
 
 import com.team.teamreadioserver.bookReview.entity.BookReview;
+import com.team.teamreadioserver.bookReview.exception.DuplicateReportException;
 import com.team.teamreadioserver.bookReview.repository.BookReviewRepository;
-import com.team.teamreadioserver.bookReview.exception.DuplicateReportException; // DuplicateReportException 임포트
 import com.team.teamreadioserver.common.common.Criteria;
 import com.team.teamreadioserver.post.entity.Post;
 import com.team.teamreadioserver.post.repository.PostRepository;
@@ -25,10 +25,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.time.LocalDateTime; // LocalDateTime 임포트 추가
 
 @Service
 @AllArgsConstructor
@@ -44,8 +42,15 @@ public class ReportedService {
     @Transactional
     public void reportReview(Integer reviewId, String reporterUserId) { // reporterUserId는 현재 로그인된 사용자 ID
         // 1. 리뷰 존재 여부 확인
-        BookReview bookReview = bookReviewRepository.findById(reviewId)
-                .orElseThrow(() -> new IllegalArgumentException("신고하려는 리뷰가 존재하지 않습니다. (ReviewId: " + reviewId + ")"));
+        Optional<BookReview> bookReview = bookReviewRepository.findById(reviewId);
+
+        if (bookReview.get() == null)
+            throw new IllegalArgumentException("신고하려는 리뷰가 존재하지 않습니다. (ReviewId: " + reviewId + ")");
+
+        bookReview.get().report();
+        if (bookReview.get().getReportedCount() >= 5) {
+            bookReview.get().hide2();
+        }
 
         // 2. ⭐ 핵심: 이미 신고된 리뷰인지 확인 (ReportedReview 엔티티의 'userId' 필드를 사용)
         boolean alreadyReported = reportedReviewRepository.existsByBookReview_ReviewIdAndUserId(reviewId, reporterUserId);
@@ -55,19 +60,14 @@ public class ReportedService {
         }
 
         // 3. 신고 기록 저장
-        ReportedReview reportedReview = ReportedReview.builder()
-                .bookReview(bookReview)
-                .userId(reporterUserId) // ⭐ ReportedReview 엔티티의 userId 필드에 값 할당
-                // reportedDate는 ReportedReview 엔티티의 @PrePersist 또는 생성자에서 자동으로 설정될 것으로 가정
-                .build();
-        reportedReviewRepository.save(reportedReview);
+        if (bookReview.get().getReportedCount() == 1) {
+            ReportedReview reportedReview = ReportedReview.builder().bookReview(bookReview.get()).userId(reporterUserId) // ⭐ ReportedReview 엔티티의 userId 필드에 값 할당
+                    // reportedDate는 ReportedReview 엔티티의 @PrePersist 또는 생성자에서 자동으로 설정될 것으로 가정
+                    .build();
+            reportedReviewRepository.save(reportedReview);
+        }
 
         // (선택 사항) BookReview 엔티티의 신고 횟수 증가 및 숨김 처리
-        // bookReview.report(); // BookReview 엔티티에 신고 횟수를 증가시키는 메서드 (예: increaseReportCount())
-        // if (bookReview.getReportedCount() >= 5) { // 5회 이상 신고 시
-        //     bookReview.hide(); // 또는 bookReview.hide2();
-        // }
-        // bookReviewRepository.save(bookReview); // @Transactional 덕분에 자동 반영 (명시적으로 호출해도 무방)
 
         log.info("리뷰 신고 완료: reviewId={}, reporterUserId={}", reviewId, reporterUserId);
     }
@@ -83,8 +83,7 @@ public class ReportedService {
     public String hideReview(Integer reportId) {
         try {
             // ReportedReview를 reportId로 찾습니다. Optional로 받습니다.
-            ReportedReview foundReport = reportedReviewRepository.findByReportId(reportId)
-                    .orElseThrow(() -> new IllegalArgumentException("신고된 리뷰를 찾을 수 없습니다. (reportId: " + reportId + ")"));
+            ReportedReview foundReport = reportedReviewRepository.findByReportId(reportId).orElseThrow(() -> new IllegalArgumentException("신고된 리뷰를 찾을 수 없습니다. (reportId: " + reportId + ")"));
 
             // BookReview는 ReportedReview 객체 내부에 포함되어 있습니다.
             // 지연 로딩일 수 있으므로, .getReviewId()를 호출하기 전에 bookReview 객체가 로드되는지 확인합니다.
@@ -151,15 +150,13 @@ public class ReportedService {
         }
     }
 
-    private ReportedReviewDTO getReportedReviewDTO(ReportedReview reportedReview, BookReview review, Profile
-            profile) {
+    private ReportedReviewDTO getReportedReviewDTO(ReportedReview reportedReview, BookReview review, Profile profile) {
         ReportedReviewDTO reportedReviewDTO = new ReportedReviewDTO();
 
         reportedReviewDTO.setReportId(reportedReview.getReportId());
         reportedReviewDTO.setReviewId(review.getReviewId()); // review 객체에서 reviewId 가져오기
 
-        // ⭐ 중요: ReportedReview 엔티티의 userId는 '신고한' 유저의 ID를 의미해야 합니다.
-        reportedReviewDTO.setUserId(reportedReview.getUserId()); // 신고한 유저의 ID
+        reportedReviewDTO.setUserId(profile.getUser().getUserId()); // 신고한 유저의 ID
 
         // reportedDate 필드가 ReportedReview 엔티티에 추가되었다고 가정
         reportedReviewDTO.setReportedDate(reportedReview.getReportedDate());
