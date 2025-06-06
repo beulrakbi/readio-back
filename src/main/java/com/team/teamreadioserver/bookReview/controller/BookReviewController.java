@@ -94,6 +94,7 @@ public class BookReviewController {
     public ResponseEntity<ResponseDTO> getAllBookReviews(@PathVariable String bookIsbn) {
         logger.info("[CONTROLLER] getAllBookReviews 호출: bookIsbn={}", bookIsbn);
         List<BookReviewDTO> reviews = bookReviewService.getBookReviewByBookIsbn(bookIsbn);
+        System.out.println("reviews: " + reviews);
         logger.info("[CONTROLLER] getAllBookReviews 응답 데이터 (일부): 첫 번째 리뷰의 isLiked={}, likesCount={}", reviews.isEmpty() ? "N/A" : reviews.get(0).isLiked(), reviews.isEmpty() ? "N/A" : reviews.get(0).getLikesCount());
         return ResponseEntity.ok(new ResponseDTO(HttpStatus.OK, "리뷰 조회 성공", reviews));
     }

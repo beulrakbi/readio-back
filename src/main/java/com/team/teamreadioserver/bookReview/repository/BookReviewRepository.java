@@ -1,6 +1,7 @@
 package com.team.teamreadioserver.bookReview.repository;
 
 import com.team.teamreadioserver.bookReview.entity.BookReview;
+import com.team.teamreadioserver.bookReview.enumPackage.IsHidden;
 import com.team.teamreadioserver.profile.entity.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +14,7 @@ public interface BookReviewRepository extends JpaRepository<BookReview, Integer>
 
     List<BookReview> findByProfile_ProfileId(Long profileId);
 
-    List<BookReview> findByBookIsbn(String isbn);
+    List<BookReview> findByBookIsbnAndIsHidden(String bookIsbn, IsHidden isHidden);
 
     BookReview findByReviewId(Integer reviewId);
 

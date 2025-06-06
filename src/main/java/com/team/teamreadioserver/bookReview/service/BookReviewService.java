@@ -6,6 +6,7 @@ import com.team.teamreadioserver.bookReview.dto.MyReviewResponseDTO;
 import com.team.teamreadioserver.bookReview.dto.ReviewRequestDTO;
 import com.team.teamreadioserver.bookReview.entity.BookReview;
 import com.team.teamreadioserver.bookReview.entity.ReviewLike;
+import com.team.teamreadioserver.bookReview.enumPackage.IsHidden;
 import com.team.teamreadioserver.bookReview.repository.BookReviewRepository;
 import com.team.teamreadioserver.bookReview.repository.LikesRepository;
 import com.team.teamreadioserver.common.common.Criteria;
@@ -194,7 +195,7 @@ public class BookReviewService {
     // ISBN으로 책 리뷰 조회
     public List<BookReviewDTO> getBookReviewByBookIsbn(String bookIsbn) {
         logger.info("[SERVICE] getBookReviewByBookIsbn 호출: bookIsbn={}", bookIsbn);
-        List<BookReview> foundBookReviews = bookReviewRepository.findByBookIsbn(bookIsbn);
+        List<BookReview> foundBookReviews = bookReviewRepository.findByBookIsbnAndIsHidden(bookIsbn, IsHidden.N);
         String currentUserId = null;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
@@ -206,7 +207,6 @@ public class BookReviewService {
 
         return foundBookReviews.stream().map(review -> {
             BookReviewDTO dto = new BookReviewDTO();
-
             dto.setReviewId(review.getReviewId());
             dto.setProfileId(review.getProfile().getProfileId());
             dto.setPenName(review.getProfile().getPenName());
