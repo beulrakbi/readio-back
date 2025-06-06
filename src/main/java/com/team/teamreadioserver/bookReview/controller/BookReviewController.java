@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping
 public class BookReviewController {
 
     private static final Logger logger = LoggerFactory.getLogger(BookReviewController.class); // SLF4J Logger
@@ -107,7 +107,7 @@ public class BookReviewController {
     }
 
     @Operation(summary = "내 리뷰 조회", description = "특정 사용자의 리뷰를 조회합니다.")
-    @GetMapping("mylibrary/reviews")
+    @GetMapping("/mylibrary/reviews")
     public ResponseEntity<?> getMyReviews(@RequestParam(name = "offset", defaultValue = "1") String offset) {
         String userId = getCurrentUserId();
         if (userId == null) {
@@ -124,7 +124,7 @@ public class BookReviewController {
     }
 
     @Operation(summary = "내 리뷰 개수 조회", description = "특정 사용자의 리뷰 개수를 조회합니다.")
-    @GetMapping("mylibrary/reviews/count")
+    @GetMapping("/mylibrary/reviews/count")
     public ResponseEntity<?> getMyReviewsCount() {
         String userId = getCurrentUserId();
         if (userId == null) {
@@ -139,7 +139,7 @@ public class BookReviewController {
 
 
     @Operation(summary = "리뷰 좋아요/취소 토글", description = "리뷰에 좋아요를 누르거나 취소합니다.")
-    @PostMapping("/{reviewId}/like-toggle")
+    @PostMapping("/bookReview/{reviewId}/like-toggle")
     public ResponseEntity<?> toggleLikeReview(@PathVariable Integer reviewId) {
         logger.info("[CONTROLLER] toggleLikeReview 호출: reviewId={}", reviewId);
         String userId = getCurrentUserId();
@@ -170,7 +170,7 @@ public class BookReviewController {
 
     // --- (getLikesCount, getReviewLikeStatus, getCurrentUserId 기존 코드 유지) ---
     @Operation(summary = "리뷰 좋아요 수 조회", description = "리뷰의 좋아요 수를 조회합니다.")
-    @GetMapping("/{reviewId}/likes/count")
+    @GetMapping("/bookReview/{reviewId}/likes/count")
     public ResponseEntity<?> getLikesCount(@PathVariable Integer reviewId) {
         try {
             Integer count = bookReviewService.getLikesCount(reviewId);
@@ -183,7 +183,7 @@ public class BookReviewController {
     }
 
     @Operation(summary = "리뷰 좋아요 상태 확인", description = "현재 로그인된 사용자가 특정 리뷰에 좋아요를 눌렀는지 확인합니다.")
-    @GetMapping("/{reviewId}/likes/status")
+    @GetMapping("/bookReview/{reviewId}/likes/status")
     public ResponseEntity<Map<String, Object>> getReviewLikeStatus(@PathVariable Integer reviewId) {
         String userId = getCurrentUserId();
         if (userId == null) {
