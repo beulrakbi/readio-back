@@ -67,15 +67,15 @@ public class SecurityConfig {
                                         "/api/clicks/**","/bookBookmark/publicCount/**","/api/follow",
                                     "/api/email/sendCode", "/api/email/verifyCode", "/api/email/resetPassword").permitAll()  // 인증 필요없는 경로
 
-                                .requestMatchers(HttpMethod.GET, "/api/user/interests/categories", "/api/user/interests/keywords",  "/post/**", "/bookReview/**", "/feed").permitAll()   // 인증 필요없는 경로
+                                .requestMatchers(HttpMethod.GET, "/api/user/interests/categories", "/api/user/interests/keywords",  "/post/**", "/feed").permitAll()   // 인증 필요없는 경로
                                 // /videoBookmark/status/** (개인 북마크 상태 포함)는 인증 필요
                                 .requestMatchers("/videoBookmark/status/**").authenticated()
                                 .requestMatchers("/bookBookmark/status/**").authenticated()
                                 .requestMatchers(HttpMethod.POST, "/bookReview/create").authenticated()
                                 .requestMatchers(HttpMethod.PUT, "/bookReview/{reviewId}/report").authenticated()
                                 .requestMatchers(HttpMethod.DELETE, "/bookReview/delete/**").authenticated()
-                                .requestMatchers(HttpMethod.POST, "/bookReview/{reviewId}/like").authenticated()
-                                .requestMatchers(HttpMethod.DELETE, "/bookReview/{reviewId}/like").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/bookReview/{reviewId}/**").authenticated()
+                                .requestMatchers(HttpMethod.DELETE, "/bookReview/{reviewId}/**").authenticated()
                                 .requestMatchers(HttpMethod.GET, "/mylibrary/reviews/**").authenticated() // 내 리뷰 조회
 
                                 // POST 및 DELETE 요청도 인증 필요
@@ -98,7 +98,8 @@ public class SecurityConfig {
                                         "/swagger-resources/**",
                                         "/webjars/**"
                                 ).permitAll()
-                                .requestMatchers("/admin/**", "/admin/filtering/**", "/admin/curationType/**", "/api/admin/**").permitAll()       // 관리자 관련 경로
+                                .requestMatchers("/admin/**", "/admin/reported/**", "/admin/filtering/**", "/admin/curationType/**", "/api/admin/**").hasRole("ADMIN")       // 관리자 관련 경로
+//                                .requestMatchers("/admin/**", "/admin/filtering/**", "/admin/curationType/**", "/api/admin/**").permitAll()       // 관리자 관련 경로
 //                       .requestMatchers("/admin/**").hasRole("ADMIN")   // 관리자 관련 경로(주석 해제시 해당경로는 관리자로 로그인해야 보임)
                                 .anyRequest().authenticated()   // 그 외는 모두 로그인 필요
                 )
