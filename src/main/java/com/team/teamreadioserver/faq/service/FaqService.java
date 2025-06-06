@@ -5,8 +5,6 @@ import com.team.teamreadioserver.faq.dto.FaqResponseDTO;
 import com.team.teamreadioserver.faq.dto.FaqUpdateDTO;
 import com.team.teamreadioserver.faq.entity.Faq;
 import com.team.teamreadioserver.faq.repository.FaqRepository;
-import com.team.teamreadioserver.notice.dto.NoticeResponseDTO;
-import com.team.teamreadioserver.notice.entity.Notice;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

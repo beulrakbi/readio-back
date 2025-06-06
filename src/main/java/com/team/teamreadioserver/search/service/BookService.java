@@ -40,7 +40,7 @@ public class BookService {
         logger.debug("DB 검색 결과 (제목/저자 '{}'): {} 건", keyword, combined.size());
 
         // DB에 결과가 있으면, size 파라미터로 페이징
-        if (!combined.isEmpty()) {
+        if (combined.size() >= size) {
             return toPagedDto(new ArrayList<>(combined), page, size);
         }
 
