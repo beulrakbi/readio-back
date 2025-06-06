@@ -36,11 +36,11 @@ public class EmotionVideoRecommendationService {
 
     // 감정별 추천 키워드 목록
     private static final Map<EmotionType, List<String>> EMOTION_KEYWORDS_MAP = Map.of(
-            EmotionType.HAPPY, List.of("신나는 음악", "즐거운 음악", "행복해지는 방법", "기분 좋아지는 노래"),
-            EmotionType.SAD, List.of("위로가 되는 이야기", "슬플 때 듣는 음악", "감성적인 영화 추천", "혼자 있고 싶을 때", "눈물"),
-            EmotionType.ANGRY, List.of("스트레스 해소법", "화 가라앉히는 방법", "액션 영화", "분노 조절"),
-            EmotionType.ANXIOUS, List.of("마음이 편안해지는", "불안감을 잠재우는", "ASMR", "명상", "힐링 사운드"),
-            EmotionType.NORMAL, List.of("일상 브이로그", "오늘의 책 추천", "오늘의 노래 추천", "흥미로운 이야기", "잔잔한 음악")
+            EmotionType.HAPPY, List.of("자기계발", "성장", "긍정 심리학", "인생", "재미있는", "재미있는 소설"),
+            EmotionType.SAD, List.of("위로", "힐링", "슬픔", "극복", "감성 소설", "감성", "마음 치유"),
+            EmotionType.ANGRY, List.of("분노 조절", "스트레스 관리", "심리 치유", "분노 해소", "명상"),
+            EmotionType.ANXIOUS, List.of("불안 극복", "마음 챙김", "심리 안정", "힐링 에세이", "명상"),
+            EmotionType.NORMAL, List.of("인기", "오늘의", "베스트셀러", "책 리뷰", "일상 에세이")
     );
 
     public VideosDTO recommendVideosByEmotion(String userId) {

@@ -24,10 +24,8 @@ public class BookService {
     private static final Logger logger = LoggerFactory.getLogger(BookService.class); // 로거 추가
     private final BookRepository bookRepository;
     private final ExternalBookApiClient externalClient;
-    // private final ModelMapper modelMapper; // ModelMapper가 사용되지 않는다면 제거해도 됩니다.
 
-    // ... (searchBooks, toPagedDto, toDto, toEntity 메소드는 동일하게 유지)
-    @Transactional // searchBooks에서 외부 API 호출 및 저장이 있으므로 Transactional 유지
+    @Transactional
     public BooksDTO searchBooks(String keyword, int page, int size) {
         // DB 에서 검색 (제목 + 저자)
         List<Book> byTitle  = bookRepository.findAllByBookTitleContaining(keyword);

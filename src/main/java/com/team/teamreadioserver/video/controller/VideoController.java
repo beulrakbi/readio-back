@@ -113,7 +113,6 @@ public class VideoController {
     }
 
 
-
     @Operation(summary = "날씨 기반 비디오 추천 및 전체 큐레이션 조회",
             description = "사용자 위치 (위도, 경도)를 받아 OpenWeather로 현재 날씨 조회 후, 날씨에 맞는 키워드로 영상을 추천하고, 전체 큐레이션 목록도 함께 반환합니다.",
             tags = { "VideoController" })
