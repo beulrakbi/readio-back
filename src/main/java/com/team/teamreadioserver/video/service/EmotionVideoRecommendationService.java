@@ -108,7 +108,7 @@ public class EmotionVideoRecommendationService {
             if (keyword == null || keyword.trim().isEmpty()) {
                 continue;
             }
-            VideosDTO videosByKeyword = videoService.findVideos(keyword);
+            VideosDTO videosByKeyword = videoService.findVideos(keyword, "6");
             if (videosByKeyword != null && videosByKeyword.getVideoDTOList() != null) {
                 videosByKeyword.getVideoDTOList().forEach(video -> {
                     if (video.getVideoId() != null && uniqueVideoIds.add(video.getVideoId())) {

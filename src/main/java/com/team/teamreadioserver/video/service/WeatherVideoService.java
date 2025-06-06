@@ -94,7 +94,7 @@ public class WeatherVideoService {
             }
 
             String finalKeyword = matched.get(0).getKeyword();
-            VideosDTO result = videoService.findVideos(finalKeyword);
+            VideosDTO result = videoService.findVideos(finalKeyword, "Y");
 
             return result;
 
