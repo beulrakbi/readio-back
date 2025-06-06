@@ -19,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.lang.Integer.parseInt;
+
 @Service
 @AllArgsConstructor
 public class VideoService {
@@ -55,8 +57,11 @@ public class VideoService {
 
     public VideosDTO findVideos(String search, String type) {
 
-        FilteringGroup group = filteringGroupRepository.findAllByOrderByTypeIdDesc()aa
-        List<Filtering> filters = filteringRepository.
+        List<FilteringGroup> groups = filteringGroupRepository.findByTypeIdAndIsActive(parseInt(type), "Y");
+        List<Filtering> filters = new ArrayList<>();
+        for (FilteringGroup group : groups) {
+            filters.addAll(filteringRepository.findByGroupId(group.getGroupId()));
+        }
 
 
         Set<Video> videos = new LinkedHashSet<>();
@@ -66,6 +71,11 @@ public class VideoService {
 
 
         Set<Video> filteredVideos = new LinkedHashSet<>();
+
+        for (Filtering filter : filters)
+        {
+
+        }
 
 
 
