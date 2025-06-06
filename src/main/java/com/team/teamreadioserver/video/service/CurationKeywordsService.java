@@ -14,20 +14,16 @@ import com.team.teamreadioserver.video.entity.CurationKeywords;
 import com.team.teamreadioserver.video.entity.CurationType;
 import com.team.teamreadioserver.video.repository.CurationKeywordsRepository;
 import com.team.teamreadioserver.video.repository.CurationTypeRepository;
-import com.team.teamreadioserver.video.repository.VideoRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,6 +54,11 @@ public class CurationKeywordsService {
     public List<CurationTypeDTO> selectAllCurationTypes() {
         List<CurationTypeDTO> result = curationTypeRepository.findAllByTypeIdLessThanEqual(100).stream().map(type -> modelMapper.map(type, CurationTypeDTO.class)).collect(Collectors.toList());
         Collections.shuffle(result);
+        return result;
+    }
+
+    public List<CurationTypeDTO> selectAllCurationTypesOrderByTypeId() {
+        List<CurationTypeDTO> result = curationTypeRepository.findAllByTypeIdLessThanEqualOrderByTypeId(100).stream().map(type -> modelMapper.map(type, CurationTypeDTO.class)).collect(Collectors.toList());
         return result;
     }
 
@@ -196,15 +197,5 @@ public class CurationKeywordsService {
 
         return (result > 0) ? "큐레이션 키워드 목록 수정 성공" : "큐레이션 키워드 목록 수정 실패";
     }
-
-    // 전체 키워드를 가져오는?
-    public List<CurationKeywordsDTO> selectAllKeywordsByTypeId(int typeId) {
-        List<CurationKeywords> entities = curationKeywordsRepository.findByTypeIdOrderByTypeId(typeId);
-        // 우리 코드에서는 랜덤 추가·잘라내기를 하지 않으므로, 모두 가져온 뒤 DTO 로 변환
-        return entities.stream()
-                .map(entity -> modelMapper.map(entity, CurationKeywordsDTO.class))
-                .collect(Collectors.toList());
-    }
-
 
 }

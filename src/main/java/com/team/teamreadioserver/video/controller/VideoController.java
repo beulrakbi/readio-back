@@ -123,14 +123,14 @@ public class VideoController {
     ) {
         log.info("[VideoController] getVideosByWeatherWithCurations 호출 - lat: {}, lon: {}", latitude, longitude);
 
-        // 1. 날씨 기반 비디오 추천
+        // 날씨 기반 비디오 추천
         VideosDTO videosDTO = weatherVideoService.getVideosByWeather(latitude, longitude);
 
-        // 2. 전체 큐레이션 정보 조회
+        // 전체 큐레이션 정보 조회
         // CurationKeywordsService에서 모든 큐레이션 타입과 해당 키워드를 가져오는 메서드 사용
         List<CurationDTO> allCurations = curationKeywordsService.selectAllCurationTypesAndKeywords();
 
-        // 3. 응답 데이터 구성
+        // 응답 데이터 구성
         Map<String, Object> responseData = new HashMap<>();
         responseData.put("weatherRecommendedVideos", videosDTO);
         responseData.put("allCurations", allCurations);
@@ -156,7 +156,7 @@ public class VideoController {
             @RequestParam(name = "userId") String userId
     ) {
         // userId 파라미터가 잘 넘어왔는지 로그로 확인
-        log.info("[VideoController] Request for emotion based recommendation for user ID: {}", userId);
+        log.info("Request for emotion based recommendation for user ID: {}", userId);
 
         if (userId == null) { // Long 타입은 null일 수 있으므로 체크
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -165,9 +165,6 @@ public class VideoController {
 
         try {
             VideosDTO recommendedVideos = emotionVideoRecommendationService.recommendVideosByEmotion(userId);
-
-            // 추천 결과가 있든 없든 성공(200 OK)으로 응답하고, 데이터 부분에 결과를 담아줍니다.
-            // 프론트엔드에서 recommendedVideos.getNum() 등을 보고 분기 처리할 수 있도록 합니다.
             String message = (recommendedVideos != null && recommendedVideos.getNum() > 0)
                     ? "감정 기반 비디오 추천 성공"
                     : "추천할 영상이 없거나 사용자의 감정 데이터가 없습니다.";
@@ -177,7 +174,6 @@ public class VideoController {
             );
 
         } catch (IllegalArgumentException e) {
-            // 예를 들어, EmotionVideoRecommendationService에서 사용자를 찾을 수 없을 때 발생
             log.warn("[VideoController] Error getting emotion based recommendations for userId {}: {}", userId, e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND) // 또는 BAD_REQUEST
                     .body(new ResponseDTO(HttpStatus.NOT_FOUND, e.getMessage(), null));
