@@ -104,6 +104,13 @@ public class AdminUserController {
         return ResponseEntity.ok().build();
     }
 
+    // 관리자 메인 화면에 신규가입 회원 수 가져오기
+    @GetMapping("/monthly-count")
+    public ResponseEntity<Integer> getThisMonthUserCount() {
+        int count = adminUserService.getThisMonthUserCount();
+        return ResponseEntity.ok(count);
+    }
+
     // 관리자 메인 화면에 전체회원 수 가져오기
     @Operation(summary = "전체회원 수 조회", description = "관리자는 메인화면에서 전체회원 수 확인이 가능하다.")
     @GetMapping("/user-count")
@@ -112,4 +119,8 @@ public class AdminUserController {
 
         return ResponseEntity.ok(count);
     }
+
+
+
+
 }
