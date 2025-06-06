@@ -1,4 +1,3 @@
-// src/main/java/com/team/teamreadioserver/bookReview/service/BookReviewService.java
 package com.team.teamreadioserver.bookReview.service;
 
 import com.team.teamreadioserver.bookReview.dto.AllReviewResponseDTO;
@@ -12,8 +11,7 @@ import com.team.teamreadioserver.bookReview.repository.LikesRepository;
 import com.team.teamreadioserver.common.common.Criteria;
 import com.team.teamreadioserver.profile.entity.Profile;
 import com.team.teamreadioserver.profile.repository.ProfileRepository;
-import com.team.teamreadioserver.report.entity.ReportedReview;
-import com.team.teamreadioserver.report.repository.ReportedReviewRepository;
+import com.team.teamreadioserver.report.service.ReportedService; // ⭐ ReportedService 임포트
 
 // [확인!] BookService 및 BookDTO 임포트 (실제 프로젝트의 패키지 경로를 확인해주세요)
 import com.team.teamreadioserver.search.entity.Book;
@@ -50,9 +48,9 @@ public class BookReviewService {
     @Autowired
     private LikesRepository likesRepository;
     @Autowired
-    private ReportedReviewRepository reportedReviewRepository;
-    @Autowired
     private ProfileRepository profileRepository;
+    @Autowired
+    private ReportedService reportedService; // ⭐ ReportedService 주입
 
     // [필수] BookService 주입 (BookService 인터페이스의 구현체가 Spring Bean으로 등록되어 있어야 합니다)
     @Autowired
@@ -60,7 +58,7 @@ public class BookReviewService {
     @Autowired
     private BookRepository bookRepository;
 
-    // --- 기존 메소드들 (addBookReview, reportReview, deleteReview, allBookReview) ---
+    // 리뷰 등록
     public void addBookReview(ReviewRequestDTO reviewRequestDTO, String userId) {
         Profile profile = profileRepository.findByUser_UserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자 프로필을 찾을 수 없습니다. (UserId: " + userId + ")"));
@@ -69,36 +67,23 @@ public class BookReviewService {
                 .profile(profile)
                 .bookIsbn(reviewRequestDTO.getBookIsbn())
                 .reviewContent(reviewRequestDTO.getReviewContent())
-                .reportedCount(0)
-                // isHidden과 createdAt은 @PrePersist로 자동 설정될 것으로 예상됩니다.
+                .reportedCount(0) // 초기 신고 횟수는 0
                 .build();
         bookReviewRepository.save(bookReview);
     }
 
+    // 리뷰 신고 (ReportedService로 로직 위임)
     @Transactional
     public void reportReview(Integer reviewId) {
-        BookReview bookReview = bookReviewRepository.findById(reviewId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 리뷰가 존재하지 않습니다. (ReviewId: " + reviewId + ")"));
-
-        bookReview.report(); // reportedCount 증가
-
-        // reportedCount가 1일 때만 ReportedReview 엔티티 생성 및 저장 (중복 방지)
-        if (bookReview.getReportedCount() == 1) {
-            ReportedReview reportedReview = ReportedReview.builder()
-                    .bookReview(bookReview)
-                    .userId(bookReview.getProfile().getUser().getUserId()) // 신고자 ID (현재는 리뷰 작성자 ID로 되어있으나, 실제 신고자 ID로 변경 필요할 수 있음)
-                    .build();
-            reportedReviewRepository.save(reportedReview);
+        String currentUserId = SecurityContextHolder.getContext().getAuthentication().getName(); // 현재 로그인 사용자 ID
+        if (currentUserId == null) {
+            throw new IllegalArgumentException("로그인된 사용자 정보를 찾을 수 없습니다."); // 로그인되지 않은 경우 예외 처리
         }
-
-        // reportedCount가 5 이상일 때 hide 처리 (BookReview 엔티티의 hide2() 또는 hide() 사용)
-        if (bookReview.getReportedCount() >= 5) { // 5회 이상 신고 시
-            // BookReview 엔티티에 hide2() 또는 hide() 메소드가 정의되어 있어야 합니다.
-            // 제공해주신 엔티티 코드에는 hide()와 hide2()가 있었습니다.
-            bookReview.hide2();
-        }
+        // 신고 로직을 ReportedService로 위임
+        reportedService.reportReview(reviewId, currentUserId);
     }
 
+    // 리뷰 삭제 (신고 기록 삭제 로직도 ReportedService로 위임)
     @Transactional
     public void deleteReview(Integer reviewId, String currentUserId) {
         BookReview bookReview = bookReviewRepository.findById(reviewId)
@@ -110,9 +95,17 @@ public class BookReviewService {
             throw new AccessDeniedException("해당 리뷰를 삭제할 권한이 없습니다.");
         }
 
-        bookReviewRepository.deleteById(reviewId);
+        // 해당 리뷰에 대한 좋아요 기록도 삭제
+        likesRepository.deleteByBookReview_ReviewId(reviewId);
+
+        // ⭐ 해당 리뷰에 대한 신고 기록도 삭제 (ReportedService로 위임)
+        reportedService.deleteReportedReviewsByBookReviewId(reviewId);
+
+        bookReviewRepository.delete(bookReview);
+        logger.info("리뷰 삭제 완료 및 관련 좋아요/신고 기록 삭제: reviewId={}", reviewId);
     }
 
+    // 모든 리뷰 조회
     public List<AllReviewResponseDTO> allBookReview() {
         return bookReviewRepository.findAll().stream().map(review ->
                 AllReviewResponseDTO.builder()
@@ -198,7 +191,7 @@ public class BookReviewService {
 //        }).collect(Collectors.toList());
     }
 
-    // --- 기존 메소드들 (getBookReviewByBookIsbn, toggleLikeBookReview, getLikesCount, isReviewLikedByUser, getProfileByUserId) ---
+    // ISBN으로 책 리뷰 조회
     public List<BookReviewDTO> getBookReviewByBookIsbn(String bookIsbn) {
         logger.info("[SERVICE] getBookReviewByBookIsbn 호출: bookIsbn={}", bookIsbn);
         List<BookReview> foundBookReviews = bookReviewRepository.findByBookIsbn(bookIsbn);
@@ -224,7 +217,7 @@ public class BookReviewService {
             // BookReview 엔티티의 isHidden 필드(IsHidden enum 타입)를 DTO의 적절한 타입으로 변환 필요할 수 있음
             // 여기서는 BookReviewDTO에 isHidden 필드가 있고, 타입이 호환된다고 가정합니다.
             dto.setIsHidden(review.getIsHidden());
-            dto.setReportedCount(review.getReportedCount());
+            dto.setReportedCount(review.getReportedCount()); // ReportedCount는 BookReview 엔티티에 직접 존재한다고 가정
 
             Integer likesCount = likesRepository.countLikesByReviewId(review.getReviewId());
             dto.setLikesCount(likesCount != null ? likesCount : 0);
@@ -249,6 +242,7 @@ public class BookReviewService {
         }).collect(Collectors.toList());
     }
 
+    // 리뷰 좋아요 토글
     @Transactional
     public boolean toggleLikeBookReview(Integer reviewId, Long profileId) {
         logger.info("[SERVICE] toggleLikeBookReview 호출: reviewId={}, profileId={}", reviewId, profileId);
@@ -283,6 +277,7 @@ public class BookReviewService {
         }
     }
 
+    // 리뷰 좋아요 수 조회
     @Transactional(readOnly = true)
     public Integer getLikesCount(Integer reviewId) {
         logger.info("[SERVICE] getLikesCount 호출: reviewId={}", reviewId);
@@ -296,6 +291,7 @@ public class BookReviewService {
         return count;
     }
 
+    // 사용자가 리뷰에 좋아요를 눌렀는지 확인
     @Transactional(readOnly = true)
     public boolean isReviewLikedByUser(Integer reviewId, Long profileId) {
         logger.info("[SERVICE] isReviewLikedByUser 호출: reviewId={}, profileId={}", reviewId, profileId);
@@ -304,6 +300,7 @@ public class BookReviewService {
         return liked;
     }
 
+    // 사용자 ID로 프로필 조회
     public Profile getProfileByUserId(String userId) {
         logger.info("[SERVICE] getProfileByUserId 호출: userId={}", userId);
         return profileRepository.findByUser_UserId(userId)

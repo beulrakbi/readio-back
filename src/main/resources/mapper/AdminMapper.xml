@@ -169,5 +169,10 @@
         WHERE user_id = #{userId}
     </delete>
 
+    <!-- 회원 수 전체조회(관리자 메인) -->
+    <select id="countAllUser" resultType="int">
+        SELECT COUNT(*) FROM `user`
+    </select>
+
 
 </mapper>
