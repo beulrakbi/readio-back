@@ -169,6 +169,13 @@
         WHERE user_id = #{userId}
     </delete>
 
+    <!-- 신규가입 회원 수(당월 기준) -->
+    <select id="countUsersThisMonth" resultType="int">
+        SELECT COUNT(*)
+        FROM `user`
+        WHERE DATE_FORMAT(user_enrolldate, '%Y-%m') = DATE_FORMAT(NOW(), '%Y-%m')
+    </select>
+
     <!-- 회원 수 전체조회(관리자 메인) -->
     <select id="countAllUser" resultType="int">
         SELECT COUNT(*) FROM `user`
