@@ -33,7 +33,7 @@ public class Video {
     private String thumbnail;
 
     @Column(name = "view_count")
-    private int viewCount;
+    private Integer viewCount;
 
     @Column(name = "upload_date")
     private Date uploadDate;
