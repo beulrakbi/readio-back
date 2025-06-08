@@ -6,6 +6,8 @@ import com.team.teamreadioserver.follow.entity.Follow;
 import com.team.teamreadioserver.follow.repositoy.FollowRepository;
 import com.team.teamreadioserver.profile.dto.ProfileResponseDTO;
 import com.team.teamreadioserver.profile.entity.Profile;
+import com.team.teamreadioserver.profile.entity.ProfileImg;
+import com.team.teamreadioserver.profile.repository.ProfileImgRepository;
 import com.team.teamreadioserver.profile.repository.ProfileRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +19,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +30,7 @@ public class FollowService {
 
     private final FollowRepository followRepository;
     private final ProfileRepository profileRepository;
+    private final ProfileImgRepository profileImgRepository;
     private final ModelMapper modelMapper; // DTO 변환을 위해 주입
 
     // 팔로우 하기
@@ -88,27 +92,84 @@ public class FollowService {
         log.info("Unfollowed successfully. Follower: {}, Following: {}", followerProfile.getProfileId(), followingId);
     }
 
-    // 특정 사용자가 팔로우하는 사람들 목록 (서비스가 DTO 리스트 직접 반환)
+    /**
+     * 특정 사용자가 '팔로우하는' 사람들 목록 조회
+     * @param profileId 목록을 조회할 사용자의 프로필 ID
+     * @param userDetails 현재 로그인한 사용자 정보 (isFollowing 상태 계산용)
+     * @return 필요한 모든 정보가 담긴 DTO 리스트
+     */
     @Transactional(readOnly = true)
-    public List<ProfileResponseDTO> getFollowingList(Long profileId) {
+    public List<ProfileResponseDTO> getFollowingList(Long profileId, UserDetails userDetails) {
         Profile user = profileRepository.findById(profileId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다. ID: " + profileId));
 
-        return followRepository.findByFollower(user).stream()
-                .map(Follow::getFollowing)
-                .map(profile -> modelMapper.map(profile, ProfileResponseDTO.class)) // Profile -> ProfileSummaryDto
+        Profile loggedInUserProfile = (userDetails != null)
+                ? profileRepository.findByUser_UserId(userDetails.getUsername()).orElse(null)
+                : null;
+
+        List<Follow> follows = followRepository.findByFollower(user);
+
+        return follows.stream()
+                .map(follow -> {
+                    Profile personInList = follow.getFollowing();
+
+                    Optional<ProfileImg> profileImgOpt = profileImgRepository.findByProfile(personInList);
+                    String imageUrl = profileImgOpt.map(ProfileImg::getSaveName).orElse(null);
+
+                    // 추가 정보 계산
+                    long followerCount = followRepository.countByFollowing(personInList);
+                    boolean isFollowing = (loggedInUserProfile != null)
+                            ? followRepository.existsByFollowerAndFollowing(loggedInUserProfile, personInList)
+                            : false;
+
+                    // ★★★ Builder 패턴으로 DTO를 생성합니다 ★★★
+                    return ProfileResponseDTO.builder()
+                            .profileId(personInList.getProfileId())
+                            .penName(personInList.getPenName())
+                            .imageUrl(imageUrl) // 조회한 이미지 파일 이름 설정
+                            .followerCount(followerCount)
+                            .isFollowing(isFollowing)
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 
-    // 특정 사용자를 팔로우하는 사람들 목록 (서비스가 DTO 리스트 직접 반환)
+    /**
+     * 특정 사용자를 '팔로우하는' 사람들 목록 조회
+     * @param profileId 목록을 조회할 사용자의 프로필 ID
+     * @param userDetails 현재 로그인한 사용자 정보 (isFollowing 상태 계산용)
+     * @return 필요한 모든 정보가 담긴 DTO 리스트
+     */
     @Transactional(readOnly = true)
-    public List<ProfileResponseDTO> getFollowerList(Long profileId) {
+    public List<ProfileResponseDTO> getFollowerList(Long profileId, UserDetails userDetails) {
         Profile user = profileRepository.findById(profileId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다. ID: " + profileId));
 
-        return followRepository.findByFollowing(user).stream()
-                .map(Follow::getFollower)
-                .map(profile -> modelMapper.map(profile, ProfileResponseDTO.class)) // Profile -> ProfileSummaryDto
+        Profile loggedInUserProfile = (userDetails != null)
+                ? profileRepository.findByUser_UserId(userDetails.getUsername()).orElse(null)
+                : null;
+
+        List<Follow> follows = followRepository.findByFollowing(user);
+
+        return follows.stream()
+                .map(follow -> {
+                    Profile personInList = follow.getFollower();
+                    Optional<ProfileImg> profileImgOpt = profileImgRepository.findByProfile(personInList);
+                    String imageUrl = profileImgOpt.map(ProfileImg::getSaveName).orElse(null);
+
+                    long followerCount = followRepository.countByFollowing(personInList);
+                    boolean isFollowing = (loggedInUserProfile != null)
+                            ? followRepository.existsByFollowerAndFollowing(loggedInUserProfile, personInList)
+                            : false;
+
+                    return ProfileResponseDTO.builder()
+                            .profileId(personInList.getProfileId())
+                            .penName(personInList.getPenName())
+                            .imageUrl(imageUrl) // 조회한 이미지 파일 이름 설정
+                            .followerCount(followerCount)
+                            .isFollowing(isFollowing)
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 

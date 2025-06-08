@@ -79,15 +79,17 @@ public class FollowController {
 
     // 특정 사용자가 팔로우하는 사람들 목록 (profileId의 사용자가 팔로우하는 사람들)
     @GetMapping("/{profileId}/following")
-    public ResponseEntity<List<ProfileResponseDTO>> getFollowingList(@PathVariable Long profileId) {
-        List<ProfileResponseDTO> responseDtoList = followService.getFollowingList(profileId);
+    public ResponseEntity<List<ProfileResponseDTO>> getFollowingList(@PathVariable Long profileId,
+                                                                     @AuthenticationPrincipal UserDetails userDetails){
+        List<ProfileResponseDTO> responseDtoList = followService.getFollowingList(profileId, userDetails);
         return ResponseEntity.ok(responseDtoList);
     }
 
     // 특정 사용자를 팔로우하는 사람들 목록 (profileId의 사용자를 팔로우하는 사람들)
     @GetMapping("/{profileId}/followers")
-    public ResponseEntity<List<ProfileResponseDTO>> getFollowerList(@PathVariable Long profileId) {
-        List<ProfileResponseDTO> responseDtoList = followService.getFollowerList(profileId);
+    public ResponseEntity<List<ProfileResponseDTO>> getFollowerList(@PathVariable Long profileId,
+                                                                    @AuthenticationPrincipal UserDetails userDetails){
+        List<ProfileResponseDTO> responseDtoList = followService.getFollowerList(profileId, userDetails);
         return ResponseEntity.ok(responseDtoList);
     }
 
