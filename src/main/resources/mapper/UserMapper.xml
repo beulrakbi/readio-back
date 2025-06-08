@@ -12,7 +12,7 @@
         <result property="userEmail" column="user_email"/>
         <result property="userPhone" column="user_phone"/>
         <result property="userBirthday" column="user_birthday"/>
-        <result property="userEnrolldate" column="user_enrolldate"/>
+        <result property="userEnrollDate" column="user_enrolldate"/>
     </resultMap>
 
     <insert id="insertUser" parameterType="com.team.teamreadioserver.user.dto.JoinRequestDTO">
