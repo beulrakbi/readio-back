@@ -8,7 +8,7 @@ import com.team.teamreadioserver.video.dto.VideosDTO;
 import com.team.teamreadioserver.video.service.CurationKeywordsService;
 import com.team.teamreadioserver.video.service.EmotionVideoRecommendationService;
 import com.team.teamreadioserver.video.service.VideoService;
-import com.team.teamreadioserver.video.service.WeatherVideoService;
+//import com.team.teamreadioserver.video.service.WeatherVideoService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -32,7 +32,7 @@ public class VideoController {
     private static final Logger log = LoggerFactory.getLogger(VideoController.class);
     private final VideoService videoService;
 
-    private final WeatherVideoService weatherVideoService;
+//    private final WeatherVideoService weatherVideoService;
     private final CurationKeywordsService curationKeywordsService;
     private final EmotionVideoRecommendationService emotionVideoRecommendationService; // 새로 만든 서비스 주입
 
@@ -113,39 +113,24 @@ public class VideoController {
     }
 
 
-
-    @Operation(summary = "날씨 기반 비디오 추천 및 전체 큐레이션 조회",
-            description = "사용자 위치 (위도, 경도)를 받아 OpenWeather로 현재 날씨 조회 후, 날씨에 맞는 키워드로 영상을 추천하고, 전체 큐레이션 목록도 함께 반환합니다.",
+    @Operation(summary = "날씨 기반 비디오 추천",
+            description = "프론트엔드가 전달한 날씨 키워드로 DB 조회를 수행합니다. (예: keyword=맑음 도서)",
             tags = { "VideoController" })
-    @GetMapping("/weather") // 엔드포인트 이름 변경 또는 기존 /weather 수정
-    public ResponseEntity<ResponseDTO> getVideosByWeatherWithCurations(
-            @RequestParam("lat") double latitude,
-            @RequestParam("lon") double longitude
+    @GetMapping("/weather")
+    public ResponseEntity<ResponseDTO> getVideosByWeatherKeyword(
+            @RequestParam("keyword") String keyword
     ) {
-        log.info("[VideoController] getVideosByWeatherWithCurations 호출 - lat: {}, lon: {}", latitude, longitude);
+        log.info("[VideoController] getVideosByWeatherKeyword 호출 - keyword: {}", keyword);
 
-        // 날씨 기반 비디오 추천
-        VideosDTO videosDTO = weatherVideoService.getVideosByWeather(latitude, longitude);
+        // 기존 findVideos(...) 대신 새 메서드 사용
+        VideosDTO videosDTO = videoService.findWeatherVideos(keyword);
 
-        // 전체 큐레이션 정보 조회
-        // CurationKeywordsService에서 모든 큐레이션 타입과 해당 키워드를 가져오는 메서드 사용
-        List<CurationDTO> allCurations = curationKeywordsService.selectAllCurationTypesAndKeywords();
-
-        // 응답 데이터 구성
-        Map<String, Object> responseData = new HashMap<>();
-        responseData.put("weatherRecommendedVideos", videosDTO);
-        responseData.put("allCurations", allCurations);
-
-        String message;
-        if (videosDTO.getNum() > 0) {
-            message = "날씨 기반 비디오 추천 및 전체 큐레이션 조회 성공";
-        } else {
-            // 날씨 추천 영상이 없더라도 전체 큐레이션 정보는 전달
-            message = "해당 날씨에 맞는 추천 영상이 없습니다. 전체 큐레이션은 조회되었습니다.";
-        }
+        String message = videosDTO.getNum() > 0
+                ? "날씨 기반 비디오 조회 성공"
+                : "해당 키워드에 매칭되는 영상이 없습니다.";
 
         return ResponseEntity.ok(
-                new ResponseDTO(HttpStatus.OK, message, responseData)
+                new ResponseDTO(HttpStatus.OK, message, videosDTO)
         );
     }
 

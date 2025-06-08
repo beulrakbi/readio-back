@@ -143,4 +143,29 @@ public class VideoService {
             throw new IllegalArgumentException("존재하지 않는 videoId : " + videoId);
         }
     }
+
+    // 날씨 기반 영상 추천
+    public VideosDTO findWeatherVideos(String weatherKeyword) {
+        // DB 에서 'weatherKeyword' 문자열이 포함된 비디오 조회
+        Set<Video> videos = new LinkedHashSet<>();
+        videos.addAll(videoRepository.findByDescriptionContaining(weatherKeyword));
+        videos.addAll(videoRepository.findByTitleContaining(weatherKeyword));
+
+        // DTO 로 변환 및 HTML 이스케이프 제거
+        List<VideoDTO> videoDTOS = new ArrayList<>();
+        for (Video v : videos) {
+            VideoDTO dto = modelMapper.map(v, VideoDTO.class);
+            dto.setTitle(StringEscapeUtils.unescapeHtml4(dto.getTitle()));
+            videoDTOS.add(dto);
+        }
+
+        // 결과를 랜덤으로 섞고 최대 10개까지만 남기기
+        Collections.shuffle(videoDTOS);
+        List<VideoDTO> finalVideos = videoDTOS.size() > 10
+                ? videoDTOS.subList(0, 10)
+                : videoDTOS;
+
+        return new VideosDTO(finalVideos, finalVideos.size());
+    }
+
 }
