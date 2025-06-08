@@ -17,4 +17,8 @@ public class ProfileResponseDTO {
     private String isPrivate;
     private String imageUrl;
 
+    private long followerCount;
+    private boolean isFollowing;
+    private String userId;
+
 }

@@ -12,6 +12,8 @@ import com.team.teamreadioserver.profile.entity.Profile;
 import com.team.teamreadioserver.profile.entity.ProfileImg;
 import com.team.teamreadioserver.profile.repository.ProfileImgRepository;
 import com.team.teamreadioserver.profile.repository.ProfileRepository;
+import com.team.teamreadioserver.user.entity.User;
+import com.team.teamreadioserver.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -124,13 +127,23 @@ public class PostReviewService {
                     log.debug("[selectPostReview] Profile ID: {} 프로필 이미지 정보 없음", authorProfileEntity.getProfileId());
                 }
 
+                String authorUserId = null;
+                User userEntity = authorProfileEntity.getUser(); // Profile로 User를 찾음
+                if (userEntity != null) {
+                    authorUserId = userEntity.getUserId(); // User 엔티티의 getUserId() 메소드 사용
+                    log.debug("[selectPostReview] Profile ID: {} 에 연결된 User ID: {}", authorProfileEntity.getProfileId(), authorUserId);
+                } else {
+                    log.warn("[selectPostReview] Profile ID: {} 에 연결된 User 정보를 찾을 수 없습니다.", authorProfileEntity.getProfileId());
+                }
+
                 // 프로필 이미지 URL 설정
                 ProfileResponseDTO profileDataForReview = ProfileResponseDTO.builder()
                         .profileId(authorProfileEntity.getProfileId())
                         .penName(authorProfileEntity.getPenName()) // ✨ 닉네임 설정
                         .biography(authorProfileEntity.getBiography()) // 필요시 설정
                         .isPrivate(authorProfileEntity.getIsPrivate() != null ? authorProfileEntity.getIsPrivate().name() : null) // 필요시 설정
-                        .imageUrl(authorImageUrl) // ✨ 이미지 URL 설정
+                        .imageUrl(authorImageUrl)
+                        .userId(authorUserId)// ✨ 이미지 URL 설정
                         .build();
 
                 reviewDTO.setProfileId(profileDataForReview); // PostReviewResponseDTO의 profileId 필드에 설정

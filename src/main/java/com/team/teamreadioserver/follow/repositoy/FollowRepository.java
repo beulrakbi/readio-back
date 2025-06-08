@@ -27,4 +27,6 @@ public interface FollowRepository extends CrudRepository<Follow, Integer> {
 
     // 특정 팔로우 관계가 존재하는지 확인 (중복 팔로우 방지 등)
     Optional<Follow> findByFollower_ProfileIdAndFollowing_ProfileId(Integer followerProfileId, Integer followingProfileId);
+
+    boolean existsByFollowerAndFollowing(Profile follower, Profile following);
 }
