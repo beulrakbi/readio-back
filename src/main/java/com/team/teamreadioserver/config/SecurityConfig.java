@@ -59,18 +59,16 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth -> auth
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
                                 .requestMatchers("/users/login", "/users/join/**", "/users/account/**",
                                         "/users/sendCode", "/users/verifyUser", "/users/resetPassword",
                                         "/video/**", "/curation/**", "/img/**", "/search/**", "/bookPage/**",
                                         "/bookReview/**", "/reported/**", "/serviceCenter/**", "/videoBookmark/publicCount/**",
-                                        "/api/clicks/**","/bookBookmark/publicCount/**",
+                                        "/api/clicks/**","/bookBookmark/publicCount/**","/api/follow",
                                     "/api/email/sendCode", "/api/email/verifyCode", "/api/email/resetPassword").permitAll()  // 인증 필요없는 경로
 
-                                .requestMatchers(HttpMethod.GET, "/api/user/interests/categories", "/api/user/interests/keywords",  "/post/**", "/bookReview/**").permitAll()   // 인증 필요없는 경로
+                                .requestMatchers(HttpMethod.GET, "/api/user/interests/categories", "/api/user/interests/keywords",  "/post/**", "/bookReview/**", "/feed").permitAll()   // 인증 필요없는 경로
 
-                                .requestMatchers("/users/login", "/users/join/**", "/users/account/**", "/users/sendCode", "/users/verifyUser", "/users/resetPassword", "/video/**", "/curation/**", "/img/**", "/search/**", "/bookPage/**", "/bookReview/**", "/reported/**", "/serviceCenter/**", "/videoBookmark/publicCount/**", "/bookBookmark/publicCount/**").permitAll()  // 인증 필요없는 경로
-                                .requestMatchers("/users/login", "/users/join/**", "/video/**", "/curation/**", "/img/**", "/api/clicks/**","/mylibrary/**", "/api/follow/**").permitAll()  // 인증 필요없는 경로
-                                .requestMatchers(HttpMethod.GET, "/api/user/interests/categories", "/api/user/interests/keywords", "/post/**", "/bookReview/**", "/feed", "/api/user/profile/**").permitAll()
                                 // /videoBookmark/status/** (개인 북마크 상태 포함)는 인증 필요
                                 .requestMatchers("/videoBookmark/status/**").authenticated()
                                 .requestMatchers("/bookBookmark/status/**").authenticated()
@@ -90,7 +88,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/post/{userId}/all/**").authenticated()
                                 .requestMatchers(HttpMethod.GET, "/post/{userId}/all").authenticated()
                                 .requestMatchers(HttpMethod.GET, "/post/{userId}/count").authenticated()
-                                .requestMatchers(HttpMethod.POST, "/mylibrary/**", "/api/follow").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/post/**", "/api/follow").authenticated()
                                 .requestMatchers("/api/user/**").authenticated()
                                 .requestMatchers(
                                         "/",

@@ -55,5 +55,4 @@ public interface UserInterestCategoryRepository extends JpaRepository<UserIntere
 
     // 주어진 관심 카테고리 ID 목록에 해당하는 활성화된 사용자 관심 카테고리를 찾는 메서드 (같은 관심사 가진 사용자 찾기)
     List<UserInterestCategory> findByInterestCategory_InterestIdInAndStatus(Set<Long> interestCategoryIds, InterestStatus status);
-
 }

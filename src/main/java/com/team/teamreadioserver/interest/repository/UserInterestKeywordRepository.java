@@ -55,3 +55,4 @@ public interface UserInterestKeywordRepository extends JpaRepository<UserInteres
     // 주어진 관심 키워드 ID 목록에 해당하는 활성화된 사용자 관심 키워드를 찾는 메서드 (같은 관심사 가진 사용자 찾기)
     List<UserInterestKeyword> findByInterestKeyword_InterestKeywordIdInAndStatus(Set<Long> interestKeywordIds, InterestStatus status);
 }
+
