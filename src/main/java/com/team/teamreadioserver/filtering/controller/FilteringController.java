@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping
 @CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
 public class FilteringController {
@@ -30,7 +30,7 @@ public class FilteringController {
 
 
     @Operation(summary = "필터링 등록 요청", description = "필터링이 등록됩니다.", tags = { "FilteringController" })
-    @PostMapping("/filtering/{groupId}")
+    @PostMapping("/admin/filtering/{groupId}")
     public ResponseEntity<ResponseDTO> insertFilterings(@RequestBody List<FilteringDTO> filteringDTOs, @PathVariable int groupId)
     {
         log.info("[FilteringController] insertFilterings");
@@ -39,14 +39,14 @@ public class FilteringController {
     }
 
     @Operation(summary = "필터링 그룹 등록 요청", description = "필터링 그룹이 등록됩니다.", tags = { "FilteringController" })
-    @PostMapping("/filtering/create")
+    @PostMapping("/admin/filtering/create")
     public ResponseEntity<ResponseDTO> insertFilteringGroup(@RequestBody FilteringGroupDTO filteringGroupDTO)
     {
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "필터링 그룹 등록 성공", filteringService.insertFilteringGroup(filteringGroupDTO)));
     }
 
     @Operation(summary = "필터링 그룹 활성 상태 수정 요청", description = "필터링 그룹 활성 상태가 수정됩니다.", tags = { "FilteringController" })
-    @PutMapping("/filtering")
+    @PutMapping("/admin/filtering")
     public ResponseEntity<ResponseDTO> updateFilteringGroupActiveState(@RequestBody FilteringGroupDTO filteringGroupDTO)
     {
 
@@ -57,7 +57,7 @@ public class FilteringController {
     }
 
     @Operation(summary = "필터링 수정 요청", description = "필터링이 수정됩니다.", tags = { "FilteringController" })
-    @PutMapping("/filtering/edit")
+    @PutMapping("/admin/filtering/edit")
     public ResponseEntity<ResponseDTO> updateFilteringGroupActiveState(@RequestBody FilteringGroupDetailDTO filteringGroupDetailDTO)
     {
 
@@ -69,7 +69,7 @@ public class FilteringController {
 
 
     @Operation(summary = "필터링 그룹 전체 조회", description = "필터링 그룹이 전체 조회됩니다.", tags = { "FilteringController" })
-    @GetMapping("/filtering")
+    @GetMapping("/admin/filtering")
     public ResponseEntity<ResponseDTO> selectFilteringGroups(@RequestParam(name="offset", defaultValue = "1") String offset)
     {
         log.info("[FilteringController] selectFilteringGroups : " + offset);
@@ -84,7 +84,7 @@ public class FilteringController {
     }
 
     @Operation (summary = "필터링 그룹 상세조회", description = "필터링 그룹이 상세 조회됩니다.", tags = { "FilteringController" })
-    @GetMapping("/filtering/{groupId}")
+    @GetMapping("/admin/filtering/{groupId}")
     public ResponseEntity<ResponseDTO> selectFilteringGroup(@PathVariable int groupId)
     {
 
@@ -101,11 +101,19 @@ public class FilteringController {
     }
 
     @Operation (summary = "필터링 그룹 삭제", description = "필터링 그룹을 삭제합니다.", tags = { "FilteringController" })
-    @DeleteMapping("/filtering/{groupId}")
+    @DeleteMapping("/admin/filtering/{groupId}")
     public ResponseEntity<ResponseDTO> deleteFilteringGroup(@PathVariable int groupId)
     {
         filteringService.removeFilteringGroup(groupId);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation (summary = "필터링 타입으로 조회", description = "필터링 타입으로 조회합니다.", tags = { "FilteringController" })
+    @GetMapping("/video/filtering/{typeId}")
+    public ResponseEntity<ResponseDTO> selectFilteringsByTypeId(@PathVariable int typeId)
+    {
+        List<FilteringDTO> result = filteringService.getFilters(typeId);
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "필터링 타입으로 조회 성공", result));
     }
 
 }

@@ -54,5 +54,14 @@ public class AdminUserService {
     adminMapper.deleteUser(userId);
   }
 
+  // 관리자-신규가입 회원 수(당월 기준)
+  public int getThisMonthUserCount() {
+    return adminMapper.countUsersThisMonth();
+  }
+
+  // 관리자-전체 회원 수
+  public int getUserCount() {
+    return adminMapper.countAllUser();
+  }
 
 }

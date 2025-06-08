@@ -1,5 +1,9 @@
 package com.team.teamreadioserver.video.service;
 
+import com.team.teamreadioserver.filtering.entity.Filtering;
+import com.team.teamreadioserver.filtering.entity.FilteringGroup;
+import com.team.teamreadioserver.filtering.repository.FilteringGroupRepository;
+import com.team.teamreadioserver.filtering.repository.FilteringRepository;
 import com.team.teamreadioserver.video.dto.VideoDTO;
 import com.team.teamreadioserver.video.dto.VideosDTO;
 import com.team.teamreadioserver.video.entity.Video;
@@ -15,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.lang.Integer.parseInt;
+
 @Service
 @AllArgsConstructor
 public class VideoService {
@@ -22,6 +28,8 @@ public class VideoService {
     private final VideoRepository videoRepository;
     private static final Logger log = LoggerFactory.getLogger(VideoService.class);
     private final ModelMapper modelMapper;
+    private final FilteringRepository filteringRepository;
+    private final FilteringGroupRepository filteringGroupRepository;
 
     @Transactional
     public Object insertVideo(VideoDTO videoDTO) {
@@ -47,10 +55,29 @@ public class VideoService {
         return (result > 0) ? "비디오 추가 성공" : "비디오 추가 실패";
     }
 
-    public VideosDTO findVideos(String search) {
+    public VideosDTO findVideos(String search, String type) {
+
+        List<FilteringGroup> groups = filteringGroupRepository.findByTypeIdAndIsActive(parseInt(type), "Y");
+        List<Filtering> filters = new ArrayList<>();
+        for (FilteringGroup group : groups) {
+            filters.addAll(filteringRepository.findByGroupId(group.getGroupId()));
+        }
+
+
         Set<Video> videos = new LinkedHashSet<>();
         videos.addAll(videoRepository.findByDescriptionContaining(search));
         videos.addAll(videoRepository.findByTitleContaining(search));
+
+
+
+        Set<Video> filteredVideos = new LinkedHashSet<>();
+
+        for (Filtering filter : filters)
+        {
+
+        }
+
+
 
         List<VideoDTO> videoDTOS = new ArrayList<>();
         videoDTOS.addAll(videos.stream().map(video -> modelMapper.map(video, VideoDTO.class)).collect(Collectors.toList()));
@@ -116,4 +143,29 @@ public class VideoService {
             throw new IllegalArgumentException("존재하지 않는 videoId : " + videoId);
         }
     }
+
+    // 날씨 기반 영상 추천
+    public VideosDTO findWeatherVideos(String weatherKeyword) {
+        // DB 에서 'weatherKeyword' 문자열이 포함된 비디오 조회
+        Set<Video> videos = new LinkedHashSet<>();
+        videos.addAll(videoRepository.findByDescriptionContaining(weatherKeyword));
+        videos.addAll(videoRepository.findByTitleContaining(weatherKeyword));
+
+        // DTO 로 변환 및 HTML 이스케이프 제거
+        List<VideoDTO> videoDTOS = new ArrayList<>();
+        for (Video v : videos) {
+            VideoDTO dto = modelMapper.map(v, VideoDTO.class);
+            dto.setTitle(StringEscapeUtils.unescapeHtml4(dto.getTitle()));
+            videoDTOS.add(dto);
+        }
+
+        // 결과를 랜덤으로 섞고 최대 10개까지만 남기기
+        Collections.shuffle(videoDTOS);
+        List<VideoDTO> finalVideos = videoDTOS.size() > 10
+                ? videoDTOS.subList(0, 10)
+                : videoDTOS;
+
+        return new VideosDTO(finalVideos, finalVideos.size());
+    }
+
 }

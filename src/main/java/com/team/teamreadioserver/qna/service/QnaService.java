@@ -6,10 +6,11 @@ import com.team.teamreadioserver.qna.dto.QnaQuestionDTO;
 import com.team.teamreadioserver.qna.dto.QnaResponseDTO;
 import com.team.teamreadioserver.qna.entity.Qna;
 import com.team.teamreadioserver.qna.repository.QnaRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.Authentication; // Authentication import 추가
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,18 +50,22 @@ public class QnaService {
     //질문 삭제
     @Transactional
     public void deleteQna(Integer qnaId) {
-        // 현재 로그인한 사용자 ID 가져오기 (관리자만 삭제 가능하게 하려면 이 로직을 변경)
-        String currentUserId = SecurityContextHolder.getContext().getAuthentication().getName();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = authentication.getName();
 
         Qna qna = qnaRepository.findById(qnaId)
                 .orElseThrow(()-> new IllegalArgumentException("해당 질문이 없습니다."));
 
-        // 작성자 검증 (필요에 따라 관리자만 삭제 가능하도록 로직 변경)
-        if (!qna.getUserId().equals(currentUserId)) {
+        // 사용자의 권한 확인
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN")); // "ROLE_ADMIN"은 실제 관리자 역할명에 따라 변경될 수 있습니다.
+
+        // 관리자이거나, 작성자 본인인 경우에만 삭제 허용
+        if (isAdmin || qna.getUserId().equals(currentUserId)) {
+            qnaRepository.delete(qna);
+        } else {
             throw new IllegalArgumentException("자신이 작성한 게시글만 삭제할 수 있습니다.");
         }
-
-        qnaRepository.delete(qna);
     }
 
     // 답변 등록 / 수정
@@ -114,6 +119,7 @@ public class QnaService {
                 qna.getQnaQuestion(),
                 qna.getQnaAnswer(),
                 qna.getQnaCreateAt(),
+                qna.getQnaView(),
                 qna.getUserId()
         );
     }
@@ -132,5 +138,10 @@ public class QnaService {
         return myQnaList.stream()
                 .map(QnaResponseDTO::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true) // 데이터 변경이 없으므로 readOnly = true 설정
+    public long getUnansweredQnaCount() {
+        return qnaRepository.countByQnaAnswerIsNull();
     }
 }

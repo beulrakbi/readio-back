@@ -13,5 +13,6 @@ public class QnaDetailDTO {
     private String qnaQuestion;
     private String qnaAnswer;
     private LocalDateTime qnaCreateAt;
+    private int qnaView;
     private String userId; // 이 줄을 추가합니다.
 }

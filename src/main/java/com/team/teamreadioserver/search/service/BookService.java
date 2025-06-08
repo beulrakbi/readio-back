@@ -23,13 +23,11 @@ public class BookService {
 
     private static final Logger logger = LoggerFactory.getLogger(BookService.class); // 로거 추가
     private final BookRepository bookRepository;
-    private final ExternalBookApiClient externalClient;
-    // private final ModelMapper modelMapper; // ModelMapper가 사용되지 않는다면 제거해도 됩니다.
+//    private final ExternalBookApiClient externalClient;
 
-    // ... (searchBooks, toPagedDto, toDto, toEntity 메소드는 동일하게 유지)
-    @Transactional // searchBooks에서 외부 API 호출 및 저장이 있으므로 Transactional 유지
+    @Transactional
     public BooksDTO searchBooks(String keyword, int page, int size) {
-        // DB 에서 검색 (제목 + 저자)
+        //  DB 내 제목/저자에 해당 키워드 포함된 도서 조회
         List<Book> byTitle  = bookRepository.findAllByBookTitleContaining(keyword);
         List<Book> byAuthor = bookRepository.findAllByBookAuthorContaining(keyword);
 
@@ -39,58 +37,69 @@ public class BookService {
 
         logger.debug("DB 검색 결과 (제목/저자 '{}'): {} 건", keyword, combined.size());
 
-        // DB에 결과가 있으면, size 파라미터로 페이징
-        if (!combined.isEmpty()) {
-            return toPagedDto(new ArrayList<>(combined), page, size);
-        }
-
-        // DB에 없으면 외부 API 호출
-        logger.info("DB에 '{}' 검색 결과 없음. 외부 API 호출 시도.", keyword);
-        List<BookDTO> apiDTOs = externalClient.fetchBooks(keyword, page, size); // 이 메소드는 List<BookDTO>를 반환한다고 가정
-
-        if (apiDTOs == null || apiDTOs.isEmpty()) {
-            logger.info("외부 API에서도 '{}' 검색 결과 없음.", keyword);
-            return new BooksDTO(Collections.emptyList(), 0); // 빈 결과 반환
-        }
-        logger.info("외부 API 검색 결과 (키워드 '{}'): {} 건", keyword, apiDTOs.size());
-
-
-        // 신규 ISBN 만 걸러내서 저장
-        List<String> isbnsFromApi = apiDTOs.stream()
-                .map(BookDTO::getBookIsbn)
-                .filter(isbn -> isbn != null && !isbn.isEmpty()) // 유효한 ISBN만 필터링
-                .collect(Collectors.toList());
-
-        Set<String> existingIsbnsInDb = Collections.emptySet();
-        if (!isbnsFromApi.isEmpty()) {
-            existingIsbnsInDb = bookRepository.findAllByBookIsbnIn(isbnsFromApi).stream()
-                    .map(Book::getBookIsbn)
-                    .collect(Collectors.toSet());
-        }
-
-
-        final Set<String> finalExistingIsbnsInDb = existingIsbnsInDb; // 람다에서 사용하기 위해 final 또는 effectively final
-        List<Book> booksToSave = apiDTOs.stream()
-                .filter(dto -> dto.getBookIsbn() != null && !dto.getBookIsbn().isEmpty() && !finalExistingIsbnsInDb.contains(dto.getBookIsbn()))
-                .map(this::toEntity) // BookDTO를 Book 엔티티로 변환
-                .collect(Collectors.toList());
-
-        List<Book> savedBooks = new ArrayList<>();
-        if (!booksToSave.isEmpty()) {
-            savedBooks = bookRepository.saveAll(booksToSave);
-            logger.info("외부 API 결과 중 {} 건의 신규 도서 정보 DB에 저장 완료.", savedBooks.size());
-        }
-
-
-        // 최종 결과 목록 구성: API에서 가져온 모든 책에 대해 (DB에 저장되었거나 이미 있던 것들)
-        List<Book> finalBookResults = new ArrayList<>();
-        if (!isbnsFromApi.isEmpty()) {
-            finalBookResults.addAll(bookRepository.findAllByBookIsbnIn(isbnsFromApi));
-        }
-
-
-        return toPagedDto(finalBookResults, page, size);
+        //  페이징 처리만 수행해서 반환 (외부 API 호출 없이 결과가 얼마든, 그대로 반환)
+        return toPagedDto(new ArrayList<>(combined), page, size);
     }
+
+    @Transactional
+    public BookDTO saveBook(BookDTO bookDto) {
+        if (bookDto == null || bookDto.getBookIsbn() == null || bookDto.getBookIsbn().isBlank()) {
+            throw new IllegalArgumentException("유효하지 않은 도서 정보입니다.");
+        }
+
+        Book existing = bookRepository.findByBookIsbn(bookDto.getBookIsbn());
+
+        // 출판일 처리: DTO에 있으면 파싱, 없으면 기존 엔티티의 값을 사용하거나 null
+        LocalDate pubDate = parsePubDate(bookDto.getBookPubdate());
+        if (pubDate == null && existing != null) {
+            pubDate = existing.getBookPubdate();
+        }
+
+        Book toSave = Book.builder()
+                .bookIsbn(bookDto.getBookIsbn())
+                .bookTitle(bookDto.getBookTitle())
+                .bookAuthor(bookDto.getBookAuthor())
+                .bookPublisher(bookDto.getBookPublisher())
+                .bookCover(bookDto.getBookCover())
+                .bookDescription(bookDto.getBookDescription())
+                .bookPubdate(pubDate)
+                .build();
+
+        Book saved = bookRepository.save(toSave);
+        return new BookDTO(
+                saved.getBookIsbn(),
+                saved.getBookTitle(),
+                saved.getBookAuthor(),
+                saved.getBookPublisher(),
+                saved.getBookCover(),
+                saved.getBookDescription(),
+                saved.getBookPubdate() != null
+                        ? saved.getBookPubdate().format(DateTimeFormatter.ISO_LOCAL_DATE)
+                        : ""
+        );
+    }
+
+    private LocalDate parsePubDate(String pubDateStr) {
+        if (pubDateStr == null || pubDateStr.isBlank()) {
+            return null;
+        }
+        try {
+            if (pubDateStr.matches("\\d{8}")) {
+                return LocalDate.parse(pubDateStr, DateTimeFormatter.BASIC_ISO_DATE);
+            } else if (pubDateStr.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                return LocalDate.parse(pubDateStr, DateTimeFormatter.ISO_LOCAL_DATE);
+            } else {
+                logger.warn("알 수 없는 날짜 형식: {}", pubDateStr);
+                return null;
+            }
+        } catch (Exception e) {
+            logger.warn("날짜 파싱 실패: {}, 입력값: {}", e.getMessage(), pubDateStr);
+            return null;
+        }
+    }
+
+
+    // -----------------------------------------------------------
 
     private BooksDTO toPagedDto(List<Book> list, int page, int size) {
         if (list == null) {

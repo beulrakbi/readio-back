@@ -27,4 +27,10 @@ public interface EmotionRepository extends JpaRepository<Emotion, Long> {
 
     @Query("SELECT e FROM Emotion e WHERE e.emotionType = :emotionType AND FUNCTION('DATE', e.createdAt) = :date")
     List<Emotion> findByEmotionTypeAndDate(@Param("emotionType") EmotionType emotionType, @Param("date") LocalDate date);
+
+
+
+    // 가장 최근 날짜(date)의, 같은 날짜 중에서는 가장 최근 생성 시간(createdAt)의 감정 1건 조회
+    Optional<Emotion> findTopByUserOrderByDateDescCreatedAtDesc(User user);
+
 }

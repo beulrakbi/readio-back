@@ -4,6 +4,7 @@ import com.team.teamreadioserver.report.entity.ReportedReview;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,4 +21,8 @@ public interface ReportedReviewRepository extends JpaRepository<ReportedReview, 
     List<ReportedReview> findByUserId(String userId); // 이 userId는 ReportedReview 엔티티에 직접 있는 필드여야 합니다.
     Page<ReportedReview> findAllBy(Pageable pageable);
 
+    boolean existsByBookReview_ReviewIdAndUserId(Integer reviewId, String userId);
+
+    @Transactional //재용
+    void deleteAllByBookReview_ReviewId(Integer reviewId);
   }
