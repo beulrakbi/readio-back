@@ -7,6 +7,7 @@ public interface FeedItemProjection {
     Long getId();
     Timestamp getCreatedAt();
     Long getProfileId();
+    String getUserId();
     String getProfileImg();
     String getUserName();
     String getBookIsbn();
