@@ -25,7 +25,6 @@ import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/video")
-@CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
 public class VideoController {
 
@@ -41,17 +40,12 @@ public class VideoController {
     public ResponseEntity<ResponseDTO> insertVideo(@RequestBody VideoDTO videoDTO)
     {
         log.info("[VideoController] insertVideo");
-//        System.out.println("videoDTO" + videoDTO);
+        System.out.println("videoDTO: " + videoDTO);
         Object result = videoService.insertVideo(videoDTO);
-        if (result.equals("비디오 추가 성공")) {
+            System.out.println("들어감: " + videoDTO);
             return ResponseEntity.ok().body(
                     new ResponseDTO(HttpStatus.OK, "비디오 등록 성공", result)
             );
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    new ResponseDTO(HttpStatus.BAD_REQUEST, "비디오 등록 실패", null)
-            );
-        }
     }
 
     @Operation(summary = "비디오 조회", description = "비디오가 조회됩니다.", tags = { "VideoController" })

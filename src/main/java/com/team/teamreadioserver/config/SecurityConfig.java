@@ -19,6 +19,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.List;
+
 @Configuration
 public class SecurityConfig {
 
@@ -89,6 +91,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/post/{userId}/count").authenticated()
                                 .requestMatchers(HttpMethod.POST, "/post/**", "/api/follow").authenticated()
                                 .requestMatchers("/api/user/**").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/video/**").permitAll()
                                 .requestMatchers(
                                         "/",
                                         "/swagger-ui/**",
@@ -120,8 +123,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOriginPattern("http://localhost:*");      // 5173이든 5174든 다 허용
-        configuration.addAllowedMethod("*");
-        configuration.addAllowedHeader("*");
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // ← 여기를 명시적으로
+        configuration.setAllowedHeaders(List.of("*"));  // 이것도 List.of로 바꿔주는 걸 권장
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

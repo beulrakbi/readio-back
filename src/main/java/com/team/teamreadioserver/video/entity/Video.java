@@ -35,6 +35,7 @@ public class Video {
     @Column(name = "view_count")
     private Integer viewCount;
 
+
     @Column(name = "upload_date")
     private Date uploadDate;
 
