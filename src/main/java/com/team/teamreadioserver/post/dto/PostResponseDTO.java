@@ -1,6 +1,7 @@
 package com.team.teamreadioserver.post.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.team.teamreadioserver.bookReview.dto.BookDetailsDTO;
 import com.team.teamreadioserver.post.entity.Post;
 import com.team.teamreadioserver.profile.dto.ProfileResponseDTO;
 import com.team.teamreadioserver.profile.entity.Profile;
@@ -28,7 +29,7 @@ public class PostResponseDTO {
     private PostImgDTO postImg;
 
 
-    private BookDTO book;
+    private BookDTO bookDetails;
     private Long likes;
     private Long reviewCount;
 

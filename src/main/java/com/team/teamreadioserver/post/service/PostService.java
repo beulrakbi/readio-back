@@ -1,5 +1,6 @@
 package com.team.teamreadioserver.post.service;
 
+import com.team.teamreadioserver.bookReview.dto.BookDetailsDTO;
 import com.team.teamreadioserver.common.common.Criteria;
 import com.team.teamreadioserver.post.dto.PostImgDTO;
 import com.team.teamreadioserver.post.dto.PostRequestDTO;
@@ -82,6 +83,7 @@ public class PostService {
                     .biography(profile.getBiography()) // Profile 엔티티의 biography
                     .isPrivate(profile.getIsPrivate() != null ? profile.getIsPrivate().name() : null) // Enum 경우 .name()
                     .imageUrl(authorImageUrl)
+                    .userId(profile.getUser() != null ? profile.getUser().getUserId() : null)
                     .build();
 
             postResponseDTO.setProfileId(profileResponseDTO);
@@ -101,6 +103,22 @@ public class PostService {
             postImgDTO.setPostId(postId);
 
             postResponseDTO.setPostImg(postImgDTO);
+        }
+
+        if (post.getBookIsbn() != null && !post.getBookIsbn().isEmpty()) {
+            Book book = bookRepository.findById(post.getBookIsbn()).orElse(null);
+            if (book != null) {
+                BookDTO bookDetailsDTO = BookDTO.builder()
+                        .bookIsbn(book.getBookIsbn())
+                        .bookTitle(book.getBookTitle())
+                        .bookAuthor(book.getBookAuthor())
+                        .bookPublisher(book.getBookPublisher())
+                        .bookCover(book.getBookCover())
+                        .build();
+                postResponseDTO.setBookDetails(bookDetailsDTO);
+            } else {
+                System.out.println("ISBN " + post.getBookIsbn() + "에 해당하는 책 정보를 찾을 수 없습니다.");
+            }
         }
 
         return postResponseDTO;
@@ -130,7 +148,7 @@ public class PostService {
             if(book != null)
             {
                 BookDTO bookDTO = new BookDTO(book);
-                postResponseDTO.setBook(bookDTO);
+                postResponseDTO.setBookDetails(bookDTO);
             }
 
             PostImg img = postImgRepository.findByPost(post);
