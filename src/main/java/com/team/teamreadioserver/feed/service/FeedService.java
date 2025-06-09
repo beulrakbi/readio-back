@@ -167,6 +167,7 @@ public class FeedService {
                 projection.getId(),
                 projection.getCreatedAt(),
                 projection.getProfileId(),
+                projection.getUserId(),
                 projection.getProfileImg(),
                 projection.getUserName(),
                 projection.getBookIsbn(),

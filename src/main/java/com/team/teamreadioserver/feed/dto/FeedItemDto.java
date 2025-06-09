@@ -16,6 +16,7 @@ public class FeedItemDto {
     private Long id;
     private LocalDateTime createdAt;
     private Long profileId;
+    private String userId;
     private String profileImg;
     private String userName;
     private String bookIsbn;
@@ -32,7 +33,7 @@ public class FeedItemDto {
     private Boolean isFollowing;
 
     public FeedItemDto(
-            String type, Long id, Timestamp createdAtRaw, Long profileId,
+            String type, Long id, Timestamp createdAtRaw, Long profileId, String userId,
             String profileImg, String userName, String bookIsbn, String title, String content,
             String contentImg, String reviewContent, String bookCoverUrl, String bookTitle,
             String bookAuthor, Long likesCount, Long reviewsCount,
@@ -43,6 +44,7 @@ public class FeedItemDto {
         this.id = id;
         this.createdAt = (createdAtRaw != null) ? createdAtRaw.toLocalDateTime() : null;
         this.profileId = profileId;
+        this.userId = userId;
         this.profileImg = profileImg;
         this.userName = userName;
         this.bookIsbn = bookIsbn;
