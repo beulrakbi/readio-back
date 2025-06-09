@@ -34,7 +34,10 @@ public class BookDTO {
         this.bookPublisher = book.getBookPublisher();
         this.bookCover = book.getBookCover();
         this.bookDescription = StringEscapeUtils.unescapeHtml4(book.getBookDescription());
-        this.bookPubdate = book.getBookPubdate().toString();
+//        this.bookPubdate = book.getBookPubdate().toString();  NPE 오류로 인해 주석처리
+        this.bookPubdate = book.getBookPubdate() != null
+                ? book.getBookPubdate().toString()
+                : ""; // 또는 "미정", "출간일 없음" 등으로 기본값 설정
     }
 
     public static List<BookDTO> fromApiResponse(String text) {
