@@ -27,8 +27,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   private static final List<String> EXEMPT_PATH_PREFIXES = List.of(
       "/users/login", "/users/join/**", "/users/account",
       "/api/email/sendCode", "/api/email/verifyCode", "/api/email/resetPassword",
-      "/video", "/curation", "/img", "/search", "/bookPage", "/api/search/**",
+      "/video/**", "/curation", "/img/**", "/search/**", "/bookPage/**", "/api/search/**",
       "/api/clicks"
+//          , "/videoBookmark/**", "/bookBookmark"
 //      "/videoBookmark/publicCount", "/bookBookmark/publicCount"
     );
 

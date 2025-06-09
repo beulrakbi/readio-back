@@ -103,6 +103,7 @@ public class CurationKeywordsService {
                 dto.setKeyword(userInterestCategory.getInterestCategory().getInterestCategory());
                 dto.setTypeId(7);
                 result.add(dto);
+                System.out.println("7, keyword: " + dto);
             }
 
             return result;
@@ -122,8 +123,8 @@ public class CurationKeywordsService {
                 }
                 dto.setKeyword(bookName);
                 dto.setTypeId(8);
-
                 result.add(dto);
+                System.out.println("8, keyword: " + dto);
             }
             return result;
         }
@@ -140,6 +141,7 @@ public class CurationKeywordsService {
                 dto.setKeyword(userInterestKeyword.getInterestKeyword().getInterestKeyword());
                 dto.setTypeId(9);
                 result.add(dto);
+                System.out.println("9, keyword: " + dto);
             }
             return result;
         }

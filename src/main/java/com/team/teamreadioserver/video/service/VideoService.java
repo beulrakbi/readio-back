@@ -64,6 +64,8 @@ public class VideoService {
         }
 
 
+
+
         Set<Video> videos = new LinkedHashSet<>();
         videos.addAll(videoRepository.findByDescriptionContaining(search));
         videos.addAll(videoRepository.findByTitleContaining(search));
@@ -94,6 +96,8 @@ public class VideoService {
         }
 
         VideosDTO result = new VideosDTO(videoDTOS, videoDTOS.size());
+
+        System.out.println(type + ", result:" + result);
 
         return result;
     }

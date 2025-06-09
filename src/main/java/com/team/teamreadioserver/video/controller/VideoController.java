@@ -1,7 +1,16 @@
 package com.team.teamreadioserver.video.controller;
 
+import com.team.teamreadioserver.bookmark.dto.BookBookmarkResponseDTO;
+import com.team.teamreadioserver.bookmark.entity.BookBookmark;
+import com.team.teamreadioserver.bookmark.service.BookBookmarkService;
 import com.team.teamreadioserver.common.common.ResponseDTO;
 import com.team.teamreadioserver.filtering.entity.Filtering;
+import com.team.teamreadioserver.interest.entity.UserInterestCategory;
+import com.team.teamreadioserver.interest.repository.UserInterestCategoryRepository;
+import com.team.teamreadioserver.profile.entity.Profile;
+import com.team.teamreadioserver.profile.service.ProfileService;
+import com.team.teamreadioserver.user.dto.UserInfoResponseDTO;
+import com.team.teamreadioserver.user.service.UserService;
 import com.team.teamreadioserver.video.dto.CurationDTO;
 import com.team.teamreadioserver.video.dto.VideoDTO;
 import com.team.teamreadioserver.video.dto.VideosDTO;
@@ -11,17 +20,17 @@ import com.team.teamreadioserver.video.service.VideoService;
 //import com.team.teamreadioserver.video.service.WeatherVideoService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @RestController
 @RequestMapping("/video")
@@ -34,6 +43,11 @@ public class VideoController {
 //    private final WeatherVideoService weatherVideoService;
     private final CurationKeywordsService curationKeywordsService;
     private final EmotionVideoRecommendationService emotionVideoRecommendationService; // 새로 만든 서비스 주입
+    private final ProfileService profileService;
+    private final ModelMapper modelMapper;
+    private final UserService userService;
+    private final UserInterestCategoryRepository userInterestCategoryRepository;
+    private final BookBookmarkService bookBookmarkService;
 
     @Operation(summary = "비디오 등록 요청", description = "비디오가 등록됩니다.", tags = { "VideoController" })
     @PostMapping("/insert")
@@ -50,10 +64,11 @@ public class VideoController {
 
     @Operation(summary = "비디오 조회", description = "비디오가 조회됩니다.", tags = { "VideoController" })
     @GetMapping("/{search}/{type}")
-    public ResponseEntity<ResponseDTO> getVideoByKeyword(@PathVariable String search, @PathVariable String type)
+    public ResponseEntity<ResponseDTO> getVideoByKeyword(@PathVariable String search, @PathVariable String type, @AuthenticationPrincipal UserDetails userDetails)
     {
         System.out.println("search?: " + search);
         log.info("[VideoController] getVideoByKeyword");
+
         VideosDTO result = videoService.findVideos(search, type);
         if(result.getNum() > 0)
         {
