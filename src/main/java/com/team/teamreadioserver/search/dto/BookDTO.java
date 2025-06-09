@@ -15,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Builder
 public class BookDTO {
 
     @EqualsAndHashCode.Include

@@ -122,12 +122,12 @@ public class FollowService {
                             ? followRepository.existsByFollowerAndFollowing(loggedInUserProfile, personInList)
                             : false;
 
-                    // ★★★ Builder 패턴으로 DTO를 생성합니다 ★★★
                     return ProfileResponseDTO.builder()
                             .profileId(personInList.getProfileId())
                             .penName(personInList.getPenName())
                             .imageUrl(imageUrl) // 조회한 이미지 파일 이름 설정
                             .followerCount(followerCount)
+                            .userId(personInList.getUser().getUserId())
                             .isFollowing(isFollowing)
                             .build();
                 })
@@ -167,6 +167,7 @@ public class FollowService {
                             .penName(personInList.getPenName())
                             .imageUrl(imageUrl) // 조회한 이미지 파일 이름 설정
                             .followerCount(followerCount)
+                            .userId(personInList.getUser().getUserId())
                             .isFollowing(isFollowing)
                             .build();
                 })
