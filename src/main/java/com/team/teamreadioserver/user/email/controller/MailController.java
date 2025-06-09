@@ -42,7 +42,8 @@ public class MailController {
 
     String authCode = mailService.sendSimpleMessage(mailDTO.getEmail());
     authCodeStorage.store(mailDTO.getEmail(), authCode);
-    return ResponseEntity.ok(authCode);
+    return ResponseEntity.ok(Map.of("message", "인증번호가 이메일로 전송되었습니다."));   // 운영 배포 버전
+//    return ResponseEntity.ok(authCode); // 운영 배포 전 반드시 제거 필요 (테스트할때 네트워크 탭에서 인증번호 확인 가능)
   }
 
 
