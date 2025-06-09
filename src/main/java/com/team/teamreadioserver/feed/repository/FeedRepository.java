@@ -47,8 +47,11 @@ public interface FeedRepository extends JpaRepository<Post, Long> {
           post_img pi ON p.post_id = pi.post_id
       WHERE
           (:subTab = 'all' OR :subTab = 'post')
-          AND (:#{#profileIds.isEmpty()} = TRUE OR pr.profile_id IN :profileIds)
-          AND (:#{#bookIsbns.isEmpty()} = TRUE OR p.book_isbn IN :bookIsbns)
+          AND (
+              (:#{#profileIds.isEmpty()} = TRUE OR pr.profile_id IN :profileIds) OR
+              (:#{#bookIsbns.isEmpty()} = TRUE OR p.book_isbn IN :bookIsbns)
+              )
+          AND (:loginUserProfileId IS NULL OR pr.profile_id != :loginUserProfileId)
     )
     UNION ALL
     (
@@ -85,8 +88,11 @@ public interface FeedRepository extends JpaRepository<Post, Long> {
             profile_img pim ON pr.profile_id = pim.profile_id
         WHERE
             (:subTab = 'all' OR :subTab = 'review')
-            AND (:#{#profileIds.isEmpty()} = TRUE OR pr.profile_id IN :profileIds)
-            AND (:#{#bookIsbns.isEmpty()} = TRUE OR br.book_isbn IN :bookIsbns)
+            AND (
+                (:#{#profileIds.isEmpty()} = TRUE OR pr.profile_id IN :profileIds) OR
+                (:#{#bookIsbns.isEmpty()} = TRUE OR br.book_isbn IN :bookIsbns)
+                )
+            AND (:loginUserProfileId IS NULL OR pr.profile_id != :loginUserProfileId)
     )
     ORDER BY createdAt DESC
     """,
@@ -99,8 +105,11 @@ public interface FeedRepository extends JpaRepository<Post, Long> {
                 JOIN user u ON pr.user_id = u.user_id
                 LEFT JOIN post_img pi ON p.post_id = pi.post_id
                 WHERE (:subTab = 'all' OR :subTab = 'post')
-                AND (:#{#profileIds.isEmpty()} = TRUE OR pr.profile_id IN :profileIds)
-                AND (:#{#bookIsbns.isEmpty()} = TRUE OR p.book_isbn IN :bookIsbns)
+                AND (
+                  (:#{#profileIds.isEmpty()} = TRUE OR pr.profile_id IN :profileIds) OR
+                  (:#{#bookIsbns.isEmpty()} = TRUE OR p.book_isbn IN :bookIsbns)
+                    )
+                AND (:loginUserProfileId IS NULL OR pr.profile_id != :loginUserProfileId)
             )
             UNION ALL
             (
@@ -110,8 +119,11 @@ public interface FeedRepository extends JpaRepository<Post, Long> {
                 JOIN user u ON pr.user_id = u.user_id
                 LEFT JOIN book b ON br.book_isbn = b.book_isbn
                 WHERE (:subTab = 'all' OR :subTab = 'review')
-                AND (:#{#profileIds.isEmpty()} = TRUE OR pr.profile_id IN :profileIds)
-                AND (:#{#bookIsbns.isEmpty()} = TRUE OR br.book_isbn IN :bookIsbns)
+                AND (
+                  (:#{#profileIds.isEmpty()} = TRUE OR pr.profile_id IN :profileIds) OR
+                  (:#{#bookIsbns.isEmpty()} = TRUE OR br.book_isbn IN :bookIsbns)
+                    )
+                AND (:loginUserProfileId IS NULL OR pr.profile_id != :loginUserProfileId)
             )
         ) AS combined_count
         """,
