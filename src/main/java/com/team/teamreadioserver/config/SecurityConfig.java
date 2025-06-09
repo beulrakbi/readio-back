@@ -63,8 +63,8 @@ public class SecurityConfig {
                                 .requestMatchers("/users/login", "/users/join/**", "/users/account/**",
                                         "/users/sendCode", "/users/verifyUser", "/users/resetPassword",
                                         "/video/**", "/curation/**", "/img/**", "/search/**", "/bookPage/**", "/api/search/**",
-                                        "/bookReview/**", "/reported/**", "/serviceCenter/**", "/videoBookmark/publicCount/**",
-                                        "/api/clicks/**","/bookBookmark/publicCount/**","/api/follow",
+                                        "/bookReview/**", "/reported/**", "/serviceCenter/**",
+                                        "/api/clicks/**", "/api/follow",
                                     "/api/email/sendCode", "/api/email/verifyCode", "/api/email/resetPassword").permitAll()  // 인증 필요없는 경로
 
                                 .requestMatchers(HttpMethod.GET, "/api/user/interests/categories", "/api/user/interests/keywords",  "/post/**", "/feed").permitAll()   // 인증 필요없는 경로

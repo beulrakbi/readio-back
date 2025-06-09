@@ -27,8 +27,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   private static final List<String> EXEMPT_PATH_PREFIXES = List.of(
       "/users/login", "/users/join/**", "/users/account",
       "/api/email/sendCode", "/api/email/verifyCode", "/api/email/resetPassword",
-      "/video", "/curation", "/img", "/search", "/bookPage", "/api/search/**",
-      "/api/clicks", "/videoBookmark/publicCount", "/bookBookmark/publicCount"
+      "/video/**", "/curation/**", "/img", "/search", "/bookPage", "/api/search/**",
+      "/api/clicks"
+//      "/videoBookmark/publicCount", "/bookBookmark/publicCount"
   );
 
   // 리스트 내 경로 중 하나라도 URI 가 해당 경로로 시작하면 true 를 반환
