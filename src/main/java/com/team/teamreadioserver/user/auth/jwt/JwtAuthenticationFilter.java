@@ -23,12 +23,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     // 디버깅용 로거 사용
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
-  // 인증 없이 통과시킬 경로 prefix 리스트
+  // 인증 없이 통과시킬 경로 prefix 리스트 (securityConfig와 동일한 경로로 설정)
   private static final List<String> EXEMPT_PATH_PREFIXES = List.of(
       "/users/login", "/users/join/**", "/users/account",
       "/api/email/sendCode", "/api/email/verifyCode", "/api/email/resetPassword",
-      "/video", "/curation", "/img", "/search", "/bookPage", "/api/search/**",
-      "/api/clicks"
+       "video/**","/curation/**", "/img/**", "/search/**", "/bookPage/**", "/api/search/**",
+      "/api/clicks/**"
 //      "/videoBookmark/publicCount", "/bookBookmark/publicCount"
     );
 
