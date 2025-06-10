@@ -56,7 +56,8 @@ dependencies {
     // 이메일인증 (보경)
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
-
+    // 성경
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
 
 }
 

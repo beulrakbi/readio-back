@@ -78,7 +78,11 @@ public class ProfileService {
         String originalName = image.getOriginalFilename();
         String extension = originalName.substring(originalName.lastIndexOf("."));
         String saveName = user.getUserId() + "_IMG" + extension;
-        String saveFolder = new File("src/main/resources/static/img/profile").getAbsolutePath();
+        String projectRoot = System.getProperty("user.dir") + File.separator + "readioBackServer";
+        String saveFolder = projectRoot + File.separator + "src" + File.separator + "main"
+                + File.separator + "resources" + File.separator + "static"
+                + File.separator + "img" + File.separator + "profile";
+//        String saveFolder = new File("/src/main/resources/static/img/profile").getPath();
         String savePath = saveFolder + File.separator + saveName;
 
         try {

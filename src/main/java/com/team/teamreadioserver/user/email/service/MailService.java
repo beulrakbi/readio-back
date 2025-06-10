@@ -69,6 +69,7 @@ public class MailService {
   // 메일 발송
   public String sendSimpleMessage(String sendEmail) throws MessagingException {
     String number = createNumber(); // 랜덤 인증번호 생성
+    System.out.println("메일 발송: email = " + sendEmail + ", code = " + number); // 로그 출력
 
     MimeMessage message = createMail(sendEmail, number); // 메일 생성
     try {

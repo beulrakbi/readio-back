@@ -12,11 +12,13 @@ public class AuthCodeStorage {
   private final Map<String, String> codeMap = new ConcurrentHashMap<>();
 
   public void store(String email, String code) {
+    email = email.toLowerCase();  // 일관 처리
     System.out.println("Store code for email: " + email + ", code: " + code);
     codeMap.put(email, code);
   }
 
   public boolean verify(String email, String code) {
+    email = email.toLowerCase();  // 일관 처리
     String storedCode = codeMap.get(email);
     System.out.println("Verify code for email: " + email + ", inputCode: " + code + ", storedCode: " + storedCode);
     return code.equals(codeMap.get(email));

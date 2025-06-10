@@ -19,6 +19,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.List;
+
 @Configuration
 public class SecurityConfig {
 
@@ -65,7 +67,7 @@ public class SecurityConfig {
                                         "/video/**", "/curation/**", "/img/**", "/search/**", "/bookPage/**", "/api/search/**",
                                         "/bookReview/**", "/reported/**", "/serviceCenter/**", "/bookBookmark/publicCount/**", "/videoBookmark/publicCount/**",
                                         "/api/clicks/**","/bookBookmark/publicCount/**", "/api/follow/**",
-                                    "/api/email/sendCode", "/api/email/verifyCode", "/api/email/resetPassword", "/api/user/profile/**").permitAll()  // 인증 필요없는 경로
+                                    "/api/email/sendCode", "/api/email/verifyCode", "/api/email/resetPassword").permitAll()  // 인증 필요없는 경로
 
                                 .requestMatchers(HttpMethod.GET, "/api/user/interests/categories", "/api/user/interests/keywords",  "/post/**", "/feed").permitAll()   // 인증 필요없는 경로
                                 // /videoBookmark/status/** (개인 북마크 상태 포함)는 인증 필요
@@ -79,6 +81,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/mylibrary/reviews/**").authenticated() // 내 리뷰 조회
 
                                 // POST 및 DELETE 요청도 인증 필요
+                                .requestMatchers(HttpMethod.GET, "/bookBookmark/**").authenticated()
                                 .requestMatchers(HttpMethod.POST, "/bookBookmark/**").authenticated()
                                 .requestMatchers(HttpMethod.DELETE, "/bookBookmark/**").authenticated()
                                 .requestMatchers(HttpMethod.GET, "/videoBookmark/**").authenticated()
@@ -88,7 +91,10 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/post/{userId}/all").authenticated()
                                 .requestMatchers(HttpMethod.GET, "/post/{userId}/count").authenticated()
                                 .requestMatchers(HttpMethod.POST, "/post/**", "/api/follow").authenticated()
-                                .requestMatchers("/api/user/**").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/api/user/profile/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/user/profile").authenticated()
+                                .requestMatchers(HttpMethod.DELETE, "/api/user/profile/image/**").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/video/**").permitAll()
                                 .requestMatchers(
                                         "/",
                                         "/swagger-ui/**",
@@ -120,8 +126,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOriginPattern("http://localhost:*");      // 5173이든 5174든 다 허용
-        configuration.addAllowedMethod("*");
-        configuration.addAllowedHeader("*");
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // ← 여기를 명시적으로
+        configuration.setAllowedHeaders(List.of("*"));  // 이것도 List.of로 바꿔주는 걸 권장
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
