@@ -34,6 +34,7 @@ public class PostResponseDTO {
     private Long reviewCount;
 
 
+
 //    public PostResponseDTO(Post post) {
 //        this.postId = post.getPostId();
 //        this.postTitle = post.getPostTitle();

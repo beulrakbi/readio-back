@@ -136,8 +136,6 @@ public class FeedService {
             if (loggedInUserProfile == null) {
                 return new ResponseDTO(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.", null);
             }
-            // TODO: FollowRepository를 사용하여 팔로우하는 프로필 ID 리스트 조회
-            // 이 부분을 실제 로직으로 대체
             profileIds = followRepository.findByFollower_ProfileId(loggedInUserProfile.getProfileId())
                     .stream()
                     .map(follow -> follow.getFollowing().getProfileId())
@@ -147,14 +145,6 @@ public class FeedService {
                 profileIds = Collections.emptyList();
             }
         }
-
-//        Page<FeedItemDto> feedPage = feedRepository.findCombinedFeed(
-//                subTab,
-//                profileIds,
-//                bookIsbns,
-//                loginUserProfileId,
-//                pageable
-//        );
 
         Page<FeedItemDto> feedPage = feedRepository.findCombinedFeed(
                 subTab,
@@ -184,8 +174,6 @@ public class FeedService {
                 projection.getIsFollowing()
         ));
 
-        // ✨ BookReview의 책 정보는 이제 쿼리에서 직접 가져오므로, 여기서 추가 로직 필요 없음
-        // finalFeedItems = feedPage.getContent() 그대로 사용
         List<FeedItemDto> finalFeedItems = feedPage.getContent();
 
 
