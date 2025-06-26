@@ -154,6 +154,9 @@ Readio 프로젝트에서는 보다 RESTful한 API 설계와 데이터 구조의
 - 또한, 답변 작성과 수정은 POST나 DELETE가 아닌 PUT 메서드로 처리, 하나의 엔드포인트에서 상태를 업데이트하는 방식으로 구현했습니다.  
 이런 고민과 개선 과정을 통해, 단순한 CRUD구현을 넘어서 데이터 흐름에 기반한 구조적 설계를 직접 경험하고 적용해볼 수 있었습니다.
 
+<img width="100%" alt="qna1" src="https://github.com/user-attachments/assets/62c2f403-111f-45ba-b02e-11e94479c02e">
+<br/>
+<img width="100%" alt="qna2" src="https://github.com/user-attachments/assets/b76519eb-177a-461a-8b7c-a6e5552ea02b">
 
 
 
