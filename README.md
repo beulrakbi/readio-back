@@ -43,33 +43,26 @@
 <br/>
 
 # 4. Tasks & Responsibilities (작업 및 역할 분담)
-|  |  |  |
-|-----------------|-----------------|-----------------|
-| 이동규    |  <img src="https://github.com/user-attachments/assets/c1c2b1e3-656d-4712-98ab-a15e91efa2da" alt="이동규" width="100"> | <ul><li>프로젝트 계획 및 관리</li><li>팀 리딩 및 커뮤니케이션</li><li>커스텀훅 개발</li></ul>     |
-| 신유승   |  <img src="https://github.com/user-attachments/assets/78ec4937-81bb-4637-975d-631eb3c4601e" alt="신유승" width="100">| <ul><li>메인 페이지 개발</li><li>동아리 만들기 페이지 개발</li><li>커스텀훅 개발</li></ul> |
-| 김나연   |  <img src="https://github.com/user-attachments/assets/78ce1062-80a0-4edb-bf6b-5efac9dd992e" alt="김나연" width="100">    |<ul><li>홈 페이지 개발</li><li>로그인 페이지 개발</li><li>동아리 찾기 페이지 개발</li><li>동아리 프로필 페이지 개발</li><li>커스텀훅 개발</li></ul>  |
-| 이승준    |  <img src="https://github.com/user-attachments/assets/beea8c64-19de-4d91-955f-ed24b813a638" alt="이승준" width="100">    | <ul><li>회원가입 페이지 개발</li><li>마이 프로필 페이지 개발</li><li>커스텀훅 개발</li></ul>    |
+|  |  |  | | |
+|-----------------|-----------------|-----------------| -----------------| -----------------|
+| 황재용    |  <img src="" alt="황재용" width="100"> | <ul><li>책 리뷰</li><li>북마크</li><li>게시판</li></ul>     |
+| 홍성경   |  <img src="" alt="홍성경" width="100">| <ul><li>큐레이션</li><li>책 상세페이지</li><li>신고</li><li>영상 필터링</li></ul> |
+| 진보경   |  <img src="" alt="진보경" width="100">    |<ul><li>회원가입</li><li>로그인/로그아웃</li><li>정보관리</li><li>회원관리</li></ul>  |
+| 조수민    |  <img src="" alt="조수민" width="100">    | <ul><li>큐레이션</li><li>영상/책 검색</li><li>영상 상세페이지</li></ul>    |
+| 박소혜    |  <img src="" alt="박소혜" width="100">    | <ul><li>프로필</li><li>감정 관리</li><li>관심분야 통계</li><li>콘텐츠 통계</li></ul>    |
+| 이상인    |  <img src="" alt="이상인" width="100">    | <ul><li>피드</li><li>팔로우/li><li>포스트</li></ul>    |
 
 <br/>
 <br/>
 
 # 5. Technology Stack (기술 스택)
-## 5.1 Language
-|  |  |
-|-----------------|-----------------|
-| HTML5    |<img src="https://github.com/user-attachments/assets/2e122e74-a28b-4ce7-aff6-382959216d31" alt="HTML5" width="100">| 
-| CSS3    |   <img src="https://github.com/user-attachments/assets/c531b03d-55a3-40bf-9195-9ff8c4688f13" alt="CSS3" width="100">|
-| Javascript    |  <img src="https://github.com/user-attachments/assets/4a7d7074-8c71-48b4-8652-7431477669d1" alt="Javascript" width="100"> | 
+## 5.1 Frontend
+| 기술 | 로고 |
+|------|------|
+| React | <img src="https://github.com/user-attachments/assets/e3b49dbb-981b-4804-acf9-012c854a2fd2" alt="React" width="100"> |
+| Redux | <img src="https://github.com/user-attachments/assets/a73eb735-84fd-4471-a0e9-806a7a1289c0" alt="Redux" width="100"> |
 
-<br/>
 
-## 5.2 Frotend
-|  |  |  |
-|-----------------|-----------------|-----------------|
-| React    |  <img src="https://github.com/user-attachments/assets/e3b49dbb-981b-4804-acf9-012c854a2fd2" alt="React" width="100"> | 18.3.1    |
-| StyledComponents    |  <img src="https://github.com/user-attachments/assets/c9b26078-5d79-40cc-b120-69d9b3882786" alt="StyledComponents" width="100">| 6.1.12   |
-| MaterialUI    |  <img src="https://github.com/user-attachments/assets/75a46fa7-ebc0-4a9d-b648-c589f87c4b55" alt="MUI" width="100">    | 5.0.0  |
-| DayJs    |  <img src="https://github.com/user-attachments/assets/3632d7d6-8d43-4dd5-ba7a-501a2bc3a3e4" alt="DayJs" width="100">    | 1.11.12    |
 
 <br/>
 
