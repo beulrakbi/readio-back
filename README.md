@@ -93,17 +93,12 @@
 <br/>
 <br/>
 
-# 7. Development Workflow (개발 워크플로우)
-## 브랜치 전략 (Branch Strategy)
-우리의 브랜치 전략은 Git Flow를 기반으로 하며, 다음과 같은 브랜치를 사용합니다.
+# 7. 문서화
+|  |  
+|-----------------|  
+|  <img src="https://github.com/user-attachments/assets/42e7eb0a-c3bc-4495-8331-0010960e6b09" alt="문서화1" width="100%">    |
+|  <img src="https://github.com/user-attachments/assets/5fbad02f-4e6d-4f29-88ae-60e602f1e393" alt="문서화2" width="100%">    |
 
-- Main Branch
-  - 배포 가능한 상태의 코드를 유지합니다.
-  - 모든 배포는 이 브랜치에서 이루어집니다.
-  
-- {name} Branch
-  - 팀원 각자의 개발 브랜치입니다.
-  - 모든 기능 개발은 이 브랜치에서 이루어집니다.
 
 <br/>
 <br/>
