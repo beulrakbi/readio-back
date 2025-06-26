@@ -109,9 +109,7 @@
 - 사용자들이 다시 보고 싶은 책과 영상을 저장할 수 있도록 즐겨찾기 기능을 구현했습니다.
 - 특히, 영상을 통해 책에 흥미를 느낀 사용자가 해당 책을 따로 저장해두고 다시 찾아볼 수 있도록 UX를 고려한 기능 설계에 집중했습니다.
 
-<div style="border:1px solid #f0f0f0; padding:10px; border-radius:8px; margin-top:10px;">
-  <img width="889" alt="SCR-20250626-qezu" src="https://github.com/user-attachments/assets/49db0eb7-8f23-43ed-8b2c-d9efd792e4d4" />
-</div>
+> <img width="889" alt="SCR-20250626-qezu" src="https://github.com/user-attachments/assets/49db0eb7-8f23-43ed-8b2c-d9efd792e4d4" />
 
 <br/><br/>
 
@@ -119,9 +117,7 @@
 - 사용자와의 직접적인 소통을 위해 질문/답변 기능을 갖춘 Q&A 게시판을 구현했습니다.  
 - 사용자는 질문을 등록할 수 있고, 관리자가 해당 질문에 답변을 작성하면 사용자가 마이페이지에서 답변 여부를 확인할 수 있도록 구성하였습니다.
 
-<div style="border:1px solid #f0f0f0; padding:10px; border-radius:8px; margin-top:10px;">
-  <img width="740" alt="SCR-20250626-qgfg" src="https://github.com/user-attachments/assets/34eec4cb-ffdc-44ca-b47f-f183eb8588d7" />
-</div>
+> <img width="740" alt="SCR-20250626-qgfg" src="https://github.com/user-attachments/assets/34eec4cb-ffdc-44ca-b47f-f183eb8588d7" />
 
 <br/><br/>
 
@@ -129,9 +125,7 @@
 - 사용자와 관리자 간 원활한 커뮤니케이션을 위해 공지사항 게시판을 구현했습니다.
 - 공지사항 성격에 따라 말머리 태그를 선택할 수 있도록 하여 정보를 더 명확하게 전달할 수 있게 했습니다.
 
-<div style="border:1px solid #f0f0f0; padding:10px; border-radius:8px; margin-top:10px;">
-  <img width="889" alt="SCR-20250626-qfmo" src="https://github.com/user-attachments/assets/194f833d-00fd-4ccc-9bf2-1194e02d36fc" />
-</div>
+> <img width="889" alt="SCR-20250626-qfmo" src="https://github.com/user-attachments/assets/194f833d-00fd-4ccc-9bf2-1194e02d36fc" />
 
 <br/><br/>
 
@@ -139,9 +133,7 @@
 - 사용자들이 반복적으로 문의하는 내용에 대해 미리 답변을 제공하는 FAQ 시스템을 구축했습니다.
 - 이를 통해 Q&A 게시판의 중복 질문을 줄이고, 관리자 업무 효율을 높이며 사용자 편의 성도 함께 개선하였습니다.
 
-<div style="border:1px solid #f0f0f0; padding:10px; border-radius:8px; margin-top:10px;">
-  <img width="761" alt="SCR-20250626-qgnp" src="https://github.com/user-attachments/assets/a8b5b002-fdff-41d9-882f-104922f90ee4" />
-</div>
+>  <img width="761" alt="SCR-20250626-qgnp" src="https://github.com/user-attachments/assets/a8b5b002-fdff-41d9-882f-104922f90ee4" />
 
 <br/>
 <br/>
