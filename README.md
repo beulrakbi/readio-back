@@ -1,7 +1,8 @@
-# 0. 황재용 Git-hub  
+# 0. 황재용 Git-hub    
 <br/>  
 <br/>  
-# 1. Project Overview (프로젝트 개요)
+
+# 1. Project Overview (프로젝트 개요)  
 - 프로젝트 이름: Readio
 - 프로젝트 설명: 독서 문화를 새롭게 경험할 수 있도록 돕는 유튜브 기반 책 추천 플랫폼  
 
