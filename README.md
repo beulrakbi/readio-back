@@ -1,6 +1,6 @@
 # 1. Project Overview (프로젝트 개요)
 - 프로젝트 이름: Readio
-- 프로젝트 설명: 독서 문화를 새롭게 경험할 수 있도록 돕는 유튜브 기반 책 추천 플랫폼
+- 프로젝트 설명: 독서 문화를 새롭게 경험할 수 있도록 돕는 유튜브 기반 책 추천 플랫폼  
 
 <br/>
 <br/>
@@ -85,26 +85,10 @@
 
 <br/>
 
-# 6. Project Structure (프로젝트 구조)
-```plaintext
-project/
-├── public/
-│   ├── index.html           # HTML 템플릿 파일
-│   └── favicon.ico          # 아이콘 파일
-├── src/
-│   ├── assets/              # 이미지, 폰트 등 정적 파일
-│   ├── components/          # 재사용 가능한 UI 컴포넌트
-│   ├── hooks/               # 커스텀 훅 모음
-│   ├── pages/               # 각 페이지별 컴포넌트
-│   ├── App.js               # 메인 애플리케이션 컴포넌트
-│   ├── index.js             # 엔트리 포인트 파일
-│   ├── index.css            # 전역 css 파일
-│   ├── firebaseConfig.js    # firebase 인스턴스 초기화 파일
-│   package-lock.json    # 정확한 종속성 버전이 기록된 파일로, 일관된 빌드를 보장
-│   package.json         # 프로젝트 종속성 및 스크립트 정의
-├── .gitignore               # Git 무시 파일 목록
-└── README.md                # 프로젝트 개요 및 사용법
-```
+# 6. 개발 기간
+- 2025년 4월 14 ~ 2025 6월 11일
+<img src="https://github.com/user-attachments/assets/7d01dd97-0dac-441c-a00a-3e3a1f90c664" alt="wbs" width="100%">
+
 
 <br/>
 <br/>
