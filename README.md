@@ -43,21 +43,21 @@
 <br/>
 
 # 4. Tasks & Responsibilities (작업 및 역할 분담)
-|  |  |  | | |
-|-----------------|-----------------|-----------------| -----------------| -----------------|
-| 황재용    |  <img src="" alt="황재용" width="100"> | <ul><li>책 리뷰</li><li>북마크</li><li>게시판</li></ul>     |
-| 홍성경   |  <img src="" alt="홍성경" width="100">| <ul><li>큐레이션</li><li>책 상세페이지</li><li>신고</li><li>영상 필터링</li></ul> |
-| 진보경   |  <img src="" alt="진보경" width="100">    |<ul><li>회원가입</li><li>로그인/로그아웃</li><li>정보관리</li><li>회원관리</li></ul>  |
-| 조수민    |  <img src="" alt="조수민" width="100">    | <ul><li>큐레이션</li><li>영상/책 검색</li><li>영상 상세페이지</li></ul>    |
-| 박소혜    |  <img src="" alt="박소혜" width="100">    | <ul><li>프로필</li><li>감정 관리</li><li>관심분야 통계</li><li>콘텐츠 통계</li></ul>    |
-| 이상인    |  <img src="" alt="이상인" width="100">    | <ul><li>피드</li><li>팔로우/li><li>포스트</li></ul>    |
+|  |  |  |  
+|-----------------|-----------------|-----------------|
+| 황재용    |  <img src="https://github.com/user-attachments/assets/b49d9b85-dcbc-45e9-8b18-19d08bd309b0" alt="황재용" width="100"> | <ul><li>책 리뷰</li><li>북마크</li><li>게시판</li></ul>     |
+| 홍성경   |  <img src="https://github.com/user-attachments/assets/12f9de22-5ec9-438a-8130-3ba89ffaf9a3" alt="홍성경" width="100">| <ul><li>큐레이션</li><li>책 상세페이지</li><li>신고</li><li>영상 필터링</li></ul> |
+| 진보경   |  <img src="https://github.com/user-attachments/assets/38dcd32c-b46a-49c5-a9fd-9d72ea16c3cc" alt="진보경" width="100">    |<ul><li>회원가입</li><li>로그인/로그아웃</li><li>정보관리</li><li>회원관리</li></ul>  |
+| 조수민    |  <img src="https://github.com/user-attachments/assets/6fc18f3c-9fc2-47af-95cf-21eddd76374b" alt="조수민" width="100">    | <ul><li>큐레이션</li><li>영상/책 검색</li><li>영상 상세페이지</li></ul>    |
+| 박소혜    |  <img src="https://github.com/user-attachments/assets/86189a2a-74f9-49b9-ae22-d0fca61c62e3" alt="박소혜" width="100">    | <ul><li>프로필</li><li>감정 관리</li><li>관심분야 통계</li><li>콘텐츠 통계</li></ul>    |
+| 이상인    |  <img src="https://github.com/user-attachments/assets/436b3b7c-cfe4-404e-8668-0e18a3befae7" alt="이상인" width="100">    | <ul><li>피드</li><li>팔로우/li><li>포스트</li></ul>    |
 
 <br/>
 <br/>
 
 # 5. Technology Stack (기술 스택)
 ## 5.1 Frontend
-| 기술 | 로고 |
+|  |  |
 |------|------|
 | React | <img src="https://github.com/user-attachments/assets/e3b49dbb-981b-4804-acf9-012c854a2fd2" alt="React" width="100"> |
 | Redux | <img src="https://github.com/user-attachments/assets/a73eb735-84fd-4471-a0e9-806a7a1289c0" alt="Redux" width="100"> |
@@ -67,10 +67,12 @@
 <br/>
 
 ## 5.3 Backend
-|  |  |  |
-|-----------------|-----------------|-----------------|
-| Firebase    |  <img src="https://github.com/user-attachments/assets/1694e458-9bb0-4a0b-8fe6-8efc6e675fa1" alt="Firebase" width="100">    | 10.12.5    |
-
+|  |  |  
+|-----------------|-----------------|  
+| Java    |  <img src="https://github.com/user-attachments/assets/d89cffd5-ed08-4183-875d-c248b6462603" alt="Java" width="100"> |  
+| Spring boot    |  <img src="https://github.com/user-attachments/assets/40ce0c36-fe55-438d-82da-95cd4bca7a7a" alt="SpringBoot" width="100"> |  
+| Spring security    |  <img src="https://github.com/user-attachments/assets/c686bdd7-4b29-4c7b-b840-936f277fde16" alt="SpringSecurity" width="100"> |  
+| MyBatis    |  <img src="https://github.com/user-attachments/assets/2b01043f-b050-4db8-998b-eb350aa93830" alt="MyBatis" width="100"> |  
 <br/>
 
 ## 5.4 Cooperation
