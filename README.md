@@ -79,7 +79,7 @@
 |  |  |
 |-----------------|-----------------|
 | Git    |  <img src="https://github.com/user-attachments/assets/483abc38-ed4d-487c-b43a-3963b33430e6" alt="git" width="100">    |
-| Figma    |  <img src="https://github.com/user-attachments/assets/00a26221-767b-43a2-bb2a-47f295e88903" alt="Figma" width="100">    |
+| Figma    |  <img src="https://github.com/user-attachments/assets/cc702edd-0ac9-4f11-b0f5-56679a12a81e" alt="Figma" width="100">    |
 | Notion    |  <img src="https://github.com/user-attachments/assets/34141eb9-deca-416a-a83f-ff9543cc2f9a" alt="Notion" width="100">    |
 | Swagger   |  <img src="https://github.com/user-attachments/assets/dab7db5d-6565-43ef-978b-3743af717c1f" alt="swagger" width="100">    |
 
@@ -103,107 +103,29 @@
 <br/>
 <br/>
 
-# 8. Coding Convention
-## 문장 종료
-```
-// 세미콜론(;)
-console.log("Hello World!");
-```
+# 8. 주요 기능 구현 @황재용
+## 책/영상 즐겨찾기
+- 사용자들이 다시 보고 싶은 책과 영상을 저장할 수 있도록 즐겨찾기 기능을 구현했습니다.
+- 특히, 영상을 통해 책에 흥미를 느낀 사용자가 해당 책을 따로 저장해두고 다시 찾아볼 수 있도록 UX를 고려한 기능 설계에 집중했습니다.
 
 <br/>
 
 
-## 명명 규칙
-* 상수 : 영문 대문자 + 스네이크 케이스
-```
-const NAME_ROLE;
-```
-* 변수 & 함수 : 카멜케이스
-```
-// state
-const [isLoading, setIsLoading] = useState(false);
-const [isLoggedIn, setIsLoggedIn] = useState(false);
-const [errorMessage, setErrorMessage] = useState('');
-const [currentUser, setCurrentUser] = useState(null);
-
-// 배열 - 복수형 이름 사용
-const datas = [];
-
-// 정규표현식: 'r'로 시작
-const = rName = /.*/;
-
-// 이벤트 핸들러: 'on'으로 시작
-const onClick = () => {};
-const onChange = () => {};
-
-// 반환 값이 불린인 경우: 'is'로 시작
-const isLoading = false;
-
-// Fetch함수: method(get, post, put, del)로 시작
-const getEnginList = () => {...}
-```
+## Q&A
+- 사용자와의 직접적인 소통을 위해 질문/답변 기능을 갖춘 Q&A 게시판을 구현했습니다.  
+- 사용자는 질문을 등록할 수 있고, 관리자가 해당 질문에 답변을 작성하면 사용자가 마이페이지에서 답변 여부를 확인할 수 있도록 구성하였습니다.  
 
 <br/>
 
-## 블록 구문
-```
-// 한 줄짜리 블록일 경우라도 {}를 생략하지 않고, 명확히 줄 바꿈 하여 사용한다
-// good
-if(true){
-  return 'hello'
-}
-
-// bad
-if(true) return 'hello'
-```
+## 공지사항
+- 사용자와 관리자 간 원활한 커뮤니케이션을 위해 공지사항 게시판을 구현했습니다.
+- 공지사항 성격에 따라 말머리 태그를 선택할 수 있도록 하여 정보를 더 명확하게 전달할 수 있게 했습니다.
 
 <br/>
 
-## 함수
-```
-함수는 함수 표현식을 사용하며, 화살표 함수를 사용한다.
-// Good
-const fnName = () => {};
-
-// Bad
-function fnName() {};
-```
-
-<br/>
-
-## 태그 네이밍
-Styled-component태그 생성 시 아래 네이밍 규칙을 준수하여 의미 전달을 명확하게 한다.<br/>
-태그명이 길어지더라도 의미 전달의 명확성에 목적을 두어 작성한다.<br/>
-전체 영역: Container<br/>
-영역의 묶음: {Name}Area<br/>
-의미없는 태그: <><br/>
-```
-<Container>
-  <ContentsArea>
-    <Contents>...</Contents>
-    <Contents>...</Contents>
-  </ContentsArea>
-</Container>
-```
-
-<br/>
-
-## 폴더 네이밍
-카멜 케이스를 기본으로 하며, 컴포넌트 폴더일 경우에만 파스칼 케이스로 사용한다.
-```
-// 카멜 케이스
-camelCase
-// 파스칼 케이스
-PascalCase
-```
-
-<br/>
-
-## 파일 네이밍
-```
-컴포넌트일 경우만 .jsx 확장자를 사용한다. (그 외에는 .js)
-customHook을 사용하는 경우 : use + 함수명
-```
+## FAQ
+- 사용자들이 반복적으로 문의하는 내용에 대해 미리 답변을 제공하는 FAQ 시스템을 구축했습니다.
+- 이를 통해 Q&A 게시판의 중복 질문을 줄이고, 관리자 업무 효율을 높이며 사용자 편의 성도 함께 개선하였습니다.
 
 <br/>
 <br/>
