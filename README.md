@@ -1,4 +1,4 @@
-![member4](https://github.com/user-attachments/assets/1f8e858f-571d-4b0e-9188-23124e984da9)![member4](https://github.com/user-attachments/assets/1f8e858f-571d-4b0e-9188-23124e984da9)# 1. Project Overview (프로젝트 개요)
+# 1. Project Overview (프로젝트 개요)
 - 프로젝트 이름: Readio
 - 프로젝트 설명: 독서 문화를 새롭게 경험할 수 있도록 돕는 유튜브 기반 책 추천 플랫폼
 
@@ -8,8 +8,7 @@
 # 2. Team Members (팀원 및 팀 소개)
 | 홍성경 | 진보경 | 박소혜 | 조수민 | 황재용 | 이상인 |
 |:------:|:------:|:------:|:------:|:------:|:------:|
-| <img src="![member4](https://github.com/user-attachments/assets/12f9de22-5ec9-438a-8130-3ba89ffaf9a3)
-" alt="홍성경" width="150"> | <img src="https://github.com/user-attachments/assets/78ec4937-81bb-4637-975d-631eb3c4601e" alt="신유승" width="150"> | <img src="https://github.com/user-attachments/assets/78ce1062-80a0-4edb-bf6b-5efac9dd992e" alt="김나연" width="150"> | <img src="https://github.com/user-attachments/assets/beea8c64-19de-4d91-955f-ed24b813a638" alt="이승준" width="150"> |
+| <img src="![member4](https://github.com/user-attachments/assets/12f9de22-5ec9-438a-8130-3ba89ffaf9a3)" alt="홍성경" width="150"> | <img src="![member6](https://github.com/user-attachments/assets/38dcd32c-b46a-49c5-a9fd-9d72ea16c3cc)" alt="진보경" width="150"> | <img src="![member5](https://github.com/user-attachments/assets/86189a2a-74f9-49b9-ae22-d0fca61c62e3)" alt="박소혜" width="150"> | <img src="![member2](https://github.com/user-attachments/assets/6fc18f3c-9fc2-47af-95cf-21eddd76374b)" alt="조수민" width="150"> | <img src="![member1](https://github.com/user-attachments/assets/b49d9b85-dcbc-45e9-8b18-19d08bd309b0)" alt="황재용" width="150"> | <img src="![member3](https://github.com/user-attachments/assets/436b3b7c-cfe4-404e-8668-0e18a3befae7)" alt="이상인" width="150"> | 
 | Fullstack | Fullstack | Fullstack | Fullstack | Fullstack | Fullstack |
 
 <br/>
