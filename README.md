@@ -8,7 +8,7 @@
 # 2. Team Members (팀원 및 팀 소개)
 | 홍성경 | 진보경 | 박소혜 | 조수민 | 황재용 | 이상인 |
 |:------:|:------:|:------:|:------:|:------:|:------:|
-| <img src="(https://github.com/user-attachments/assets/12f9de22-5ec9-438a-8130-3ba89ffaf9a3)" alt="홍성경" width="150"> | <img src="![member6](https://github.com/user-attachments/assets/38dcd32c-b46a-49c5-a9fd-9d72ea16c3cc)" alt="진보경" width="150"> | <img src="![member5](https://github.com/user-attachments/assets/86189a2a-74f9-49b9-ae22-d0fca61c62e3)" alt="박소혜" width="150"> | <img src="![member2](https://github.com/user-attachments/assets/6fc18f3c-9fc2-47af-95cf-21eddd76374b)" alt="조수민" width="150"> | <img src="![member1](https://github.com/user-attachments/assets/b49d9b85-dcbc-45e9-8b18-19d08bd309b0)" alt="황재용" width="150"> | <img src="![member3](https://github.com/user-attachments/assets/436b3b7c-cfe4-404e-8668-0e18a3befae7)" alt="이상인" width="150"> | 
+| <img src="https://github.com/user-attachments/assets/12f9de22-5ec9-438a-8130-3ba89ffaf9a3" alt="홍성경" width="150"> | <img src="https://github.com/user-attachments/assets/38dcd32c-b46a-49c5-a9fd-9d72ea16c3cc" alt="진보경" width="150"> | <img src="https://github.com/user-attachments/assets/86189a2a-74f9-49b9-ae22-d0fca61c62e3" alt="박소혜" width="150"> | <img src="https://github.com/user-attachments/assets/6fc18f3c-9fc2-47af-95cf-21eddd76374b" alt="조수민" width="150"> | <img src="https://github.com/user-attachments/assets/b49d9b85-dcbc-45e9-8b18-19d08bd309b0" alt="황재용" width="150"> | <img src="https://github.com/user-attachments/assets/436b3b7c-cfe4-404e-8668-0e18a3befae7" alt="이상인" width="150"> | 
 | Fullstack | Fullstack | Fullstack | Fullstack | Fullstack | Fullstack |
 
 <br/>
