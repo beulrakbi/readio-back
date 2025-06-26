@@ -7,7 +7,7 @@
 
 # 2. Team Members (팀원 및 팀 소개)
 | 홍성경 | 진보경 | 박소혜 | 조수민 | 황재용 | 이상인 |
-|:------:|:------:|:------:|:------:|:------:|
+|:------:|:------:|:------:|:------:|:------:|:------:|
 | <img src="![member4](https://github.com/user-attachments/assets/12f9de22-5ec9-438a-8130-3ba89ffaf9a3)
 " alt="홍성경" width="150"> | <img src="https://github.com/user-attachments/assets/78ec4937-81bb-4637-975d-631eb3c4601e" alt="신유승" width="150"> | <img src="https://github.com/user-attachments/assets/78ce1062-80a0-4edb-bf6b-5efac9dd992e" alt="김나연" width="150"> | <img src="https://github.com/user-attachments/assets/beea8c64-19de-4d91-955f-ed24b813a638" alt="이승준" width="150"> |
 | Fullstack | Fullstack | Fullstack | Fullstack | Fullstack | Fullstack |
