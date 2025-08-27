@@ -103,7 +103,9 @@
 <br/>
 <br/>
 
-# 8. 주요 기능 구현 @황재용
+# 8. 주요 기능 구현 @황재용  
+## 결과물 영상  
+[🎥유튜브 https://studio.youtube.com/video/M8WMhGZ78SA/edit](https://studio.youtube.com/video/M8WMhGZ78SA/edit)  
 
 ## 책/영상 즐겨찾기
 - 사용자들이 다시 보고 싶은 책과 영상을 저장할 수 있도록 즐겨찾기 기능을 구현했습니다.
